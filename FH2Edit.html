@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<!--
+    FH2Edit An Expert Sleepers Configuration/Preset Edit Tool
+    Copyright (C) 2026 Shawn Garbett
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FH-2 Editor</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href=assets/"favicon-16x16.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="manifest" href="assets/site.webmanifest"> 
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    *
+    {
+      box-sizing: border-box;
+    }
+
+    html,
+    body
+    {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    body
+    {
+      display: flex;
+      flex-direction: column;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 14px;
+    }
+
+    #status-bar
+    {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+    #app-title
+    {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    #status
+    {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .status-item
+    {
+      white-space: nowrap;
+    }
+
+    #tab-bar
+    {
+      flex: 0 0 auto;
+      display: flex;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .tab
+    {
+      padding: 0.65rem 1.25rem;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .tab.active
+    {
+      border-bottom-color: currentColor;
+      font-weight: 600;
+    }
+
+    #main
+    {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .screen
+    {
+      display: none;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      padding: 1rem;
+    }
+
+    .screen.active
+    {
+      display: block;
+    }
+
+    .screen-header
+    {
+      margin-bottom: 1rem;
+    }
+
+    .screen-header h2
+    {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .screen-content
+    {
+      width: 100%;
+    }
+
+    /* I/O */
+
+    #io-layout
+    {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    #io-layout select
+    {
+      font-size: 1.1rem;
+    }
+
+    #io-controls
+    {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    #io-advanced
+    {
+      margin-top: 1rem;
+    }
+    
+    .io-actions
+    {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      gap: 0.5rem 1rem;
+      margin-top: 1rem;
+    }
+    
+    .io-actions button
+    {
+      font-size: 1.1rem;
+    }
+
+    #io-advanced-raw
+    {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    #io-advanced-raw h3
+    {
+      margin-top: 0;
+    }
+    
+    .debug-box
+    {
+      min-height: 12rem;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      font-family: "IBM Plex Mono", monospace;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    /* Outputs */
+
+    #outputs-layout
+    {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    #output-list
+    {
+      flex: 0 0 35%;
+      min-width: 20rem;
+      overflow: auto;
+      border-right: 1px solid #ccc;
+      padding-right: 1rem;
+    }
+
+    #output-editor
+    {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: auto;
+      padding-left: 1rem;
+    }
+
+    /* Other screens */
+
+    .placeholder
+    {
+      padding: 2rem;
+      border: 1px dashed #aaa;
+    }
+    
+    #footer
+    {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      padding: 0.5rem 1rem;
+      align-items: center;
+      border-top: 1px solid #ccc;
+      justify-content: flex-end;
+    }
+    
+    .tooltip
+    {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip-popup
+    {
+      position: fixed;
+      width: max-content;
+      max-width: min(20rem, calc(100vw - 1rem));
+      box-sizing: border-box;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ccc;
+      background: white;
+      color: black;
+      font-size: 0.85rem;
+      line-height: 1.3;
+      white-space: normal;
+      text-align: left;
+      overflow-wrap: break-word;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 1000;
+    }
+    
+    .tooltip-popup.visible
+    {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+
+  <script src="ui.js"   ></script>
+  <script src="midi.js" ></script>
+  <script src="icons.js"></script>
+  <script src="app.js"  ></script>
+</head>
+
+<body>
+  <header id="status-bar">
+    <div id="app-title">FH-2 Editor</div>
+    <div id="status">
+      <div class="status-item" id="browser-status"    > Browser: Checking&hellip; </div>
+      <div class="status-item" id="fh2-status"        > FH-2: Unconnected </div>
+      <div class="status-item" id="parameter-status"  > Parameters: Unmodified </div>
+      <div class="status-item" id="config-name-status"> Configuration: </div>
+      <div class="status-item" id="preset-name-status"> Preset: </div>
+    </div>
+  </header>
+
+  <nav id="tab-bar" aria-label="Main navigation">
+    <button class="tab active" data-target="io-screen"         >I/O</button>
+    <button class="tab"        data-target="globals-screen"    >Globals</button>
+    <button class="tab"        data-target="outputs-screen"    >Outputs</button>
+    <button class="tab"        data-target="controllers-screen">Controllers</button>
+    <button class="tab"        data-target="sequencers-screen" >Sequencers</button>
+  </nav>
+
+  <main id="main">
+
+    <!-- I/O -->
+
+    <section class="screen active" id="io-screen">
+
+      <div class="screen-header"><h2>I/O</h2></div>
+      <div class="screen-content" id="io-layout">
+        <div id="io-controls">
+          <div>
+            <label for="midi-input">MIDI Input</label>
+            <select id="midi-input"><option>No MIDI inputs</option></select>
+          </div>
+
+          <div>
+            <label for="midi-output">MIDI Output</label>
+            <select id="midi-output"><option>No MIDI outputs</option></select>
+          </div>
+
+        </div>
+        
+        <div id="io-options">
+          <label>
+            <input type="checkbox" id="retry-mode">
+            <span class="tooltip" data-tooltip="The FH-2 has timing issues receiving large sysex from Linux and mioXL. This is a hack that overcomes that limitation by stuffing the sysex 3 times quickly which seems to work for v2.0">Timing Hack for Linux/mioXL compatibility</span>
+          </label>
+        </div>
+
+        <div class="io-actions">
+          <button id="read-from-fh2">Read from FH-2</button>
+          <button id="write-to-fh2" >Write to FH-2</button>
+          <button id="load-sysex"   >Load from Files</button>
+          <button id="save-sysex"   >Save to Files</button>
+        </div>
+
+
+        <details id="io-advanced">
+
+          <summary>Advanced / Debug</summary>
+
+          <div id="io-advanced-content">
+            
+            <div class="io-actions">
+              <button id="read-config-fh2" >Read Configuration from FH-2</button>
+              <button id="write-config-fh2">Write Configuration to FH-2</button>
+
+              <button id="read-preset-fh2" >Read Preset from FH-2</button>
+              <button id="write-preset-fh2">Write Preset to FH-2</button>
+
+              <button id="load-config"     >Load Configuration from File</button>
+              <button id="save-config"     >Save Configuration to File</button>
+
+              <button id="load-preset"     >Load Preset from File</button>
+              <button id="save-preset"     >Save Preset to File</button>
+
+              <button id="read-version"    >Read Version from FH-2</button>
+              <button id="write-msg"       >Write Message to FH-2</button>
+            </div>
+
+            <div id="io-advanced-raw">
+              <div>
+                <h3>Log</h3>
+                <div
+                  class="debug-box"
+                  id="midi-log"
+                  aria-label="MIDI log">
+                </div>
+              </div>
+
+              <div>
+                <h3>Raw MIDI Output</h3>
+                <div
+                  class="debug-box"
+                  id="raw-midi-output"
+                  aria-label="Raw MIDI output">
+                </div>
+              </div>
+  
+              <div>
+                <h3>Raw MIDI Input</h3>
+                <div
+                  class="debug-box"
+                  id="raw-midi-input"
+                  aria-label="Raw MIDI input">
+                </div>
+              </div>
+            </div
+          </div>
+
+        </details>
+
+      </div>
+
+    </section>
+
+
+    <!-- Globals -->
+
+    <section class="screen" id="globals-screen">
+
+      <div class="screen-header"><h2>Globals</h2></div>
+
+      <div class="screen-content" id="globals-content">
+        <div id="global-names">
+          <div>
+            <label for="configuration-name">Configuration Name: </label>
+            <input type="text" id="configuration-name"placeholder="Configuration name">
+          </div>
+          <br/>
+          <div>
+            <label for="preset-name">Preset Name: </label>
+            <input type="text" id="preset-name" placeholder="Preset name">
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- Outputs -->
+
+    <section class="screen" id="outputs-screen">
+
+      <div class="screen-header"><h2>Outputs</h2></div>
+
+      <div class="screen-content" id="outputs-layout">
+
+        <aside id="output-list">
+          <!-- Output/source list will be generated here. -->
+        </aside>
+
+        <section id="output-editor">
+          <div class="placeholder">
+            Select an output source to configure it.
+          </div>
+        </section>
+
+      </div>
+
+    </section>
+
+
+    <!-- Controllers -->
+
+    <section class="screen" id="controllers-screen">
+
+      <div class="screen-header"><h2>Controllers</h2></div>
+
+      <div class="screen-content" id="controllers-content">
+        <div class="placeholder">
+          MIDI controller configuration
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- Sequencers -->
+
+    <section class="screen" id="sequencers-screen">
+
+      <div class="screen-header"><h2>Sequencers</h2></div>
+
+      <div class="screen-content" id="sequencers-content">
+        <div class="placeholder">
+          Sequencer configuration
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+  
+  <footer id="footer">
+    <span><a href="https://github.com/spgarbet/FH2Edit" id="github-link">Source</a></span>
+    <span>Version 0.0.9999</span>
+    <span>©2026 <a href="https://garbett.org">Shawn Garbett</a></span>
+    <span>
+      <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+         class="tooltip"
+         data-tooltip="This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL-3.">
+         <img src="assets/gplv3-with-text-84x42.png" alt="GPL 3 Free as in Freedom"/>
+      </a>
+    </span>
+    
+  </footer>
+
+</body>
+</html>
