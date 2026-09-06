@@ -14,15 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const appState =
-{
-  compatible: false  // Is the browser compatible (false until proven)
-};
+let midi = null;
 
-document.addEventListener("DOMContentLoaded", () =>
+async function initMIDI()
 {
-  initTabs();
-  initTooltips();
-  initApplication();
-  // Other application initialization...
-});
+  if (typeof navigator.requestMIDIAccess !== "function") { return false; }
+
+  try
+  {
+    midi = await navigator.requestMIDIAccess({ sysex: true });
+    return true;
+  }
+  catch (error)
+  {
+    console.error("Unable to access Web MIDI:", error);
+    return false;
+  }
+}
+
+async function initApplication()
+{
+  // Check for WebMIDI
+  appState.compatible = await initMIDI();
+
+  updateBrowserStatus();
+
+  if (!appState.compatible) { return; }
+
+  // Continue initialization...
+}

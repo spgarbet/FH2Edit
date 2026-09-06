@@ -196,3 +196,22 @@ function initTabs()
     });
   }
 }
+
+function updateBrowserStatus()
+{
+  const status = document.getElementById("browser-status");
+  const text   = document.getElementById("browser-status-text");
+  const popup  = status.querySelector(".tooltip-popup");
+  
+  if (appState.compatible)
+  {
+    text.textContent = "Browser: Compatible";
+    status.classList.remove("tooltip");
+    if(popup) { popup.remove(); }
+  }
+  else
+  {
+    text.textContent = "Browser: UNSUPPORTED";
+    status.classList.add("incompatible");
+  }
+}

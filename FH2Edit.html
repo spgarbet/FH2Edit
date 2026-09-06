@@ -22,9 +22,8 @@
   <title>FH-2 Editor</title>
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href=assets/"favicon-16x16.png">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-  <link rel="manifest" href="assets/site.webmanifest"> 
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico">
   <link
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
@@ -77,6 +76,11 @@
     .status-item
     {
       white-space: nowrap;
+    }
+    
+    #browser-status.incompatible
+    {
+      color: darkred;
     }
 
     #tab-bar
@@ -191,6 +195,11 @@
       margin-top: 0;
     }
     
+    .midi-src option[value=""]
+    {
+      font-style: italic;
+    }
+    
     .debug-box
     {
       min-height: 12rem;
@@ -284,7 +293,6 @@
 
   <script src="ui.js"   ></script>
   <script src="midi.js" ></script>
-  <script src="icons.js"></script>
   <script src="app.js"  ></script>
 </head>
 
@@ -292,11 +300,14 @@
   <header id="status-bar">
     <div id="app-title">FH-2 Editor</div>
     <div id="status">
-      <div class="status-item" id="browser-status"    > Browser: Checking&hellip; </div>
-      <div class="status-item" id="fh2-status"        > FH-2: Unconnected </div>
-      <div class="status-item" id="parameter-status"  > Parameters: Unmodified </div>
-      <div class="status-item" id="config-name-status"> Configuration: </div>
-      <div class="status-item" id="preset-name-status"> Preset: </div>
+      <div class="status-item tooltip"
+           id="browser-status"
+           data-tooltip="Web MIDI is required and must be allowed. Supported browsers include Google Chrome, Opera, and other Chromium-based browsers. Firefox and Safari do not currently provide the Web MIDI API.">
+        <span id="browser-status-text"                >Browser: Checking&hellip;</span></div>
+      <div class="status-item" id="fh2-status"        >FH-2: Unconnected</div>
+      <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div>
+      <div class="status-item" id="config-name-status">Configuration:</div>
+      <div class="status-item" id="preset-name-status">Preset:</div>
     </div>
   </header>
 
@@ -319,12 +330,12 @@
         <div id="io-controls">
           <div>
             <label for="midi-input">MIDI Input</label>
-            <select id="midi-input"><option>No MIDI inputs</option></select>
+            <select id="midi-input" class="midi-src"><option value="">None Available</option></select>
           </div>
 
           <div>
             <label for="midi-output">MIDI Output</label>
-            <select id="midi-output"><option>No MIDI outputs</option></select>
+            <select id="midi-output" class="midi-src"><option value="">None Available</option></select>
           </div>
 
         </div>
