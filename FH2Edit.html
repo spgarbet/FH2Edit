@@ -208,6 +208,7 @@
       font-family: "IBM Plex Mono", monospace;
       white-space: pre;
       overflow: auto;
+      text-align: left;
     }
 
     /* Outputs */
@@ -325,7 +326,7 @@
 
     <section class="screen active" id="io-screen">
 
-      <div class="screen-header"><h2>I/O</h2></div>
+      <div class="screen-header"><h2>MIDI and File Input/Output</h2></div>
       <div class="screen-content" id="io-layout">
         <div id="io-controls">
           <div>
@@ -354,7 +355,6 @@
           <button id="save-sysex"   >Save to Files</button>
         </div>
 
-
         <details id="io-advanced">
 
           <summary>Advanced / Debug</summary>
@@ -381,28 +381,17 @@
             <div id="io-advanced-raw">
               <div>
                 <h3>Log</h3>
-                <div
-                  class="debug-box"
-                  id="midi-log"
-                  aria-label="MIDI log">
-                </div>
+                <div class="debug-box" id="midi-log" aria-label="MIDI log"></div>
               </div>
 
               <div>
                 <h3>Raw MIDI Output</h3>
-                <div
-                  class="debug-box"
-                  id="raw-midi-output"
-                  aria-label="Raw MIDI output">
-                </div>
+                <div class="debug-box" id="raw-midi-output" aria-label="Raw MIDI output"></div>
               </div>
   
               <div>
                 <h3>Raw MIDI Input</h3>
-                <div
-                  class="debug-box"
-                  id="raw-midi-input"
-                  aria-label="Raw MIDI input">
+                <div class="debug-box" id="raw-midi-input" aria-label="Raw MIDI input">
                 </div>
               </div>
             </div

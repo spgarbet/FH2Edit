@@ -215,3 +215,13 @@ function updateBrowserStatus()
     status.classList.add("incompatible");
   }
 }
+
+function log(message)
+{
+  const logElement = document.getElementById("midi-log");
+  const timestamp  = new Date().toLocaleTimeString();
+
+  if (!logElement) { console.error("Log element missing", message); return; }
+  logElement.textContent += `[${timestamp}] ${message}\n`;
+  logElement.scrollTop = logElement.scrollHeight;
+}

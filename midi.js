@@ -18,6 +18,8 @@ let midi = null;
 
 async function initMIDI()
 {
+  log('Initializing MIDI');
+  
   if (typeof navigator.requestMIDIAccess !== "function") { return false; }
 
   try
@@ -39,7 +41,7 @@ async function initApplication()
 
   updateBrowserStatus();
 
-  if (!appState.compatible) { return; }
+  if (!appState.compatible) { log("ERROR: web-midi not enabled"); return; }
 
   // Continue initialization...
 }
