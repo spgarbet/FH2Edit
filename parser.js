@@ -1,0 +1,888 @@
+// A Monadic byte parser
+class ByteReader
+{
+  constructor(data)
+  {
+    this.view   = new DataView(data.buffer, data.byteOffset, data.byteLength);
+    this.offset = 0;
+  }
+
+  ensure(bytes)
+  {
+    if (this.offset + bytes > this.view.byteLength)
+    {
+      log("Parse Error");
+      throw new Error("Unexpected end of data");
+    }
+  }
+
+  u8()
+  {
+    this.ensure(1);
+    return this.view.getUint8(this.offset++);
+  }
+
+  u32LE()
+  {
+    this.ensure(4);
+    const value = this.view.getUint32(this.offset, true);
+    this.offset += 4;
+    return value;
+  }
+  
+  i32LE()
+  {
+    this.ensure(4);
+    const value = this.view.getInt32(this.offset, true);
+    this.offset += 4;
+    return value;
+  }
+  
+  sysexShort() { return this.u8() | ((this.u8() << 7) & 0x3f80); }
+  
+  sysexSignedShort()
+  {
+    const value = this.sysexShort();
+
+    if (value & 0x2000) { return value - 16384; }
+    return value;
+  }
+
+  sysexSignedChar()
+  {
+    const value = this.u8();
+
+    if (value & 0x40) { return value - 128; }
+
+    return value;
+  }
+
+
+  bytes(length)
+  {
+    this.ensure(length);
+
+    const result = new Uint8Array(
+      this.view.buffer, 
+      this.view.byteOffset + this.offset,
+      length
+    );
+
+    this.offset += length;
+    return result;
+  }
+
+  fixedString(length)
+  {
+    const bytes = this.bytes(length);
+
+    let end = bytes.indexOf(0);
+    if (end === -1) { end = bytes.length; }
+
+    return new TextDecoder().decode(bytes.subarray(0, end));
+  }
+
+  skip(length)
+  {
+    this.ensure(length);
+    this.offset += length;
+  }
+  
+  seek(offset)
+  {
+    if (offset < 0 || offset > this.view.byteLength)
+    {
+      log("Parse Error");
+      throw new Error("Invalid seek position");
+    }
+
+    this.offset = offset;
+  }
+
+  get position() { return this.offset; }
+}
+
+function parsePreset(reader)
+{
+  const version = reader.u32LE();
+
+  if (version !== 8)
+  {
+    log("FH-2 Preset Version Unsupported");
+    throw new Error("This version of the tool does not match the FH-2 firmware.");
+  }
+
+  const name = reader.fixedString(16);
+  reader.skip(1);
+
+  const swingType   = reader.u8();
+  const swingAmount = reader.u8();
+
+  reader.skip(1);
+
+  const outputs = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    const output =
+    {
+      dc:  reader.sysexSignedShort(),
+      mlt: reader.sysexSignedShort(),
+      lfo: reader.sysexSignedShort(),
+      clk: reader.u8(),
+      clkm: reader.u8(),
+      sin: reader.u8(),
+      sqr: reader.u8(),
+      tri: reader.u8(),
+      pw:  reader.u8(),
+      saw: reader.u8(),
+      rnd: reader.u8(),
+      nse: reader.u8(),
+      fad: reader.u8(),
+      mus: reader.u8(),
+      phs: reader.u8()
+    };
+
+    outputs.push(output);
+  }
+
+  const smoothing = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    smoothing.push(reader.u8());
+  }
+
+  const arpeg = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    arpeg.push(
+      {
+        m: reader.u8(),
+        r: reader.u8(),
+        g: reader.u8(),
+        l: reader.u8(),
+        t: reader.u8(),
+        p: reader.u8(),
+        s: reader.u8(),
+        e: reader.u8()
+      }
+    );
+  }
+
+  const tempo = reader.i32LE() * 0.1;
+
+  const euclidean = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    euclidean.push(
+      {
+        p: reader.u8(),
+        s: reader.u8(),
+        r: reader.u8(),
+        t: reader.u8(),
+        g: reader.u8(),
+        a: reader.u8(),
+        e: reader.u8()
+      }
+    );
+
+    reader.skip(1);
+  }
+
+  const mcvm2 = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    mcvm2.push(
+      {
+        a:   reader.u8(),
+        d:   reader.u8(),
+        s:   reader.u8(),
+        r:   reader.u8(),
+        n:   reader.u8(),
+        p:   reader.u8(),
+        v:   reader.u8(),
+        rnd: reader.u8()
+      }
+    );
+  }
+
+  const scala = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    scala.push(
+      {
+        enable: reader.u8(),
+        scl:    reader.u8(),
+        kbm:    reader.u8()
+      }
+    );
+
+    reader.skip(1);
+  }
+
+  const sequencerActive = reader.u8();
+  const sequencerMute   = reader.u8();
+
+  const sequencers = [];
+
+  for (let i = 0; i < 4; ++i)
+  {
+    sequencers.push(
+      {
+        active: (sequencerActive >> i) & 1,
+        mute:   (sequencerMute >> i) & 1
+      }
+    );
+  }
+
+  const drumActive = reader.u8();
+  const drumMute   = reader.u8();
+
+  const drumSequencers = [];
+
+  for (let i = 0; i < 1; ++i)
+  {
+    drumSequencers.push(
+      {
+        active: (drumActive >> i) & 1,
+        mute:   (drumMute >> i) & 1
+      }
+    );
+  }
+
+  reader.skip(8);
+
+  // Main Sequencer
+  for (let i = 0; i < 4; ++i)
+  {
+    const sequencer = sequencers[i];
+
+    sequencer.pattern = [];
+
+    for (let j = 0; j < 32; ++j)
+    {
+      const pattern = reader.sysexShort();
+
+      const v0 = reader.u8();
+      const v1 = reader.u8();
+
+      sequencer.pattern.push(
+        {
+          value:   pattern,
+          degree:  v0 & 0xf,
+          octave:  (v0 >> 4) & 0x7,
+          length:  v1 & 0x7,
+          ratchet: (v1 >> 3) & 1,
+          reset:   (v1 >> 4) & 1
+        }
+      );
+    }
+
+    sequencer.a = reader.u8();
+    sequencer.e = reader.u8();
+    sequencer.t = reader.u8();
+    sequencer.g = reader.u8();
+    sequencer.s = reader.u8();
+    sequencer.n = reader.u8();
+    sequencer.d = reader.u8();
+
+    reader.skip(1);
+  }
+
+  // Drum Sequencer
+  for (let i = 0; i < 1; ++i)
+  {
+    const drum = drumSequencers[i];
+
+    drum.patterns = [];
+
+    for (let j = 0; j < 8; ++j)
+    {
+      const h = reader.u32LE();
+      const a = reader.u32LE();
+
+      drum.patterns.push(
+        {
+          high: h,
+          accent: a
+        }
+      );
+
+      for (let m = 0; m < 4; ++m)
+      {
+        for (let n = 0; n < 4; ++n)
+        {
+          const bit = m * 8 + n;
+
+          drum.patterns[j]["h" + bit] = (h >> bit) & 1;
+          drum.patterns[j]["a" + bit] = (a >> bit) & 1;
+        }
+      }
+
+      drum.patterns[j].a = reader.u8();
+      drum.patterns[j].e = reader.u8();
+      drum.patterns[j].t = reader.u8();
+      drum.patterns[j].s = reader.u8();
+      drum.patterns[j].m = reader.u8();
+
+      reader.skip(3);
+    }
+
+    drum.s = reader.u8();
+
+    reader.skip(15);
+  }
+
+  const shiftRegisters = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    shiftRegisters.push(
+      {
+        d: reader.u8(),
+        l: reader.u8(),
+        r: reader.u8(),
+        t: reader.u8(),
+        a: reader.u8(),
+        s: reader.u8(),
+        k: reader.u8(),
+        g: reader.u8()
+      }
+    );
+  }
+
+  const swing =
+  {
+    pos1: reader.u8(),
+    pos2: reader.u8(),
+    pos3: reader.u8()
+  };
+
+  reader.skip(1);
+
+  const mcvm3 = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    mcvm3.push(
+      {
+        as: reader.u8(),
+        ds: reader.u8(),
+        rs: reader.u8()
+      }
+    );
+
+    reader.skip(5);
+  }
+
+  // Addendum Jump
+  reader.seek(4096);
+
+  const triggers = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    const value = reader.u8();
+
+    for (let j = 0; j < 4; ++j)
+    {
+      triggers.push((value >> j) & 1);
+    }
+  }
+
+  // Sequencer Addendum
+  for (let i = 0; i < 4; ++i)
+  {
+    const sequencer = sequencers[i];
+
+    sequencer.patternSelect = reader.u8();
+
+    for (let j = 0; j < 32; ++j)
+    {
+      const v0 = reader.u8();
+      const v1 = reader.u8();
+
+      const pattern = sequencer.pattern[j];
+
+      pattern.value =
+        pattern.value |
+        (v0 << 14);
+
+      pattern.skip = v1 & 1;
+      pattern.mute = (v1 >> 1) & 0x7;
+
+      pattern.steps = [];
+
+      for (let k = 0; k < 8; ++k)
+      {
+        pattern.steps.push(
+          (pattern.value >> (2 * k)) & 3
+        );
+      }
+    }
+  }
+
+  /*
+   * Drum sequencer addendum.
+   */
+
+  for (let i = 0; i < 1; ++i)
+  {
+    const drum = drumSequencers[i];
+
+    for (let j = 0; j < 8; ++j)
+    {
+      const h = reader.u32LE();
+      const a = reader.u32LE();
+
+      const pattern = drum.patterns[j];
+
+      for (let m = 0; m < 4; ++m)
+      {
+        for (let n = 0; n < 4; ++n)
+        {
+          const bit = m * 8 + n + 4;
+
+          pattern["h" + bit] = (h >> (m * 8 + n)) & 1;
+          pattern["a" + bit] = (a >> (m * 8 + n)) & 1;
+        }
+      }
+    }
+  }
+
+  return
+  {
+    version,
+    name,
+    swingType,
+    swingAmount,
+    outputs,
+    smoothing,
+    arpeg,
+    tempo,
+    euclidean,
+    mcvm2,
+    scala,
+    sequencers,
+    drumSequencers,
+    triggers,
+    shiftRegisters,
+    swing,
+    mcvm3
+  };
+}
+
+function parseMcv(reader)
+{
+  return
+  {
+    enable:     reader.u8(),
+    channel:    reader.u8(),
+    min:        reader.u8(),
+    max:        reader.u8(),
+    type:       reader.u8(),
+    voices:     reader.u8(),
+    bend:       reader.u8(),
+    scheme:     reader.u8(),
+    stealing:   reader.u8(),
+    gatedPress: reader.u8(),
+    sustain:    reader.u8(),
+    base:       reader.u8(),
+    stride:     reader.u8(),
+    lastMPE:    reader.u8(),
+    pressure:   reader.u8(),
+    paraGate:   reader.u8(),
+    cvOutput:   reader.u8(),
+    gateOutput: reader.u8(),
+    velGate:    reader.u8(),
+    velOutput:  reader.u8(),
+    relVel:     reader.u8(),
+    trigger:    reader.u8(),
+    voicePress: reader.u8(),
+    mpeY:       reader.u8(),
+    envelope:   reader.u8(),
+    baseGate:   reader.u8(),
+    retrigger:  reader.u8(),
+    intGate:    reader.u8(),
+    zeroStart:  reader.u8(),
+    bendDown:   reader.u8(),
+    pitchBend:  reader.u8(),
+    random:     reader.u8()
+  };
+}
+
+function parseConfig(data)
+{
+  const reader = new ByteReader(data);
+
+  const version = reader.u32LE();
+
+  if (version !== 11)
+  {
+    log("FH-2 Config Version Unsupported");
+    throw new Error("This version of the tool does not match the FH-2 firmware.");
+  }
+
+  const config =
+  {
+    version: version,
+    name: reader.fixedString(16)
+  };
+
+  reader.skip(1);
+
+  // Globals
+  config.globals =
+  {
+    triglen:      reader.u8(),
+    transpose:    reader.sysexSignedChar(),
+    legvel:       reader.u8(),
+    extclkmult:   reader.u8(),
+    extclkrun:    reader.u8(),
+    presetprogch: reader.u8(),
+    softtakeover: reader.u8()
+  };
+
+  // Output ranges
+  config.outputRanges = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    config.outputRanges.push(reader.u8());
+  }
+
+  // MCVs
+  config.mcvs = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.mcvs.push(parseMcv(reader));
+  }
+
+  // MIDI mappings
+  config.mappings = [];
+
+  for (let i = 0; i < 384; ++i)
+  {
+    config.mappings.push(
+      {
+        channel: reader.u8(),
+        cc:      reader.u8(),
+        type0:   reader.u8(),
+        type1:   reader.u8()
+      }
+    );
+  }
+
+  // Clocks
+  config.clocks = [];
+
+  for (let i = 0; i < 32; ++i)
+  {
+    config.clocks.push(
+      {
+        type:   reader.u8(),
+        base:   reader.u8(),
+        mult:   reader.u8(),
+        len:    reader.u8(),
+        output: reader.u8(),
+        shift:  reader.u8()
+      }
+    );
+
+    reader.skip(2);
+  }
+
+  // Gate levels
+  config.gateLevels = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    config.gateLevels.push(
+      {
+        low:  reader.sysexShort(),
+        high: reader.sysexShort()
+      }
+    );
+  }
+
+  // Triggers
+  config.triggers = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    const typeEnv = reader.u8();
+    const channelNote = reader.u8();
+    const note = reader.u8();
+    const output = reader.u8();
+
+    config.triggers.push(
+      {
+        type:     typeEnv & 0x0f,
+        channel:  (channelNote & 0x0f),
+        note:     ((channelNote >> 5) & 1) ? -1 : note,
+        output:   output,
+        envelope: (((typeEnv >> 4) << 1) | ((channelNote >> 4) & 1))
+      }
+    );
+  }
+
+  // Euclidean outputs
+  config.euclideanOutputs = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.euclideanOutputs.push(reader.u8());
+  }
+ 
+  // Global MIDI controls
+  config.globalMidi =
+  {
+    tapType:      reader.u8(),
+    tapChannel:   reader.u8(),
+    tapCC:        reader.u8(),
+    eucAccent:    reader.u8(),
+    startType:    reader.u8(),
+    startChannel: reader.u8(),
+    startCC:      reader.u8()
+  };
+
+  reader.skip(1);
+
+  // Euclidean off outputs
+  config.euclideanOffOutputs = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.euclideanOffOutputs.push(reader.u8());
+  }
+
+  // Gamepad / HID mappings
+  config.hidMappings = [];
+
+  for (let i = 0; i < 32; ++i)
+  {
+    config.hidMappings.push(
+      {
+        usage:   reader.u8(),
+        output:  reader.u8(),
+        scale:   reader.sysexSignedShort(),
+        offset:  reader.sysexSignedShort()
+      }
+    );
+
+    reader.skip(2);
+  }
+
+  // Keyboard mappings
+  config.keyboardMappings = [];
+
+  for (let i = 0; i < 32; ++i)
+  {
+    const type = reader.u8();
+    const output = reader.u8();
+    const key = reader.u8();
+
+    reader.skip(1);
+
+    config.keyboardMappings.push(
+      {
+        type:   type,
+        output: output,
+        key:    key,
+        value0: reader.sysexShort(),
+        value1: reader.sysexShort()
+      }
+    );
+  }
+
+  // LFO resets
+  config.lfoResets = [];
+
+  for (let i = 0; i < 64; ++i)
+  {
+    const typeChannel = reader.u8();
+
+    config.lfoResets.push(
+      {
+        type:    typeChannel >> 4,
+        channel: typeChannel & 0x0f,
+        cc:      reader.u8()
+      }
+    );
+  }
+
+  // CV/MIDI
+  config.cvMidi = [];
+
+  for (let i = 0; i < 2; ++i)
+  {
+    const flags = reader.u8();
+    const typeChannel = reader.u8();
+
+    config.cvMidi.push(
+      {
+        enable:  (flags & (1 << 0)) != 0,
+        outI:    (flags & (1 << 1)) != 0,
+        outA:    (flags & (1 << 2)) != 0,
+        outC:    (flags & (1 << 3)) != 0,
+        outD:    (flags & (1 << 4)) != 0,
+        outS:    (flags & (1 << 5)) != 0,
+
+        type:    typeChannel >> 4,
+        channel: typeChannel & 0x0f,
+
+        cc:      reader.u8()
+      }
+    );
+
+    reader.skip(1);
+
+    config.cvMidi[i].zeroV = reader.sysexSignedShort();
+    config.cvMidi[i].fiveV = reader.sysexSignedShort();
+  }
+
+  // Tempo limits
+  config.tempo =
+  {
+    min: reader.u8(),
+    max: reader.u8()
+  };
+
+  reader.skip(2);
+
+  // Sequencers
+  config.sequencers = [];
+
+  for (let i = 0; i < 4; ++i)
+  {
+    const channel = reader.u8();
+    const outputs = reader.u8();
+
+    config.sequencers.push(
+      {
+        channel: channel,
+        internal: (outputs >> 0) & 1,
+        cv:       (outputs >> 1) & 1,
+        accent:   (outputs >> 2) & 1,
+        drum:     (outputs >> 3) & 1,
+        slide:    (outputs >> 4) & 1,
+        clock:    reader.u8()
+      }
+    );
+
+    reader.skip(1);
+  }
+
+  /*
+   * Drum sequencer
+   */
+  config.drumSequencer = [];
+
+  for (let i = 0; i < 1; ++i)
+  {
+    const channel = reader.u8();
+    const outputs = reader.u8();
+
+    const drum =
+    {
+      channel: channel,
+      internal: (outputs >> 0) & 1,
+      cv:       (outputs >> 1) & 1,
+      accent:   (outputs >> 2) & 1,
+      drum:     (outputs >> 3) & 1,
+      slide:    (outputs >> 4) & 1,
+      notes: []
+    };
+
+    reader.skip(2);
+
+    for (let j = 0; j < 8; ++j)
+    {
+      drum.notes.push(reader.u8());
+    }
+
+    config.drumSequencer.push(drum);
+  }
+
+  // Arpeggiators
+  config.arpeggiators = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    const clock = reader.u8();
+    const outputs = reader.u8();
+
+    config.arpeggiators.push(
+      {
+        clock: clock,
+        channel: outputs & 0x0f,
+        cv:      (outputs >> 4) & 1,
+        accent:  (outputs >> 5) & 1,
+        drum:    (outputs >> 6) & 1
+      }
+    );
+
+    reader.skip(2);
+  }
+
+  // Shift registers
+  config.shiftRegisters = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    const shiftRegister =
+    {
+      output:  reader.u8(),
+      change:  reader.u8(),
+      trigger: reader.u8(),
+      clock:   reader.u8(),
+      nch:     reader.u8(),
+      channel: reader.u8()
+    };
+
+    const outputs = reader.u8();
+
+    shiftRegister.internal = (outputs >> 0) & 1;
+    shiftRegister.cv       = (outputs >> 1) & 1;
+    shiftRegister.accent   = (outputs >> 2) & 1;
+    shiftRegister.drum     = (outputs >> 3) & 1;
+    shiftRegister.slide    = (outputs >> 4) & 1;
+
+    config.shiftRegisters.push(shiftRegister);
+  }
+
+  // The addendum begins at absolute offset 4096.
+  reader.seek(4096);
+
+  // Euclidean output addendum
+  config.euclideanOutputAddendum = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.euclideanOutputAddendum.push(reader.u8());
+  }
+
+  // Euclidean off-output addendum
+  config.euclideanOffOutputAddendum = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.euclideanOffOutputAddendum.push(reader.u8());
+  }
+
+  // Shift-register addendum
+  config.shiftRegisterAddendum = [];
+
+  for (let i = 0; i < 16; ++i)
+  {
+    config.shiftRegisterAddendum.push(reader.u8());
+  }
+
+  return config;
+}
