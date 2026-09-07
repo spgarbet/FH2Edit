@@ -197,22 +197,42 @@ function initTabs()
   }
 }
 
+function updateFH2Status()
+{
+  const status = document.getElementById("fh2-status");  
+  const text   = status;
+  
+  if(appState.compatible)
+  {
+    text.textContent = "FH-2: Connected";
+    status.classList.add("alarm");
+  } else if(appState.connection)
+  {
+    text.textContent = "FH-2: Wrong Version";
+    status.classList.add("alarm");
+  } else
+  {
+    text.textContent = "FH-2: Disconnected";
+    status.classList.add("alarm");
+  }
+}
+
 function updateBrowserStatus()
 {
   const status = document.getElementById("browser-status");
   const text   = document.getElementById("browser-status-text");
   const popup  = status.querySelector(".tooltip-popup");
   
-  if (appState.compatible)
+  if (appState.webMIDI)
   {
-    text.textContent = "Browser: Compatible";
+    text.textContent = "Browser: Web MIDI Enabled";
     status.classList.remove("tooltip");
     if(popup) { popup.remove(); }
   }
   else
   {
     text.textContent = "Browser: UNSUPPORTED";
-    status.classList.add("incompatible");
+    status.classList.add("alarm");
   }
 }
 
@@ -225,3 +245,27 @@ function log(message)
   logElement.textContent += `[${timestamp}] ${message}\n`;
   logElement.scrollTop = logElement.scrollHeight;
 }
+
+function nybbleChar( n )
+{
+	if ( n >= 10 ) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
+	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
+}
+
+function dumpSysex( data, id )
+{
+	var len = data.length;
+	var h   = "";
+	for (var i=0; i<len; ++i)
+	{
+		var b = data[ i ];
+		h += nybbleChar( b >> 4 );
+		h += nybbleChar( b & 0xf );
+		h += " ";
+		if (( i & 0xf ) === 0xf) { h += "\n"; }
+	} 
+	document.getElementById(id).textContent = h + "\n";
+}
+
+function midiLogOut(sysex) { dumpSysex( sysex, "raw-midi-output" ); }
+function midiLogIn(sysex)  { dumpSysex( sysex, "raw-midi-input" );  }	

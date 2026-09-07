@@ -78,7 +78,7 @@
       white-space: nowrap;
     }
     
-    #browser-status.incompatible
+    #status .alarm
     {
       color: darkred;
     }
@@ -305,7 +305,7 @@
            id="browser-status"
            data-tooltip="Web MIDI is required and must be allowed. Supported browsers include Google Chrome, Opera, and other Chromium-based browsers. Firefox and Safari do not currently provide the Web MIDI API.">
         <span id="browser-status-text"                >Browser: Checking&hellip;</span></div>
-      <div class="status-item" id="fh2-status"        >FH-2: Unconnected</div>
+      <div class="status-item alarm" id="fh2-status"  >FH-2: Disconnected</div>
       <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div>
       <div class="status-item" id="config-name-status">Configuration:</div>
       <div class="status-item" id="preset-name-status">Preset:</div>
@@ -331,12 +331,16 @@
         <div id="io-controls">
           <div>
             <label for="midi-input">MIDI Input</label>
-            <select id="midi-input" class="midi-src"><option value="">None Available</option></select>
+            <select id="midi-input" class="midi-src" onchange="changeInput()">
+              <option value="">None Available</option>
+            </select>
           </div>
 
           <div>
             <label for="midi-output">MIDI Output</label>
-            <select id="midi-output" class="midi-src"><option value="">None Available</option></select>
+            <select id="midi-output" class="midi-src" onchange="changeOutput()">
+              <option value="">None Available</option>
+            </select>
           </div>
 
         </div>
@@ -354,6 +358,8 @@
           <button id="load-sysex"   >Load from Files</button>
           <button id="save-sysex"   >Save to Files</button>
         </div>
+        
+        <div id="io-feedback"></div>
 
         <details id="io-advanced">
 
@@ -362,6 +368,11 @@
           <div id="io-advanced-content">
             
             <div class="io-actions">
+              <button id="read-version" onclick="readVersion()" accesskey="v">
+                Read Version from FH-2
+              </button>
+              <button id="write-msg"       >Write Message to FH-2</button>
+              
               <button id="read-config-fh2" >Read Configuration from FH-2</button>
               <button id="write-config-fh2">Write Configuration to FH-2</button>
 
@@ -373,9 +384,6 @@
 
               <button id="load-preset"     >Load Preset from File</button>
               <button id="save-preset"     >Save Preset to File</button>
-
-              <button id="read-version"    >Read Version from FH-2</button>
-              <button id="write-msg"       >Write Message to FH-2</button>
             </div>
 
             <div id="io-advanced-raw">
@@ -394,7 +402,7 @@
                 <div class="debug-box" id="raw-midi-input" aria-label="Raw MIDI input">
                 </div>
               </div>
-            </div
+            </div>
           </div>
 
         </details>
