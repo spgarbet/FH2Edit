@@ -161,19 +161,19 @@ function onMIDIMessage(message)
 	else if ( data[5] == 0x13 )
 	{
 		log("Received preset");
-		// parsePreset( data.slice( 8, -1 ) );
+		renderPreset( data.slice( 8, -1 ) );
 	}	else if ( data[5] == 0x10 ) 
 	{
 		log("Received configuration");
-		// parseConfig( data.slice( 8, -1 ) );
+		// renderConfig( data.slice( 8, -1 ) );
 	} else if ( data[5] == 0x4C )
 	{
 		log("Received pad");
-		// parsePad( data.slice( 6, -1 ) );
+		// renderPad( data.slice( 6, -1 ) );
 	} else if ( data[5] == 0x33 )
 	{
 	  log("Received screenshot");
-		//parseScreenshot( data.slice( 8, -1 ) );
+		//renderScreenshot( data.slice( 8, -1 ) );
 	} else
 	{
 	  log("Received unknown sysex");

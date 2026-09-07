@@ -306,7 +306,7 @@
            data-tooltip="Web MIDI is required and must be allowed. Supported browsers include Google Chrome, Opera, and other Chromium-based browsers. Firefox and Safari do not currently provide the Web MIDI API.">
         <span id="browser-status-text"                >Browser: Checking&hellip;</span></div>
       <div class="status-item alarm" id="fh2-status"  >FH-2: Disconnected</div>
-      <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div>
+      <!-- <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div> -->
       <div class="status-item" id="config-name-status">Configuration:</div>
       <div class="status-item" id="preset-name-status">Preset:</div>
     </div>
@@ -422,12 +422,12 @@
         <div id="global-names">
           <div>
             <label for="configuration-name">Configuration Name: </label>
-            <input type="text" id="configuration-name"placeholder="Configuration name">
+            <input type="text" id="configuration-name"placeholder="Configuration name" maxlength="16">
           </div>
           <br/>
           <div>
             <label for="preset-name">Preset Name: </label>
-            <input type="text" id="preset-name" placeholder="Preset name">
+            <input type="text" id="preset-name" placeholder="Preset name" maxlength="16">
           </div>
         </div>
       </div>
