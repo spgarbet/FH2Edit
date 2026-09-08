@@ -345,3 +345,11 @@ function renderConfig(data)
     }
   }
 }
+
+function renderScreenshot(data)
+{
+  const reader = new ByteReader(data);
+  const canvas = parseScreenshot(reader);
+  document.getElementById("fh2-screenshot").src = canvas.toDataURL();
+  document.getElementById("fh2-screenshot").hidden = false;
+}

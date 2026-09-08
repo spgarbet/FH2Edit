@@ -479,7 +479,7 @@ function parsePreset(reader)
 
 function parseMcv(reader)
 {
-  return
+  return (
   {
     enable:     reader.u8(),
     channel:    reader.u8(),
@@ -513,7 +513,7 @@ function parseMcv(reader)
     bendDown:   reader.u8(),
     pitchBend:  reader.u8(),
     random:     reader.u8()
-  };
+  });
 }
 
 function parseConfig(data)
@@ -885,4 +885,48 @@ function parseConfig(data)
   }
 
   return config;
+}
+
+function parseScreenshot(reader)
+{
+  var screen    = new Uint32Array(128);
+  var canvas    = document.createElement("canvas");
+  var ctx       = canvas.getContext("2d");
+  canvas.width  = 128;
+  canvas.height = 32;
+  var imgData   = ctx.getImageData(0, 0, 128, 32);
+  var d         = imgData.data;
+  var arr       = new Uint16Array(512);
+
+  for (var i = 0; i < 512; ++i)
+  {
+    arr[i] = reader.sysexShort();
+  }
+
+  for (var i = 0; i < 128; ++i)
+  {
+    screen[i] =
+        arr[4 * i] |
+        (arr[4 * i + 1] << 8) |
+        (arr[4 * i + 2] << 16) |
+        (arr[4 * i + 3] << 24);
+  }
+
+  for (var y = 31; y >= 0; --y)
+  {
+    for (var x = 0; x < 128; ++x)
+    {
+      var pix = 128 * y + x;
+      var v   = (screen[x] & (1 << y)) ? 0xff : 0;
+
+      d[4 * pix + 0] = 0;
+      d[4 * pix + 1] = v;
+      d[4 * pix + 2] = v;
+      d[4 * pix + 3] = 0xff;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+
+  return canvas;
 }

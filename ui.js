@@ -205,10 +205,10 @@ function updateFH2Status()
   if(appState.compatible)
   {
     text.textContent = "FH-2: Connected";
-    status.classList.add("alarm");
+    status.classList.remove("alarm");
   } else if(appState.connection)
   {
-    text.textContent = "FH-2: Wrong Version";
+    text.textContent = "FH-2: Incompatible Version";
     status.classList.add("alarm");
   } else
   {

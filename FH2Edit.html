@@ -195,6 +195,27 @@
       margin-top: 0;
     }
     
+    .io-controls
+    {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+    }
+    
+    .io-screenshot
+    {
+      width: 512px;
+      height: 128px;
+    }
+    
+    .io-screenshot img
+    {
+      width: 512px;
+      height: 128px;
+      image-rendering: pixelated;
+    }
+    
     .midi-src option[value=""]
     {
       font-style: italic;
@@ -354,14 +375,21 @@
           </label>
         </div>
 
-        <div class="io-actions">
-          <button id="read-from-fh2">Read from FH-2</button>
-          <button id="write-to-fh2" >Write to FH-2</button>
-          <button id="load-sysex"   >Load from Files</button>
-          <button id="save-sysex"   >Save to Files</button>
+        <div class="io-controls">
+          <div>
+            <div class="io-actions">
+              <button id="read-from-fh2">Read from FH-2</button>
+              <button id="write-to-fh2" >Write to FH-2</button>
+              <button id="load-sysex"   >Load from Files</button>
+              <button id="save-sysex"   >Save to Files</button>
+              <button id="screenshot" onclick="readScreen()" accesskey="p">Screenshot</button>
+            </div>
+            <div id="io-feedback"></div>
+          </div>
+          <div class="io-screenshot">
+            <img id="fh2-screenshot" alt="FH-2 display screenshot" hidden>
+          </div>
         </div>
-        
-        <div id="io-feedback"></div>
 
         <details id="io-advanced">
 
@@ -373,7 +401,9 @@
               <button id="read-version" onclick="readVersion()" accesskey="v">
                 Read Version from FH-2
               </button>
-              <button id="write-msg"       >Write Message to FH-2</button>
+              <button id="write-msg"    onclick="writeMessage()">
+                Write Message to FH-2
+              </button>
               
               <button id="read-config-fh2" >Read Configuration from FH-2</button>
               <button id="write-config-fh2">Write Configuration to FH-2</button>

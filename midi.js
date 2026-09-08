@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-let midi = null;
+let   midi = null;
+const FH2_SYSEX_HEADER = [ 0xF0, 0x00, 0x21, 0x27, 0x2F ];
 
 async function initMIDI()
 {
@@ -34,15 +35,56 @@ async function initMIDI()
   }
 }
 
-function readVersion()
+function makeSysex(request)
 {
-  // FIXME: delete this for a release version, left for reference
-  // console.trace("readVersion()");
-  let output = midi.outputs.get( document.getElementById( "midi-output" ).value );
-	let sysex = [ 0xF0, 0x00, 0x21, 0x27, 0x2F, 0x22, 0xF7 ];
-	output.send( sysex );
-	log( "Version requested" );
+  return FH2_SYSEX_HEADER.concat(request).concat([0xF7]);
+}
+
+function midiOutput()
+{
+  return midi.outputs.get( document.getElementById( "midi-output" ).value );
+}
+
+function request(id, logMsg)
+{
+  var sysex = makeSysex([id]);
+	midiOutput().send(sysex);
+	log( logMsg );
 	midiLogOut(sysex);
+}
+
+function readScreen()  { request([0x01], "Take screenshot");    }
+function readVersion() { request([0x22], "Version requested");  }
+function readConfig()  { request([0x21], "Config requested" );  }
+function readPreset()  { request([0x23], "Preset requested" );  }
+
+// Slot 0 means the current preset slot
+function flashPreset(slot)
+{
+  if (!Number.isInteger(slot) || slot < 0 || slot > 30)
+  {
+    throw new Error("flashPreset() invalid slot");
+  }
+  request([0x19, slot], "Flash preset");
+}
+function flashConfig(slot)
+{
+  if (!Number.isInteger(slot) || slot < 0 || slot > 30)
+  {
+    throw new Error("flashConfig() invalid slot");
+  }
+  request([0x18, slot], "Flash configuration");
+}
+
+function writeMessage()
+{
+  var text = "Hello!\nThis message\nwas sent from\nthe config tool.";
+  var request = [0x02];
+  for (var i = 0; i < text.length; ++i) { request.push(text.charCodeAt(i)); }
+  var sysex = makeSysex(request);
+  midiOutput().send(sysex);
+  log("Sent message");
+  midiLogOut(sysex);
 }
 
 function checkConnection()
@@ -150,11 +192,13 @@ function onMIDIMessage(message)
   // Check if it's an FH-2 message, ignore if not
   var header = [ 240, 0, 33, 39, 47 ];
   for (var i=0; i<5; ++i) { if ( header[i] != data[i] ) { return; } }
+  if (data[5] == 0x22) { return; } // Asking if this is an FH-2! Loopback
   midiLogIn(data);
+  appState.connection = true;
 	if ( data[5] == 0x32 )
 	{
-	  var str = String.fromCharCode.apply(null, data.slice( 6, -1 ));
-	  appState.connection = true;
+	  var str = String.fromCharCode.apply(null, data.slice( 7, -1 ));
+
 	  log("Received version "+str);
 	  appState.compatible = str.startsWith("2.");
 	}
@@ -173,7 +217,7 @@ function onMIDIMessage(message)
 	} else if ( data[5] == 0x33 )
 	{
 	  log("Received screenshot");
-		//renderScreenshot( data.slice( 8, -1 ) );
+		renderScreenshot( data.slice( 8, -1 ) );
 	} else
 	{
 	  log("Received unknown sysex");
