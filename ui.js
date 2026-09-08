@@ -270,11 +270,21 @@ function dumpSysex( data, id )
 function midiLogOut(sysex) { dumpSysex( sysex, "raw-midi-output" ); }
 function midiLogIn(sysex)  { dumpSysex( sysex, "raw-midi-input" );  }	
 
-function optionRange(low, high)
+function optionRange(low, high, selected = null, valueOffset = 0)
 {
-  for ( let i=low; i<=high; i++)
+  for ( let i=low; i<=high; ++i)
   {
-  	document.write( '<option value=' + i + '>' + i + '</option>' );
+    const isSelected = i === selected ? ' selected' : '';
+    document.write(`<option value="${i-valueOffset}"${isSelected}>${i}</option>`);
+  }
+}
+
+function u7PercentRange(selected = 0)
+{
+  for (let i=0; i<128; ++i)
+  {
+    const isSelected = i === selected ? ' selected' : '';
+    document.write(`<option value="${i}"${isSelected}>${(100*i/127).toFixed(1)}&#37;</option>`);
   }
 }
 
