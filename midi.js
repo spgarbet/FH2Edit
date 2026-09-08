@@ -17,7 +17,7 @@
 let   midi = null;
 const FH2_SYSEX_HEADER = [ 0xF0, 0x00, 0x21, 0x27, 0x2F ];
 
-async function initMIDI()
+async function initWebMIDI()
 {
   log('Initializing MIDI');
   
@@ -47,7 +47,7 @@ function midiOutput()
 
 function request(id, logMsg)
 {
-  var sysex = makeSysex([id]);
+  var sysex = makeSysex(id);
 	midiOutput().send(sysex);
 	log( logMsg );
 	midiLogOut(sysex);
@@ -73,6 +73,7 @@ function flashConfig(slot)
   {
     throw new Error("flashConfig() invalid slot");
   }
+  console.log("Slot: "+slot);
   request([0x18, slot], "Flash configuration");
 }
 
@@ -261,7 +262,7 @@ function changeOutput()
 async function initMIDI()
 {
   // Check for WebMIDI
-  appState.webMIDI = await initMIDI();
+  appState.webMIDI = await initWebMIDI();
 
   updateBrowserStatus();
 

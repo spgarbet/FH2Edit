@@ -278,3 +278,13 @@ function optionRange(low, high)
   }
 }
 
+function onFlashPreset()
+{
+  flashPreset(Number(document.getElementById('preset-slot').value))
+}
+
+function onFlashConfig()
+{
+  flashConfig(Number(document.getElementById('config-slot').value))
+}
+
