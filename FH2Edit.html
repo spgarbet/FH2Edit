@@ -381,6 +381,11 @@
             <input type="checkbox" id="retry-mode">
             <span class="tooltip" data-tooltip="The FH-2 has timing issues receiving large sysex from Linux and mioXL. This is a hack that overcomes that limitation by stuffing the sysex 3 times quickly which seems to work for v2.0">Timing Hack for Linux/mioXL compatibility</span>
           </label>
+          <br/>
+          <label>
+            <input type="checkbox" id="flash-mode">
+            <span class="tooltip" data-tooltip="See 'Globals' tab to configure slot">Flash Preset/Configuration to Slot on Write</span>
+          </label>
         </div>
 
         <div class="io-controls">
@@ -463,12 +468,23 @@
           <div>
             <label for="configuration-name">Configuration Name: </label>
             <input type="text" id="configuration-name"placeholder="Configuration name" maxlength="16">
+            <label for="config-slot">Slot: </label>
+            <select id="config-slot">
+              <option value="0">Current</option>
+              <script>optionRange(1,30);</script>
+            </select>
           </div>
           <br/>
           <div>
             <label for="preset-name">Preset Name: </label>
             <input type="text" id="preset-name" placeholder="Preset name" maxlength="16">
+            <label for="preset-slot">Slot: </label>
+            <select id="preset-slot">
+              <option value="0">Current</option>
+              <script>optionRange(1,30);</script>
+            </select>
           </div>
+          
         </div>
       </div>
 

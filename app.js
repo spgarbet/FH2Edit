@@ -25,6 +25,6 @@ document.addEventListener("DOMContentLoaded", () =>
 {
   initTabs();
   initTooltips();
-  initApplication();
+  initMIDI();
   // Other application initialization...
 });

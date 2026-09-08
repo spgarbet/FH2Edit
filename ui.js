@@ -269,3 +269,12 @@ function dumpSysex( data, id )
 
 function midiLogOut(sysex) { dumpSysex( sysex, "raw-midi-output" ); }
 function midiLogIn(sysex)  { dumpSysex( sysex, "raw-midi-input" );  }	
+
+function optionRange(low, high)
+{
+  for ( let i=low; i<=high; i++)
+  {
+  	document.write( '<option value=' + i + '>' + i + '</option>' );
+  }
+}
+
