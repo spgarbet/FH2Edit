@@ -1,4 +1,4 @@
-// FH2Edit An Expert Sleepers Configuration/Preset Edit Tool
+// FH2Edit An Expert Sleepers FH-2 Configuration/Preset Edit Tool
 // Copyright (C) 2026 Shawn Garbett
 //
 // This program is free software: you can redistribute it and/or modify

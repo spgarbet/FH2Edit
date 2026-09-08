@@ -75,6 +75,12 @@ class ByteReader
     return value;
   }
 
+  u32FromSysexShorts()
+  {
+    const value = this.sysexShort()         | (this.sysexShort() << 8) |
+                  (this.sysexShort() << 16) | (this.sysexShort() << 24);
+    return value >>> 0;
+  }
 
   bytes(length)
   {
@@ -914,21 +920,8 @@ function parseScreenshot(reader)
   canvas.height = 32;
   var imgData   = ctx.getImageData(0, 0, 128, 32);
   var d         = imgData.data;
-  var arr       = new Uint16Array(512);
 
-  for (var i = 0; i < 512; ++i)
-  {
-    arr[i] = reader.sysexShort();
-  }
-
-  for (var i = 0; i < 128; ++i)
-  {
-    screen[i] =
-        arr[4 * i] |
-        (arr[4 * i + 1] << 8) |
-        (arr[4 * i + 2] << 16) |
-        (arr[4 * i + 3] << 24);
-  }
+  for (var i = 0; i < 128; ++i) { screen[i] = reader.u32FromSysexShorts(); }
 
   for (var y = 31; y >= 0; --y)
   {
