@@ -85,14 +85,16 @@
         
         <div id="io-options">
           <label>
-            <input type="checkbox" id="retry-mode">
+            <input type="checkbox" id="retry-mode" onchange="localStorage.setItem(retryModeKey, this.checked);">
             <span class="tooltip" data-tooltip="The FH-2 has timing issues receiving large sysex from Linux and mioXL. This is a hack that overcomes that limitation by stuffing the sysex 3 times quickly which seems to work for v2.0">Timing Hack for Linux/mioXL Compatibility</span>
           </label>
           <br/>
           <label>
-            <input type="checkbox" id="flash-mode">
+            <input type="checkbox" id="flash-mode" onchange="localStorage.setItem(flashModeKey, this.checked);">
             <span class="tooltip" data-tooltip="See 'Globals' tab to configure slot">Flash Preset/Configuration to Slot on Write</span>
           </label>
+          <script>check('retry-mode', localStorage.getItem(retryModeKey) === 'true');
+                  check('flash-mode', localStorage.getItem(flashModeKey) === 'true');</script>
         </div>
 
         <div class="io-controls">
@@ -176,7 +178,7 @@
           <legend>Preset</legend>
           <div>
             <label for="preset-name" class="name-label">Preset: </label>
-            <input type="text" id="preset-name" placeholder="Preset name" maxlength="16">
+            <input type="text" id="preset-name" placeholder="Name" maxlength="16">
     
             <label for="preset-slot">Slot: </label>
             <select id="preset-slot">
@@ -211,15 +213,15 @@
             </div>
             <div>
               <label for="swing_pos1">&emsp;&emsp;Position 1</label>
-              <select id="swing_pos1"><script>u7PercentRange(0);</script></select>
+              <select id="swing_pos1"><script>optionRange(2,9,2);</script></select>
             </div>
             <div>
               <label for="swing_pos2">&emsp;&emsp;Position 2</label>
-              <select id="swing_pos2"><script>u7PercentRange(0);</script></select>
+              <select id="swing_pos2"><script>optionRange(2,9,4);</script></select>
             </div>
             <div>
               <label for="swing_pos3">&emsp;&emsp;Position 3</label>
-              <select id="swing_pos3"><script>u7PercentRange(0);</script></select>
+              <select id="swing_pos3"><script>optionRange(2,9,5);</script></select>
             </div>
           </div>
         </fieldset>
@@ -227,7 +229,7 @@
           <legend>Configuration</legend>
           <div>
             <label for="config-name" class="name-label">Configuration: </label>
-            <input type="text" id="config-name" placeholder="Configuration name" maxlength="16">
+            <input type="text" id="config-name" placeholder="Name" maxlength="16">
     
             <label for="config-slot">Slot: </label>
             <select id="config-slot">
@@ -256,7 +258,7 @@
             <div>
               <label for="glb_extclkmult" class="tooltip" data-tooltip="Sets the multiplier relating the (incoming) external clock to the internal 24ppqn timebase. Example values for would be '24' for quarter note clocks, and '1' for 24ppqn clocks e.g. a DINsync clock.">
                 External Clock Multiplier</label>
-              <select id="glb_extclkmult"><script>optionRange(1,96,1);</script></select>
+              <select id="glb_extclkmult"><script>optionRange(1,96,24);</script></select>
             </div>
             <div>
               <label for="glb_extclkrun" class="tooltip" data-tooltip="'None'&mdash;the external clock is considered to start as soon as a clock pulse is received on the X input, and to stop when clock pulses stop arriving. The module waits up to 2 seconds after each clock pulse, and if another clock does not arrive in that time, the clock is considered to have stopped.
@@ -268,8 +270,8 @@
               </select>
             </div>
             <div>
-              <label for="glb_eucaccent" class="tooltip" data-tooltip="Amount Euclidean unaccented pulses are scaled down.">Euclidean Accent</label>
-              <select id="glb_eucaccent"><script>u7PercentRange(95);</script></select>
+              <label for="glb_eucaccent" class="tooltip" data-tooltip="Amount Euclidean unaccented pulses are scaled down.">Euclidean Unaccented</label>
+              <select id="glb_eucaccent"><script>u7PercentRange(78);</script></select>
             </div>
             <div>              
               <label for="glb_presetprogch" class="tooltip" data-tooltip="MIDI channel on which to respond to program change messages by changing the current preset.">

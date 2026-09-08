@@ -14,6 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// UI functions have a few categories
+// - helpers to construct the interface
+// - event handlers that write to the Sysex in memory
+
+const retryModeKey        = "retrymode";
+const flashModeKey        = "flashmode";
+
+function put(id, value  ) { document.getElementById(id).value   = value; }
+function check(id, value) { document.getElementById(id).checked = value; }
+function num(id)          { Number(document.getElementById(id).value);   }
+
 function initTooltips()
 {
   const tooltips = document.querySelectorAll(".tooltip");
@@ -56,12 +67,7 @@ function initTooltips()
 function showTooltip(tooltip)
 {
   const popup = tooltip.querySelector(".tooltip-popup");
-
-  if (!popup)
-  {
-    return;
-  }
-
+  if (!popup) { return; }
   popup.classList.add("visible");
 
   positionTooltip(tooltip);
@@ -71,12 +77,7 @@ function showTooltip(tooltip)
 function hideTooltip(tooltip)
 {
   const popup = tooltip.querySelector(".tooltip-popup");
-
-  if (!popup)
-  {
-    return;
-  }
-
+  if (!popup) { return; }
   popup.classList.remove("visible");
 }
 
@@ -84,12 +85,7 @@ function hideTooltip(tooltip)
 function positionTooltip(tooltip)
 {
   const popup = tooltip.querySelector(".tooltip-popup");
-
-  if (!popup || !popup.classList.contains("visible"))
-  {
-    return;
-  }
-
+  if (!popup || !popup.classList.contains("visible")) { return; }
   const anchor = tooltip.getBoundingClientRect();
 
   /*
@@ -104,25 +100,16 @@ function positionTooltip(tooltip)
   const gap = 8;
   const margin = 8;
 
-  const viewportWidth = document.documentElement.clientWidth;
+  const viewportWidth  = document.documentElement.clientWidth;
   const viewportHeight = document.documentElement.clientHeight;
 
-  /*
-   * Prefer above.
-   */
+  // Prefer above.
   let top = anchor.top - popupRect.height - gap;
 
-  /*
-   * If there isn't enough room above, put it below.
-   */
-  if (top < margin)
-  {
-    top = anchor.bottom + gap;
-  }
+  // If there isn't enough room above, put it below.
+  if (top < margin) { top = anchor.bottom + gap; }
 
-  /*
-   * If it doesn't fit below either, clamp it vertically.
-   */
+  // If it doesn't fit below either, clamp it vertically.
   if (top + popupRect.height > viewportHeight - margin)
   {
     top = Math.max(
@@ -131,33 +118,21 @@ function positionTooltip(tooltip)
     );
   }
 
-  /*
-   * Center horizontally on the control.
-   */
-  let left = anchor.left +
-    (anchor.width - popupRect.width) / 2;
+  // Center horizontally on the control.
+  let left = anchor.left + (anchor.width - popupRect.width) / 2;
 
-  /*
-   * Keep the tooltip inside the left edge.
-   */
-  if (left < margin)
-  {
-    left = margin;
-  }
+  // Keep the tooltip inside the left edge.
+  if (left < margin) { left = margin; }
 
-  /*
-   * Keep the tooltip inside the right edge.
-   */
+  // Keep the tooltip inside the right edge.
   if (left + popupRect.width > viewportWidth - margin)
   {
     left = viewportWidth - popupRect.width - margin;
   }
 
-  /*
-   * Apply the final position.
-   */
+  // Apply the final position.
   popup.style.left = `${left}px`;
-  popup.style.top = `${top}px`;
+  popup.style.top  = `${top}px`;
 }
 
 
@@ -288,13 +263,5 @@ function u7PercentRange(selected = 0)
   }
 }
 
-function onFlashPreset()
-{
-  flashPreset(Number(document.getElementById('preset-slot').value))
-}
-
-function onFlashConfig()
-{
-  flashConfig(Number(document.getElementById('config-slot').value))
-}
-
+function onFlashPreset() { flashPreset(num('preset-slot')); }
+function onFlashConfig() { flashConfig(num('config-slot')); }
