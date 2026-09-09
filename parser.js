@@ -140,8 +140,9 @@ function parsePreset(reader)
   const version = reader.u32LE();
   if (version !== 8)
   {
-    log("FH-2 Preset Version Unsupported");
-    throw new Error("This version of the tool does not match the FH-2 firmware.");
+    log("Preset Version Unsupported");
+    alert("This version of the tool does not support the preset version number.");
+    return null;
   }
 
   const name = reader.fixedString(16).trimEnd();
@@ -545,7 +546,8 @@ function parseConfig(reader)
   if (version !== 11)
   {
     log("FH-2 Config Version Unsupported");
-    throw new Error("This version of the tool does not match the FH-2 firmware.");
+    alert("This version of the tool does support the configuration version.");
+    return null;
   }
 
   const config =

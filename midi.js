@@ -72,7 +72,8 @@ function flashPreset(slot)
   
   if (!Number.isInteger(slot) || slot < 0 || slot > 30)
   {
-    throw new Error("flashPreset() invalid slot");
+    alert("flashPreset() invalid slot");
+    return;
   }
   request([0x19, slot], "Flash preset");
 }
@@ -82,7 +83,8 @@ function flashConfig(slot)
   
   if (!Number.isInteger(slot) || slot < 0 || slot > 30)
   {
-    throw new Error("flashConfig() invalid slot");
+    alert("flashConfig() invalid slot");
+    return;
   }
   console.log("Slot: "+slot);
   request([0x18, slot], "Flash configuration");
@@ -292,11 +294,11 @@ function onMIDIMessage(message)
 	else if ( data[5] == 0x13 )
 	{
 		log("Received preset");
-		renderPreset( data );
+		if ( renderPreset( data ) ) { presetSysex = data; }
 	}	else if ( data[5] == 0x10 ) 
 	{
 		log("Received configuration");
-		// renderConfig( data.slice( 8, -1 ) );
+		if ( renderConfig( data ) ) { configSysex = data; }
 	} else if ( data[5] == 0x4C )
 	{
 		log("Received pad");

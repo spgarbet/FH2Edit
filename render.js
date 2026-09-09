@@ -22,6 +22,8 @@ function renderPreset(data)
   const reader = new ByteReader(data);
   const preset = parsePreset(reader);
   
+  if (preset === null) { return false; }
+  
   put('preset-name',  preset.name);
   document.getElementById("preset-name-status").textContent = "Preset: "+preset.name.trimEnd();
   put('tempo',        preset.tempo);
@@ -31,6 +33,7 @@ function renderPreset(data)
   put('swing_pos2',   preset.swing.pos2);
   put('swing_pos3',   preset.swing.pos3);
 
+  return true;
 }
 
 function renderMcv(mcv, m)
@@ -109,6 +112,8 @@ function renderConfig(data)
   configSysex  = data;
   const reader = new ByteReader(data);
   const config = parseConfig(reader);
+  
+  if (config === null) { return false; }
   
   put('config-name',  config.name);
   document.getElementById("config-name-status").textContent = "Preset: "+config.name.trimEnd();
@@ -384,6 +389,8 @@ function renderConfig(data)
     }
   }
   */
+  
+  return true;
 }
 
 function renderScreenshot(data)
