@@ -16,6 +16,21 @@
 
 // Render Functions can only READ sysex and WRITE to HTML Elements
 
+function renderPreset(data)
+{
+  const reader = new ByteReader(data);
+  const preset = parsePreset(reader);
+  
+  put('preset-name',  preset.name);
+  put('tempo',        preset.tempo);
+  put('swing_type',   preset.swingType);
+  put('swing_amount', preset.swingAmount);
+  put('swing_pos1',   preset.swing.pos1);
+  put('swing_pos2',   preset.swing.pos2);
+  put('swing_pos3',   preset.swing.pos3);
+
+}
+
 function renderMcv(mcv, m)
 {
   let enable    = !!mcv.enable;

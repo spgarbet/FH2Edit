@@ -81,6 +81,14 @@ class ByteReader
                   (this.sysexShort() << 16) | (this.sysexShort() << 24);
     return value >>> 0;
   }
+  
+  sysexSafeInt()
+  {
+    const value = this.u8() | (this.u8() << 8) | (this.u8() << 16) | (this.u8() << 24);
+  
+    return (value & 0x7f)            | ((value >> 1) & 0x3f80) |
+           ((value >> 2) & 0x1fc000) | ((value >> 3) & 0xfe00000);
+  }
 
   bytes(length)
   {
@@ -128,15 +136,15 @@ class ByteReader
 
 function parsePreset(reader)
 {
+  reader.skip(8);
   const version = reader.u32LE();
-
   if (version !== 8)
   {
     log("FH-2 Preset Version Unsupported");
     throw new Error("This version of the tool does not match the FH-2 firmware.");
   }
 
-  const name = reader.fixedString(16);
+  const name = reader.fixedString(16).trimEnd();
   reader.skip(1);
 
   const swingType   = reader.u8();
@@ -144,13 +152,14 @@ function parsePreset(reader)
 
   reader.skip(1);
 
+  const faders = [];
+	for (let i = 0; i<64; ++i) { faders.push(reader.sysexSignedShort()); }
+	
   const outputs = [];
-
   for (let i = 0; i < 64; ++i)
   {
     const output =
     {
-      dc:  reader.sysexSignedShort(),
       mlt: reader.sysexSignedShort(),
       lfo: reader.sysexSignedShort(),
       clk: reader.u8(),
@@ -171,14 +180,9 @@ function parsePreset(reader)
   }
 
   const smoothing = [];
-
-  for (let i = 0; i < 64; ++i)
-  {
-    smoothing.push(reader.u8());
-  }
+  for (let i=0; i<64; ++i) { smoothing.push(reader.u8());}
 
   const arpeg = [];
-
   for (let i = 0; i < 16; ++i)
   {
     arpeg.push(
@@ -195,11 +199,10 @@ function parsePreset(reader)
     );
   }
 
-  const tempo = reader.i32LE() * 0.1;
+  const tempo = reader.sysexSafeInt() * 0.1;
 
   const euclidean = [];
-
-  for (let i = 0; i < 16; ++i)
+  for (let i=0; i<16; ++i)
   {
     euclidean.push(
       {
@@ -217,7 +220,6 @@ function parsePreset(reader)
   }
 
   const mcvm2 = [];
-
   for (let i = 0; i < 16; ++i)
   {
     mcvm2.push(
@@ -235,8 +237,7 @@ function parsePreset(reader)
   }
 
   const scala = [];
-
-  for (let i = 0; i < 16; ++i)
+  for (let i=0; i<16; ++i)
   {
     scala.push(
       {
@@ -253,23 +254,19 @@ function parsePreset(reader)
   const sequencerMute   = reader.u8();
 
   const sequencers = [];
-
-  for (let i = 0; i < 4; ++i)
+  for (let i=0; i<4; ++i)
   {
-    sequencers.push(
-      {
-        active: (sequencerActive >> i) & 1,
-        mute:   (sequencerMute >> i) & 1
-      }
-    );
+    sequencers.push({
+      active: (sequencerActive >> i) & 1,
+      mute:   (sequencerMute >> i) & 1
+    });
   }
 
   const drumActive = reader.u8();
   const drumMute   = reader.u8();
 
   const drumSequencers = [];
-
-  for (let i = 0; i < 1; ++i)
+  for (let i=0; i<1; ++i)
   {
     drumSequencers.push(
       {
@@ -279,7 +276,7 @@ function parsePreset(reader)
     );
   }
 
-  reader.skip(8);
+  reader.skip(8); // Triggers?
 
   // Main Sequencer
   for (let i = 0; i < 4; ++i)
@@ -295,16 +292,14 @@ function parsePreset(reader)
       const v0 = reader.u8();
       const v1 = reader.u8();
 
-      sequencer.pattern.push(
-        {
+      sequencer.pattern.push({
           value:   pattern,
           degree:  v0 & 0xf,
           octave:  (v0 >> 4) & 0x7,
           length:  v1 & 0x7,
           ratchet: (v1 >> 3) & 1,
           reset:   (v1 >> 4) & 1
-        }
-      );
+      });
     }
 
     sequencer.a = reader.u8();
@@ -479,12 +474,13 @@ function parsePreset(reader)
     }
   }
 
-  return
+  return (
   {
     version,
     name,
     swingType,
     swingAmount,
+    faders,
     outputs,
     smoothing,
     arpeg,
@@ -498,7 +494,7 @@ function parsePreset(reader)
     shiftRegisters,
     swing,
     mcvm3
-  };
+  });
 }
 
 function parseMcv(reader)
@@ -543,6 +539,8 @@ function parseMcv(reader)
 function parseConfig(data)
 {
   const reader = new ByteReader(data);
+  
+  reader.skip(8);
 
   const version = reader.u32LE();
 
@@ -920,6 +918,8 @@ function parseScreenshot(reader)
   canvas.height = 32;
   var imgData   = ctx.getImageData(0, 0, 128, 32);
   var d         = imgData.data;
+  
+  reader.skip(8);
 
   for (var i = 0; i < 128; ++i) { screen[i] = reader.u32FromSysexShorts(); }
 

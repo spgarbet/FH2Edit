@@ -206,7 +206,7 @@ function onMIDIMessage(message)
 	else if ( data[5] == 0x13 )
 	{
 		log("Received preset");
-		renderPreset( data.slice( 8, -1 ) );
+		renderPreset( data );
 	}	else if ( data[5] == 0x10 ) 
 	{
 		log("Received configuration");
@@ -218,7 +218,7 @@ function onMIDIMessage(message)
 	} else if ( data[5] == 0x33 )
 	{
 	  log("Received screenshot");
-		renderScreenshot( data.slice( 8, -1 ) );
+		renderScreenshot( data );
 	} else
 	{
 	  log("Received unknown sysex");
