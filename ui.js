@@ -29,12 +29,56 @@ function get(id)          { return(document.getElementById(id).value);   }
 function num(id)          { Number(get(id));                             }
 function checked(id)      { return(document.getElementById(id).checked); }
 
+// Helpers
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
 function capitalizeFirstLetter(str)
 {
   if (!str) return ''; // Handle empty strings safely
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function nybbleChar( n )
+{
+	if ( n >= 10 ) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
+	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
+}
+
+
+function optionRange(low, high, selected = null, valueOffset = 0)
+{
+  for ( let i=low; i<=high; ++i)
+  {
+    const isSelected = i === selected ? ' selected' : '';
+    document.write(`<option value="${i-valueOffset}"${isSelected}>${i}</option>`);
+  }
+}
+
+function u7PercentRange(selected = 0)
+{
+  for (let i=0; i<128; ++i)
+  {
+    const isSelected = i === selected ? ' selected' : '';
+    document.write(`<option value="${i}"${isSelected}>${(100*i/127).toFixed(1)}&#37;</option>`);
+  }
+}
+
+function dumpSysex( data, id )
+{
+	var len = data.length;
+	var h   = "";
+	for (var i=0; i<len; ++i)
+	{
+		var b = data[ i ];
+		h += nybbleChar( b >> 4 );
+		h += nybbleChar( b & 0xf );
+		h += " ";
+		if (( i & 0xf ) === 0xf) { h += "\n"; }
+	} 
+	document.getElementById(id).textContent = h + "\n";
+}
+
+// Initializations
 function initTooltips()
 {
   const tooltips = document.querySelectorAll(".tooltip");
@@ -182,6 +226,8 @@ function initTabs()
   }
 }
 
+// Main UI Functions
+
 function updateFH2Status()
 {
   const status = document.getElementById("fh2-status");  
@@ -233,47 +279,8 @@ function log(message)
   document.getElementById('io-feedback').textContent = message;
 }
 
-function nybbleChar( n )
-{
-	if ( n >= 10 ) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
-	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
-}
-
-function dumpSysex( data, id )
-{
-	var len = data.length;
-	var h   = "";
-	for (var i=0; i<len; ++i)
-	{
-		var b = data[ i ];
-		h += nybbleChar( b >> 4 );
-		h += nybbleChar( b & 0xf );
-		h += " ";
-		if (( i & 0xf ) === 0xf) { h += "\n"; }
-	} 
-	document.getElementById(id).textContent = h + "\n";
-}
-
 function midiLogOut(sysex) { dumpSysex( sysex, "raw-midi-output" ); }
 function midiLogIn(sysex)  { dumpSysex( sysex, "raw-midi-input" );  }	
-
-function optionRange(low, high, selected = null, valueOffset = 0)
-{
-  for ( let i=low; i<=high; ++i)
-  {
-    const isSelected = i === selected ? ' selected' : '';
-    document.write(`<option value="${i-valueOffset}"${isSelected}>${i}</option>`);
-  }
-}
-
-function u7PercentRange(selected = 0)
-{
-  for (let i=0; i<128; ++i)
-  {
-    const isSelected = i === selected ? ' selected' : '';
-    document.write(`<option value="${i}"${isSelected}>${(100*i/127).toFixed(1)}&#37;</option>`);
-  }
-}
 
 // Simple forwards from view layer to midi operation
 function onFlashPreset() { flashPreset(num('preset-slot')); }
@@ -314,8 +321,9 @@ function onSaveConfig()
   URL.revokeObjectURL(url);
 }
 
-function onSave()
-{
-  onSavePreset();
-  onSaveConfig();
-}
+// Compound Ops
+function onSave()        { onSavePreset();  onSaveConfig();  }
+function onLoad()        { onLoadPreset();  onLoadConfig();  }
+function onWrite()       { onWritePreset(); onWriteConfig(); }
+async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
+function onFlash()       { onFlashPreset(); onFlashConfig(); }
