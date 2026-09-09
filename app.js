@@ -30,4 +30,5 @@ document.addEventListener("DOMContentLoaded", () =>
   initMIDI();
   renderPreset(presetSysex);
   renderConfig(configSysex);
+  initFileChooser();
 });
