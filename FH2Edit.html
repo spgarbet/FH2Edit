@@ -98,13 +98,13 @@
           <div>
             <input type="file" id="chooseFiles" name="files[]" multiple style="display:none" />
             <div class="io-actions">
-              <button id="read-from-fh2" onclick="onRead()"       accesskey="r">Read from FH-2</button>
-              <button id="write-to-fh2"  onclick="onWrite()"      accesskey="w">Write to FH-2</button>
-              <button id="load-sysex"    onclick="onLoad()"       accesskey="l" class="tooltip", data-tooltip="This will load all preset/configuration sysex files selected. If multiple same types are selected the last one loaded will be the one live in the editor.">Load Sysex File(s)</button>
-              <button id="save-sysex"    onclick="onSave()"       accesskey="s">Save to Files</button>
-              <button id="screenshot"    onclick="onReadScreen()" accesskey="p">Screenshot</button>
-              <button id="flash"         onclick="onFlash()"      accesskey="f">Flash</button>
-              <button id="initialize"    onclick="onInitialize()" accesskey="i">Initialize</button>
+              <button id="read-from-fh2" type="button" onclick="onRead()"       accesskey="r">Read from FH-2</button>
+              <button id="write-to-fh2"  type="button" onclick="onWrite()"      accesskey="w">Write to FH-2</button>
+              <button id="load-sysex"    type="button" onclick="onLoad()"       accesskey="l" class="tooltip" data-tooltip="This will load all preset/configuration sysex files selected. If multiple same types are selected the last one loaded will be the one live in the editor.">Load Sysex File(s)</button>
+              <button id="save-sysex"    type="button" onclick="onSave()"       accesskey="s">Save to Files</button>
+              <button id="screenshot"    type="button" onclick="onReadScreen()" accesskey="p">Screenshot</button>
+              <button id="flash"         type="button" onclick="onFlash()"      accesskey="f">Flash</button>
+              <button id="initialize"    type="button" onclick="onInitialize()" accesskey="i">Initialize</button>
             </div>
             <div id="io-feedback"></div>
           </div>
@@ -120,23 +120,23 @@
           <div id="io-advanced-content">
             
             <div class="io-actions">
-              <button id="read-version"     onclick="onReadVersion()" accesskey="v">Read Version from FH-2</button>
-              <button id="write-msg"        onclick="onWriteMessage()">Write Message to FH-2</button>
+              <button id="read-version"     type="button" onclick="onReadVersion()" accesskey="v">Read Version from FH-2</button>
+              <button id="write-msg"        type="button" onclick="onWriteMessage()">Write Message to FH-2</button>
               
-              <button id="read-config-fh2"  onclick="onReadConfig()" >Read Configuration from FH-2</button>
-              <button id="write-config-fh2" onclick="onWriteConfig()">Write Configuration to FH-2</button>
+              <button id="read-config-fh2"  type="button" onclick="onReadConfig()" >Read Configuration from FH-2</button>
+              <button id="write-config-fh2" type="button" onclick="onWriteConfig()">Write Configuration to FH-2</button>
 
-              <button id="read-preset-fh2"  onclick="onReadPreset()" >Read Preset from FH-2</button>
-              <button id="write-preset-fh2" onclick="onWritePreset()">Write Preset to FH-2</button>
+              <button id="read-preset-fh2"  type="button" onclick="onReadPreset()" >Read Preset from FH-2</button>
+              <button id="write-preset-fh2" type="button" onclick="onWritePreset()">Write Preset to FH-2</button>
 
-              <button id="save-preset"      onclick="onSavePreset()" >Save Preset to File</button>
-              <button id="save-config"      onclick="onSaveConfig()" >Save Configuration to File</button>
+              <button id="save-preset"      type="button" onclick="onSavePreset()" >Save Preset to File</button>
+              <button id="save-config"      type="button" onclick="onSaveConfig()" >Save Configuration to File</button>
             
-              <button id="flash-preset"     onclick="onFlashPreset()">Flash Preset to Slot</button>
-              <button id="flash-config"     onclick="onFlashConfig()">Flash Configuration to Slot</button>
+              <button id="flash-preset"     type="button" onclick="onFlashPreset()">Flash Preset to Slot</button>
+              <button id="flash-config"     type="button" onclick="onFlashConfig()">Flash Configuration to Slot</button>
               
-              <button id="init-preset"      onclick="onInitPreset()" >Initialize Preset</button>
-              <button id="init-config"      onclick="onInitConfig()" >Initialize Configuration</button>
+              <button id="init-preset"      type="button" onclick="onInitPreset()" >Initialize Preset</button>
+              <button id="init-config"      type="button" onclick="onInitConfig()" >Initialize Configuration</button>
             </div>
 
             <div id="io-advanced-raw">
