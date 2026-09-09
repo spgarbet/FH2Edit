@@ -26,6 +26,12 @@ function num(id)          { Number(document.getElementById(id).value);   }
 
 function checked(id)      { return(document.getElementById(id).checked); }
 
+function capitalizeFirstLetter(str)
+{
+  if (!str) return ''; // Handle empty strings safely
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function initTooltips()
 {
   const tooltips = document.querySelectorAll(".tooltip");

@@ -165,7 +165,7 @@ function writeConfig()
 function checkConnection()
 {
   // If a check is called for, the state reversion occurs until proven otherwise
-  appState.connected  = false;
+  appState.connection = false;
   appState.compatible = false;
   updateFH2Status();
   readVersion();
@@ -272,22 +272,22 @@ function onMIDIMessage(message)
   midiLogIn(data);
   
   appState.connection = true;
-	if ( data[5] == 0x32 && data[6] == 0x76 )
+	if ( data[5] == 0x32 && data[6] == 0x76 ) // Version
 	{
 	  var str = String.fromCharCode.apply(null, data.slice(7, -1 ));
 
 	  log("Received version "+str);
 	  appState.compatible = str.startsWith("2.");
 	}
-	else if ( data[5] == 0x32 && data[6] == 0x70)
+	else if ( data[5] == 0x32 && data[6] == 0x70) // Preset OK
 	{
 	  appState.presetReq = false;
-	  log(String.fromCharCode.apply(null, data.slice(6, -1)));
+	  log(capitalizeFirstLetter(String.fromCharCode.apply(null, data.slice(6, -1))));
 	}
-	else if ( data[5] == 0x32 && data[6] == 0x63)
+	else if ( data[5] == 0x32 && data[6] == 0x63) // Config OK
 	{
 	  appState.configReq = false;
-	  log(String.fromCharCode.apply(null, data.slice(6, -1)));
+	  log(capitalizeFirstLetter(String.fromCharCode.apply(null, data.slice(6, -1))));
 	}
 	else if ( data[5] == 0x13 )
 	{
