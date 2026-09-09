@@ -109,12 +109,17 @@ async function retryPreset()
   {
     await new Promise(resolve => setTimeout(resolve, 750));
 
-    if (!appState.presetReq) { return; }
+    if (!appState.presetReq) { break; }
 
     midiOutput().send(presetSysex);
     log("Retried preset");
     midiLogOut(presetSysex);
   }
+  if(!appState.presetReq && checked('flash-mode'))
+  { 
+    flashPreset(num('preset-slot')); 
+  }
+  appState.presetReq = false; // Make sure to give up
 }
 
 function writePreset()
@@ -130,7 +135,6 @@ function writePreset()
   // The FH-2 sysex timing cannot reliably receive large sysex from Linux/mioXL
   // This will do a number of retries that will hopefully hit the magic timing.
   retryPreset();
-  if(checked('flash-mode')) { flashPreset(num('preset-slot')); }
 }
 
 async function retryConfig()
@@ -139,13 +143,17 @@ async function retryConfig()
   {
     await new Promise(resolve => setTimeout(resolve, 750));
 
-    if (!appState.configReq) { return; }
+    if (!appState.configReq) { break; }
 
     midiOutput().send(configSysex);
     log("Retried config");
     midiLogOut(configSysex);
   }
-  appState.configReq=false;
+  if(!appState.configReq && checked('flash-mode'))
+  { 
+    configPreset(num('config-slot')); 
+  }
+  appState.configReq = false; // Make sure to give up
 }
 
 function writeConfig()
@@ -161,7 +169,6 @@ function writeConfig()
   // The FH-2 sysex timing cannot reliably receive large sysex from Linux/mioXL
   // This will do a number of retries that will hopefully hit the magic timing.
   retryConfig();
-  if(checked('flash-mode')) { flashConfig(num('config-slot')); }
 }
 
 function checkConnection()
