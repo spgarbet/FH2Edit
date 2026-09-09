@@ -552,7 +552,7 @@ function parseConfig(reader)
   const config =
   {
     version: version,
-    name: reader.fixedString(16)
+    name: reader.fixedString(16).trimEnd()
   };
 
   reader.skip(1);

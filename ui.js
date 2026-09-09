@@ -321,9 +321,22 @@ function onSaveConfig()
   URL.revokeObjectURL(url);
 }
 
+function onInitPreset()
+{
+  presetSysex = structuredClone(PRESET_DEFAULT_SYSEX);
+  renderPreset(presetSysex);
+}
+
+function onInitConfig()
+{
+  configSysex = structuredClone(CONFIG_DEFAULT_SYSEX);
+  renderConfig(configSysex);
+}
+
 // Compound Ops
 function onSave()        { onSavePreset();  onSaveConfig();  }
 function onLoad()        { onLoadPreset();  onLoadConfig();  }
 function onWrite()       { onWritePreset(); onWriteConfig(); }
 async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
 function onFlash()       { onFlashPreset(); onFlashConfig(); }
+function onInitialize()  { onInitPreset();  onInitConfig();  }

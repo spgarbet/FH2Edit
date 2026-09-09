@@ -103,6 +103,7 @@
               <button id="save-sysex"    onclick="onSave()"       accesskey="s">Save to Files</button>
               <button id="screenshot"    onclick="onReadScreen()" accesskey="p">Screenshot</button>
               <button id="flash"         onclick="onFlash()"      accesskey="f">Flash</button>
+              <button id="initialize"    onclick="onInitialize()" accesskey="i">Initialize</button>
             </div>
             <div id="io-feedback"></div>
           </div>
@@ -131,14 +132,17 @@
               <button id="read-preset-fh2"  onclick="onReadPreset()" >Read Preset from FH-2</button>
               <button id="write-preset-fh2" onclick="onWritePreset()">Write Preset to FH-2</button>
 
-              <button id="load-config"      onclick="onLoadConfig()">Load Configuration from File</button>
-              <button id="save-config"      onclick="onSaveConfig()">Save Configuration to File</button>
+              <button id="load-config"      onclick="onLoadConfig()" >Load Configuration from File</button>
+              <button id="save-config"      onclick="onSaveConfig()" >Save Configuration to File</button>
 
-              <button id="load-preset"      onclick="onLoadPreset()">Load Preset from File</button>
-              <button id="save-preset"      onclick="onSavePreset()">Save Preset to File</button>
+              <button id="load-preset"      onclick="onLoadPreset()" >Load Preset from File</button>
+              <button id="save-preset"      onclick="onSavePreset()" >Save Preset to File</button>
               
               <button id="flash-preset"     onclick="onFlashPreset()">Flash Preset to Slot</button>
               <button id="flash-config"     onclick="onFlashConfig()">Flash Configuration to Slot</button>
+              
+              <button id="init-preset"      onclick="onInitPreset()" >Initialize Preset</button>
+              <button id="init-config"      onclick="onInitConfig()" >Initialize Configuration</button>
             </div>
 
             <div id="io-advanced-raw">

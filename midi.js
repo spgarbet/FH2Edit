@@ -45,8 +45,10 @@ function midiOutput()
   return midi.outputs.get( get( "midi-output" ));
 }
 
-function request(id, logMsg)
+function request(id, logMsg, check=true)
 {
+  if(check && !isCompatible(logMsg)) { return; }
+  
   var sysex = makeSysex(id);
 	midiOutput().send(sysex);
 	log( logMsg );
@@ -54,7 +56,7 @@ function request(id, logMsg)
 }
 
 function readScreen()  { request([0x01], "Take screenshot"  );  }
-function readVersion() { request([0x22], "Version requested");  }
+function readVersion() { request([0x22], "Version requested", false);  }
 function readConfig()  { request([0x21], "Config requested" );  }
 function readPreset()  { request([0x23], "Preset requested" );  }
 
