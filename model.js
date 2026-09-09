@@ -48,7 +48,7 @@ function clampSwing(swing)
   for(let i=0; i<3; ++i)
   {
     let minimum = i+2;
-    if(i > 0) { minimum = Math.maximum(minimum, swing[i-1]+1); }
+    if(i > 0) { minimum = Math.max(minimum, swing[i-1]+1); }
     const maximum = i+7; // More constraints by type, but this is at least something
     if(swing[i] < minimum)
     {

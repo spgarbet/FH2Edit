@@ -20,10 +20,13 @@
 
 const flashModeKey        = "flashmode";
 
+// Putters
 function put(id, value  ) { document.getElementById(id).value   = value; }
 function check(id, value) { document.getElementById(id).checked = value; }
-function num(id)          { Number(document.getElementById(id).value);   }
 
+// Getters
+function get(id)          { return(document.getElementById(id).value);   }
+function num(id)          { Number(get(id));                             }
 function checked(id)      { return(document.getElementById(id).checked); }
 
 function capitalizeFirstLetter(str)
@@ -272,5 +275,47 @@ function u7PercentRange(selected = 0)
   }
 }
 
+// Simple forwards from view layer to midi operation
 function onFlashPreset() { flashPreset(num('preset-slot')); }
 function onFlashConfig() { flashConfig(num('config-slot')); }
+function onReadScreen()  { readScreen();                    }
+function onReadVersion() { readVersion();                   }
+function onReadConfig()  { readConfig();                    }
+function onReadPreset()  { readPreset();                    }
+function onWriteConfig() { writeConfig();                   }
+function onWritePreset() { writePreset();                   }
+
+function onSavePreset()
+{
+  const blob    = new Blob([presetSysex], { type: "application/octet-stream" });
+  const url     = URL.createObjectURL(blob);
+  const link    = document.createElement("a");
+  const name    = get("preset-name").trimEnd().replace(/[\\/:*?"<>|]/g, "_");
+  const suffix  = name != "" ? "-" : "";
+  link.href     = url;
+  link.download = "preset"+suffix+name+".syx";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function onSaveConfig()
+{
+  const blob    = new Blob([configSysex], { type: "application/octet-stream" });
+  const url     = URL.createObjectURL(blob);
+  const link    = document.createElement("a");
+  const name    = get("config-name").trimEnd().replace(/[\\/:*?"<>|]/g, "_");
+  const suffix  = name != "" ? "-" : "";
+
+  link.href     = url;
+  link.download = "config"+suffix+name+".syx";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function onSave()
+{
+  onSavePreset();
+  onSaveConfig();
+}

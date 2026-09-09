@@ -42,7 +42,7 @@ function makeSysex(request)
 
 function midiOutput()
 {
-  return midi.outputs.get( document.getElementById( "midi-output" ).value );
+  return midi.outputs.get( get( "midi-output" ));
 }
 
 function request(id, logMsg)
@@ -319,7 +319,7 @@ function onStateChange()
   var inputChanged  = updateMIDIInput();
   if (inputChanged)
   {
-    var input = midi.inputs.get( document.getElementById( "midi-input" ).value );
+    var input = midi.inputs.get( get( "midi-input" ) );
   	input.onmidimessage = onMIDIMessage;
   }
 	

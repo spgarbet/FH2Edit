@@ -97,11 +97,12 @@
         <div class="io-controls">
           <div>
             <div class="io-actions">
-              <button id="read-from-fh2">Read from FH-2</button>
-              <button id="write-to-fh2" >Write to FH-2</button>
-              <button id="load-sysex"   >Load from Files</button>
-              <button id="save-sysex"   >Save to Files</button>
-              <button id="screenshot" onclick="readScreen()" accesskey="p">Screenshot</button>
+              <button id="read-from-fh2" onclick="onRead()"       accesskey="r">Read from FH-2</button>
+              <button id="write-to-fh2"  onclick="onWrite()"      accesskey="w">Write to FH-2</button>
+              <button id="load-sysex"    onclick="onLoad()"       accesskey="l">Load from Files</button>
+              <button id="save-sysex"    onclick="onSave()"       accesskey="s">Save to Files</button>
+              <button id="screenshot"    onclick="onReadScreen()" accesskey="p">Screenshot</button>
+              <button id="flash"         onclick="onFlash()"      accesskey="f">Flash</button>
             </div>
             <div id="io-feedback"></div>
           </div>
@@ -117,27 +118,27 @@
           <div id="io-advanced-content">
             
             <div class="io-actions">
-              <button id="read-version" onclick="readVersion()" accesskey="v">
+              <button id="read-version"     onclick="onReadVersion()" accesskey="v">
                 Read Version from FH-2
               </button>
-              <button id="write-msg"    onclick="writeMessage()">
+              <button id="write-msg"        onclick="onWriteMessage()">
                 Write Message to FH-2
               </button>
               
-              <button id="read-config-fh2"  onclick="readConfig()" >Read Configuration from FH-2</button>
-              <button id="write-config-fh2" onclick="writeConfig()">Write Configuration to FH-2</button>
+              <button id="read-config-fh2"  onclick="onReadConfig()" >Read Configuration from FH-2</button>
+              <button id="write-config-fh2" onclick="onWriteConfig()">Write Configuration to FH-2</button>
 
-              <button id="read-preset-fh2"  onclick="readPreset()" >Read Preset from FH-2</button>
-              <button id="write-preset-fh2" onclick="writePreset()">Write Preset to FH-2</button>
+              <button id="read-preset-fh2"  onclick="onReadPreset()" >Read Preset from FH-2</button>
+              <button id="write-preset-fh2" onclick="onWritePreset()">Write Preset to FH-2</button>
 
-              <button id="load-config"      >Load Configuration from File</button>
-              <button id="save-config"      >Save Configuration to File</button>
+              <button id="load-config"      onclick="onLoadConfig()">Load Configuration from File</button>
+              <button id="save-config"      onclick="onSaveConfig()">Save Configuration to File</button>
 
-              <button id="load-preset"     >Load Preset from File</button>
-              <button id="save-preset"     >Save Preset to File</button>
+              <button id="load-preset"      onclick="onLoadPreset()">Load Preset from File</button>
+              <button id="save-preset"      onclick="onSavePreset()">Save Preset to File</button>
               
-              <button id="flash-preset" onclick="onFlashPreset()">Flash Preset to Slot</button>
-              <button id="flash-config" onclick="onFlashConfig()">Flash Configuration to Slot</button>
+              <button id="flash-preset"     onclick="onFlashPreset()">Flash Preset to Slot</button>
+              <button id="flash-config"     onclick="onFlashConfig()">Flash Configuration to Slot</button>
             </div>
 
             <div id="io-advanced-raw">
