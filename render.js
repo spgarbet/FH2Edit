@@ -24,14 +24,17 @@ function renderPreset(data)
   
   if (preset === null) { return false; }
   
+  // Globals
+  preset.swing = clampSwing(preset.swing);
+  document.getElementById("preset-name-status").textContent = 
+    "Preset: "+preset.name.trimEnd();
   put('preset-name',  preset.name);
-  document.getElementById("preset-name-status").textContent = "Preset: "+preset.name.trimEnd();
   put('tempo',        preset.tempo);
   put('swing_type',   preset.swingType);
   put('swing_amount', preset.swingAmount);
-  put('swing_pos1',   preset.swing.pos1);
-  put('swing_pos2',   preset.swing.pos2);
-  put('swing_pos3',   preset.swing.pos3);
+  put('swing_pos1',   preset.swing[0]);
+  put('swing_pos2',   preset.swing[1]);
+  put('swing_pos3',   preset.swing[2]);
 
   return true;
 }

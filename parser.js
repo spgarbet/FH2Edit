@@ -56,38 +56,47 @@ class ByteReader
     return value;
   }
   
-  sysexShort() { return this.u8() | ((this.u8() << 7) & 0x3f80); }
+  uShort() { return this.u8() | ((this.u8() << 7) & 0x3f80); }
   
-  sysexSignedShort()
+  sShort()
   {
-    const value = this.sysexShort();
+    const value = this.uShort();
 
     if (value & 0x2000) { return value - 16384; }
     return value;
   }
 
-  sysexSignedChar()
+  sByte()
   {
     const value = this.u8();
-
     if (value & 0x40) { return value - 128; }
-
     return value;
   }
 
-  u32FromSysexShorts()
+/*
+  screenWord()
   {
-    const value = this.sysexShort()         | (this.sysexShort() << 8) |
-                  (this.sysexShort() << 16) | (this.sysexShort() << 24);
+    const value = this.uShort()         | (this.uShort() << 8) |
+                  (this.uShort() << 16) | (this.uShort() << 24);
     return value >>> 0;
   }
-  
-  sysexSafeInt()
+*/
+  screenWord()
   {
-    const value = this.u8() | (this.u8() << 8) | (this.u8() << 16) | (this.u8() << 24);
+    return this.uShort() |
+           (this.uShort() << 8) |
+           (this.uShort() << 16) |
+           (this.uShort() << 24);
+  }
+
+  uLong()
+  {
+    const value = this.u32LE();
   
-    return (value & 0x7f)            | ((value >> 1) & 0x3f80) |
-           ((value >> 2) & 0x1fc000) | ((value >> 3) & 0xfe00000);
+    return (value & 0x7f)            |
+           ((value >> 1) & 0x3f80)   |
+           ((value >> 2) & 0x1fc000) |
+           ((value >> 3) & 0xfe00000);
   }
 
   bytes(length)
@@ -137,7 +146,7 @@ class ByteReader
 function parsePreset(reader)
 {
   reader.skip(8);
-  const version = reader.u32LE();
+  const version = reader.u32LE(); // 4
   if (version !== 8)
   {
     log("Preset Version Unsupported");
@@ -145,24 +154,22 @@ function parsePreset(reader)
     return null;
   }
 
-  const name = reader.fixedString(16).trimEnd();
+  const name = reader.fixedString(16).trimEnd();  // 16
+  reader.skip(1);
+  const swingType   = reader.u8();                // 29
+  const swingAmount = reader.u8();                // 30
   reader.skip(1);
 
-  const swingType   = reader.u8();
-  const swingAmount = reader.u8();
-
-  reader.skip(1);
-
-  const faders = [];
-	for (let i = 0; i<64; ++i) { faders.push(reader.sysexSignedShort()); }
+  const faders = [];                              // 32
+	for (let i = 0; i<64; ++i) { faders.push(reader.sShort()); }
 	
-  const outputs = [];
+  const outputs = [];                             // 160
   for (let i = 0; i < 64; ++i)
   {
     const output =
     {
-      mlt: reader.sysexSignedShort(),
-      lfo: reader.sysexSignedShort(),
+      mlt: reader.sShort(),
+      lfo: reader.sShort(),
       clk: reader.u8(),
       clkm: reader.u8(),
       sin: reader.u8(),
@@ -180,10 +187,10 @@ function parsePreset(reader)
     outputs.push(output);
   }
 
-  const smoothing = [];
+  const smoothing = [];                                   // 1184
   for (let i=0; i<64; ++i) { smoothing.push(reader.u8());}
 
-  const arpeg = [];
+  const arpeg = [];                                       // 1248
   for (let i = 0; i < 16; ++i)
   {
     arpeg.push(
@@ -200,9 +207,9 @@ function parsePreset(reader)
     );
   }
 
-  const tempo = reader.sysexSafeInt() * 0.1;
+  const tempo = reader.uLong() * 0.1;                    // 1376
 
-  const euclidean = [];
+  const euclidean = [];                                  // 1380
   for (let i=0; i<16; ++i)
   {
     euclidean.push(
@@ -220,7 +227,7 @@ function parsePreset(reader)
     reader.skip(1);
   }
 
-  const mcvm2 = [];
+  const mcvm2 = [];                            // 1508
   for (let i = 0; i < 16; ++i)
   {
     mcvm2.push(
@@ -237,7 +244,7 @@ function parsePreset(reader)
     );
   }
 
-  const scala = [];
+  const scala = [];                          // 1636
   for (let i=0; i<16; ++i)
   {
     scala.push(
@@ -251,10 +258,10 @@ function parsePreset(reader)
     reader.skip(1);
   }
 
-  const sequencerActive = reader.u8();
-  const sequencerMute   = reader.u8();
+  const sequencerActive = reader.u8();      // 1700
+  const sequencerMute   = reader.u8();      // 1701
 
-  const sequencers = [];
+  const sequencers = [];                    
   for (let i=0; i<4; ++i)
   {
     sequencers.push({
@@ -263,8 +270,8 @@ function parsePreset(reader)
     });
   }
 
-  const drumActive = reader.u8();
-  const drumMute   = reader.u8();
+  const drumActive = reader.u8();           // 1702
+  const drumMute   = reader.u8();           // 1703
 
   const drumSequencers = [];
   for (let i=0; i<1; ++i)
@@ -277,9 +284,9 @@ function parsePreset(reader)
     );
   }
 
-  reader.skip(8); // Triggers?
+  reader.skip(8); // Triggers? 1520
 
-  // Main Sequencer
+  // Main Sequencer                           1712
   for (let i = 0; i < 4; ++i)
   {
     const sequencer = sequencers[i];
@@ -288,7 +295,7 @@ function parsePreset(reader)
 
     for (let j = 0; j < 32; ++j)
     {
-      const pattern = reader.sysexShort();
+      const pattern = reader.uShort();
 
       const v0 = reader.u8();
       const v1 = reader.u8();
@@ -314,7 +321,7 @@ function parsePreset(reader)
     reader.skip(1);
   }
 
-  // Drum Sequencer
+  // Drum Sequencer                      2256
   for (let i = 0; i < 1; ++i)
   {
     const drum = drumSequencers[i];
@@ -358,7 +365,7 @@ function parsePreset(reader)
     reader.skip(15);
   }
 
-  const shiftRegisters = [];
+  const shiftRegisters = [];   // 2400
 
   for (let i = 0; i < 16; ++i)
   {
@@ -376,16 +383,11 @@ function parsePreset(reader)
     );
   }
 
-  const swing =
-  {
-    pos1: reader.u8(),
-    pos2: reader.u8(),
-    pos3: reader.u8()
-  };
+  const swing = [reader.u8(), reader.u8(), reader.u8()]; // 2528
 
   reader.skip(1);
 
-  const mcvm3 = [];
+  const mcvm3 = [];  // 2532
 
   for (let i = 0; i < 16; ++i)
   {
@@ -403,7 +405,7 @@ function parsePreset(reader)
   // Addendum Jump
   reader.seek(4096);
 
-  const triggers = [];
+  const triggers = []; // 4096
 
   for (let i = 0; i < 16; ++i)
   {
@@ -415,7 +417,7 @@ function parsePreset(reader)
     }
   }
 
-  // Sequencer Addendum
+  // Sequencer Addendum 4112
   for (let i = 0; i < 4; ++i)
   {
     const sequencer = sequencers[i];
@@ -447,10 +449,7 @@ function parsePreset(reader)
     }
   }
 
-  /*
-   * Drum sequencer addendum.
-   */
-
+  // Drum sequencer addendum  4372
   for (let i = 0; i < 1; ++i)
   {
     const drum = drumSequencers[i];
@@ -562,7 +561,7 @@ function parseConfig(reader)
   config.globals =
   {
     triglen:      reader.u8(),
-    transpose:    reader.sysexSignedChar(),
+    transpose:    reader.sByte(),
     legvel:       reader.u8(),
     extclkmult:   reader.u8(),
     extclkrun:    reader.u8(),
@@ -627,8 +626,8 @@ function parseConfig(reader)
   {
     config.gateLevels.push(
       {
-        low:  reader.sysexShort(),
-        high: reader.sysexShort()
+        low:  reader.uShort(),
+        high: reader.uShort()
       }
     );
   }
@@ -693,8 +692,8 @@ function parseConfig(reader)
       {
         usage:   reader.u8(),
         output:  reader.u8(),
-        scale:   reader.sysexSignedShort(),
-        offset:  reader.sysexSignedShort()
+        scale:   reader.sShort(),
+        offset:  reader.sShort()
       }
     );
 
@@ -717,8 +716,8 @@ function parseConfig(reader)
         type:   type,
         output: output,
         key:    key,
-        value0: reader.sysexShort(),
-        value1: reader.sysexShort()
+        value0: reader.uShort(),
+        value1: reader.uShort()
       }
     );
   }
@@ -765,8 +764,8 @@ function parseConfig(reader)
 
     reader.skip(1);
 
-    config.cvMidi[i].zeroV = reader.sysexSignedShort();
-    config.cvMidi[i].fiveV = reader.sysexSignedShort();
+    config.cvMidi[i].zeroV = reader.sShort();
+    config.cvMidi[i].fiveV = reader.sShort();
   }
 
   // Tempo limits
@@ -921,7 +920,7 @@ function parseScreenshot(reader)
   
   reader.skip(8);
 
-  for (var i = 0; i < 128; ++i) { screen[i] = reader.u32FromSysexShorts(); }
+  for (var i = 0; i < 128; ++i) { screen[i] = reader.screenWord(); }
 
   for (var y = 31; y >= 0; --y)
   {
