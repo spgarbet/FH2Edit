@@ -1,4 +1,4 @@
-// FH2Edit An Expert Sleepers Configuration/Preset Edit Tool
+// FH2Edit An Expert Sleepers FH-2 Configuration/Preset Edit Tool
 // Copyright (C) 2026 Shawn Garbett
 //
 // This program is free software: you can redistribute it and/or modify
@@ -333,9 +333,143 @@ function onInitConfig()
   renderConfig(configSysex);
 }
 
+// callback: undefined/null = standalone (no alert); a function = chained,
+// call this when done; `true` = chained, but nothing further to call.
+function onLoadConfig(callback)
+{
+  // Part of a chained request
+  if(callback)
+  { 
+    alert("Please select a configuration sysex file (.syx) in the file dialog");
+    if (typeof callback === 'function') { pendingConfigCallback = callback; }
+  }
+  document.getElementById('chooseConfig').click();
+}
+document.getElementById('chooseConfig').addEventListener('change', handleConfigSelect, false);
+var chosenConfig = [];
+var pendingConfigCallback = null;
+function handleConfigSelect(evt)
+{
+  let files = evt.target.files;
+  let f     = files[0];
+
+  if (!f)
+  {
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e)
+  {
+    let ints = new Uint8Array(e.target.result);
+    let arr = Array.from(ints);
+    chosenConfig = [];
+
+    if (arr.length < 7
+			|| arr[0] != 0xF0
+			|| arr[1] != 0x00
+			|| arr[2] != 0x21
+			|| arr[3] != 0x27
+			|| arr[4] != 0x2F
+			|| arr[5] != 0x10
+      || arr[arr.length - 1] != 0xF7)
+    {
+      alert("Not a valid configuration file");
+      log("Invalid configuration file");
+    }
+    else
+    {
+      chosenConfig = arr;
+
+      if (renderConfig(chosenConfig))
+      {
+        configSysex = chosenConfig;
+      }
+
+      log("Loaded configuration file");
+    }
+
+    if (pendingConfigCallback)
+    {
+      let cb = pendingConfigCallback;
+      pendingConfigCallback = null;
+      cb();
+    }
+  };
+
+  reader.readAsArrayBuffer(f);
+}
+// callback: undefined/null = standalone (no alert); a function = chained,
+// call this when done; `true` = chained, but nothing further to call.
+function onLoadPreset(callback)
+{
+  if(callback)
+  {
+    alert("Please select a preset sysex file (.syx) in the file dialog");
+    if (typeof callback === 'function') { pendingPresetCallback = callback; }
+  }
+  document.getElementById('choosePreset').click();
+}
+document.getElementById('choosePreset').addEventListener('change', handlePresetSelect, false);
+var chosenPreset = [];
+var pendingPresetCallback = null;
+function handlePresetSelect(evt)
+{
+  let files = evt.target.files;
+  let f     = files[0];
+
+  if (!f)
+  {
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e)
+  {
+    let ints = new Uint8Array(e.target.result);
+    let arr = Array.from(ints);
+    chosenPreset = [];
+
+    if (arr.length < 7
+      || arr[0] != 0xF0
+      || arr[1] != 0x00
+      || arr[2] != 0x21
+      || arr[3] != 0x27
+      || arr[4] != 0x2F
+      || arr[5] != 0x13
+      || arr[arr.length - 1] != 0xF7)
+    {
+      alert("Not a valid preset file");
+      log("Invalid preset file");
+    }
+    else
+    {
+      chosenPreset = arr;
+
+      if (renderPreset(chosenPreset))
+      {
+        presetSysex = chosenPreset;
+      }
+
+      log("Loaded preset file");
+    }
+
+    if (pendingPresetCallback)
+    {
+      let cb = pendingPresetCallback;
+      pendingPresetCallback = null;
+      cb();
+    }
+  };
+
+  reader.readAsArrayBuffer(f);
+}
+
 // Compound Ops
+function onLoad()        { onLoadPreset(function() { onLoadConfig(true); }) }
 function onSave()        { onSavePreset();  onSaveConfig();  }
-function onLoad()        { onLoadPreset();  onLoadConfig();  }
 function onWrite()       { onWritePreset(); onWriteConfig(); }
 async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
 function onFlash()       { onFlashPreset(); onFlashConfig(); }
