@@ -101,23 +101,33 @@ function writeMessage()
   midiLogOut(sysex);
 }
 
+async function retryPreset()
+{
+  for (let i=0; i<4; ++i)
+  {
+    await new Promise(resolve => setTimeout(resolve, 750));
+
+    if (!appState.presetReq) { return; }
+
+    midiOutput().send(presetSysex);
+    log("Retried preset");
+    midiLogOut(presetSysex);
+  }
+}
+
 function writePreset()
 {
   if(!isCompatible('write preset')) { return; }
+  
+  appState.presetReq = true;
  
   midiOutput().send(presetSysex);
-  // The FH-2 sysex timing cannot receive large sysex from Linux/mioXL
-  // UNLESS it's sent 3 times a 1/2 second apart
-  // Likely a bug in the event loop on the FH-2
-  if(checked('retry-mode'))
-  {
-    midiOutput().send(presetSysex, performance.now() +  500);
-    midiOutput().send(presetSysex, performance.now() + 1000);
-  }
-
-  log("Sent preset")
+  log("Sent preset");
   midiLogOut(presetSysex);
   
+  // The FH-2 sysex timing cannot receive large sysex from Linux/mioXL
+  // This will do a number of retries that will hopefully hit the magic timing.
+  if(checked('retry-mode')) { retryPreset(); }
   if(checked('flash-mode')) { flashPreset(num('preset-slot')); }
 }
 
@@ -228,13 +238,21 @@ function onMIDIMessage(message)
   for (var i=0; i<5; ++i) { if ( header[i] != data[i] ) { return; } }
   if (data[5] == 0x22) { return; } // Asking if this is an FH-2! Loopback
   midiLogIn(data);
+  
+  // Version response            F0 00 21 27 2F | 32 76 32 2E 30 2E 30 00 F7 
+  // OK response from preset set F0 00 21 27 2F | 32 70 72 65 73 65 74 20 4F 4B 00 F7 
   appState.connection = true;
-	if ( data[5] == 0x32 )
+	if ( data[5] == 0x32 && data[6] == 0x76 )
 	{
-	  var str = String.fromCharCode.apply(null, data.slice( 7, -1 ));
+	  var str = String.fromCharCode.apply(null, data.slice(7, -1 ));
 
 	  log("Received version "+str);
 	  appState.compatible = str.startsWith("2.");
+	}
+	else if ( data[5] == 0x32 && data[6] == 0x70)
+	{
+	  appState.presetReq = false;
+	  log(String.fromCharCode.apply(null, data.slice(6, -1)));
 	}
 	else if ( data[5] == 0x13 )
 	{

@@ -18,7 +18,8 @@ const appState =
 {
   webMIDI:    false,  // Is the browser compatible (false until proven)
   connection: false,  // Is there a MIDI port that connects to an FH-2?
-  compatible: false   // Is the FH-2 a compatible version
+  compatible: false,  // Is the FH-2 a compatible version
+  presetReq:  false   // Is a preset request been sent?
 };
 
 document.addEventListener("DOMContentLoaded", () =>
