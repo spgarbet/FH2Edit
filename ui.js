@@ -18,7 +18,6 @@
 // - helpers to construct the interface
 // - event handlers that write to the Sysex in memory
 
-const retryModeKey        = "retrymode";
 const flashModeKey        = "flashmode";
 
 function put(id, value  ) { document.getElementById(id).value   = value; }

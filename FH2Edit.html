@@ -86,17 +86,12 @@
         </div>
         
         <div id="io-options">
-          <label>
-            <input type="checkbox" id="retry-mode" onchange="localStorage.setItem(retryModeKey, this.checked);">
-            <span class="tooltip" data-tooltip="The FH-2 has timing issues receiving large sysex from Linux and mioXL. This is a hack that overcomes that limitation by stuffing the sysex 3 times quickly which seems to work for v2.0">Timing Hack for Linux/mioXL Compatibility</span>
-          </label>
           <br/>
           <label>
             <input type="checkbox" id="flash-mode" onchange="localStorage.setItem(flashModeKey, this.checked);">
             <span class="tooltip" data-tooltip="See 'Globals' tab to configure slot">Flash Preset/Configuration to Slot on Write</span>
           </label>
-          <script>check('retry-mode', localStorage.getItem(retryModeKey) === 'true');
-                  check('flash-mode', localStorage.getItem(flashModeKey) === 'true');</script>
+          <script>check('flash-mode', localStorage.getItem(flashModeKey) === 'true');</script>
         </div>
 
         <div class="io-controls">
@@ -129,14 +124,14 @@
                 Write Message to FH-2
               </button>
               
-              <button id="read-config-fh2" >Read Configuration from FH-2</button>
-              <button id="write-config-fh2">Write Configuration to FH-2</button>
+              <button id="read-config-fh2"  onclick="readConfig()" >Read Configuration from FH-2</button>
+              <button id="write-config-fh2" onclick="writeConfig()">Write Configuration to FH-2</button>
 
               <button id="read-preset-fh2"  onclick="readPreset()" >Read Preset from FH-2</button>
               <button id="write-preset-fh2" onclick="writePreset()">Write Preset to FH-2</button>
 
-              <button id="load-config"     >Load Configuration from File</button>
-              <button id="save-config"     >Save Configuration to File</button>
+              <button id="load-config"      >Load Configuration from File</button>
+              <button id="save-config"      >Save Configuration to File</button>
 
               <button id="load-preset"     >Load Preset from File</button>
               <button id="save-preset"     >Save Preset to File</button>
@@ -181,7 +176,7 @@
           <div>
             <label for="preset-name" class="name-label">Preset: </label>
             <input type="text" id="preset-name" placeholder="Name" maxlength="16"
-                    onchange="setPresetName(this.value)">
+                   onchange="setPresetName(this.value)">
             <label for="preset-slot">Slot: </label>
             <select id="preset-slot">
               <option value="0">Current</option>
@@ -231,8 +226,8 @@
           <legend>Configuration</legend>
           <div>
             <label for="config-name" class="name-label">Configuration: </label>
-            <input type="text" id="config-name" placeholder="Name" maxlength="16">
-    
+            <input type="text" id="config-name" placeholder="Name" maxlength="16"
+                   onchange="setConfigName(this.value)">
             <label for="config-slot">Slot: </label>
             <select id="config-slot">
               <option value="0">Current</option>

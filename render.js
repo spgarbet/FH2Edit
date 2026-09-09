@@ -106,9 +106,13 @@ function renderMcv(mcv, m)
 
 function renderConfig(data)
 {
+  configSysex  = data;
   const reader = new ByteReader(data);
   const config = parseConfig(reader);
-
+  
+  put('config-name',  config.name);
+  document.getElementById("config-name-status").textContent = "Preset: "+config.name.trimEnd();
+/*
   for (let j = 0; j < ac.length; ++j)
   {
     for (let i = 0; i < 64; ++i)
@@ -379,6 +383,7 @@ function renderConfig(data)
       if (relativeElement) { relativeElement.checked = relative; }
     }
   }
+  */
 }
 
 function renderScreenshot(data)

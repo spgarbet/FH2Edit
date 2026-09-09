@@ -125,10 +125,41 @@ function writePreset()
   log("Sent preset");
   midiLogOut(presetSysex);
   
-  // The FH-2 sysex timing cannot receive large sysex from Linux/mioXL
+  // The FH-2 sysex timing cannot reliably receive large sysex from Linux/mioXL
   // This will do a number of retries that will hopefully hit the magic timing.
-  if(checked('retry-mode')) { retryPreset(); }
+  retryPreset();
   if(checked('flash-mode')) { flashPreset(num('preset-slot')); }
+}
+
+async function retryConfig()
+{
+  for (let i=0; i<4; ++i)
+  {
+    await new Promise(resolve => setTimeout(resolve, 750));
+
+    if (!appState.configReq) { return; }
+
+    midiOutput().send(configSysex);
+    log("Retried config");
+    midiLogOut(configSysex);
+  }
+  appState.configReq=false;
+}
+
+function writeConfig()
+{
+  if(!isCompatible('write config')) { return; }
+  
+  appState.configReq = true;
+ 
+  midiOutput().send(configSysex);
+  log("Sent configuration");
+  midiLogOut(presetSysex);
+  
+  // The FH-2 sysex timing cannot reliably receive large sysex from Linux/mioXL
+  // This will do a number of retries that will hopefully hit the magic timing.
+  retryConfig();
+  if(checked('flash-mode')) { flashConfig(num('config-slot')); }
 }
 
 function checkConnection()
@@ -136,6 +167,7 @@ function checkConnection()
   // If a check is called for, the state reversion occurs until proven otherwise
   appState.connected  = false;
   appState.compatible = false;
+  updateFH2Status();
   readVersion();
 }
 
@@ -239,8 +271,6 @@ function onMIDIMessage(message)
   if (data[5] == 0x22) { return; } // Asking if this is an FH-2! Loopback
   midiLogIn(data);
   
-  // Version response            F0 00 21 27 2F | 32 76 32 2E 30 2E 30 00 F7 
-  // OK response from preset set F0 00 21 27 2F | 32 70 72 65 73 65 74 20 4F 4B 00 F7 
   appState.connection = true;
 	if ( data[5] == 0x32 && data[6] == 0x76 )
 	{
@@ -252,6 +282,11 @@ function onMIDIMessage(message)
 	else if ( data[5] == 0x32 && data[6] == 0x70)
 	{
 	  appState.presetReq = false;
+	  log(String.fromCharCode.apply(null, data.slice(6, -1)));
+	}
+	else if ( data[5] == 0x32 && data[6] == 0x63)
+	{
+	  appState.configReq = false;
 	  log(String.fromCharCode.apply(null, data.slice(6, -1)));
 	}
 	else if ( data[5] == 0x13 )

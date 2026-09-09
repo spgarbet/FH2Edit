@@ -536,10 +536,8 @@ function parseMcv(reader)
   });
 }
 
-function parseConfig(data)
+function parseConfig(reader)
 {
-  const reader = new ByteReader(data);
-  
   reader.skip(8);
 
   const version = reader.u32LE();

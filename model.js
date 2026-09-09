@@ -27,3 +27,15 @@ function setPresetName(name)
   
   document.getElementById("preset-name-status").textContent = "Preset: "+name.trimEnd();
 }
+
+function setConfigName(name)
+{
+  const offset = 12;
+  const bytes  = new TextEncoder().encode(name.trimEnd());
+  for (let i=0; i<16; ++i)
+  {
+    configSysex[offset + i] =  i < bytes.length ? bytes[i] : 0;
+  }
+  
+  document.getElementById("config-name-status").textContent = "Config: "+name.trimEnd();
+}
