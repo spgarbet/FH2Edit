@@ -172,6 +172,13 @@ body
   align-items: start;
 }
 
+#io-feedback
+{
+  padding: 0.5em 0 0 0.5em;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 .io-screenshot
 {
   width: 100%;

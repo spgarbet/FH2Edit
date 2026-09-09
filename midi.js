@@ -53,14 +53,23 @@ function request(id, logMsg)
 	midiLogOut(sysex);
 }
 
-function readScreen()  { request([0x01], "Take screenshot");    }
+function readScreen()  { request([0x01], "Take screenshot"  );  }
 function readVersion() { request([0x22], "Version requested");  }
 function readConfig()  { request([0x21], "Config requested" );  }
 function readPreset()  { request([0x23], "Preset requested" );  }
 
+function isCompatible(name)
+{
+  if(appState.compatible) { return true; }
+  log("Unable to "+name);
+  return false;
+}
+
 // Slot 0 means the current preset slot
 function flashPreset(slot)
 {
+  if(!isCompatible('flash preset')) { return; }
+  
   if (!Number.isInteger(slot) || slot < 0 || slot > 30)
   {
     throw new Error("flashPreset() invalid slot");
@@ -69,6 +78,8 @@ function flashPreset(slot)
 }
 function flashConfig(slot)
 {
+  if(!isCompatible('flash config')) { return; }
+  
   if (!Number.isInteger(slot) || slot < 0 || slot > 30)
   {
     throw new Error("flashConfig() invalid slot");
@@ -79,6 +90,8 @@ function flashConfig(slot)
 
 function writeMessage()
 {
+  if(!isCompatible('write message')) { return; }
+    
   var text = "Hello!\nThis message\nwas sent from\nthe config tool.";
   var request = [0x02];
   for (var i = 0; i < text.length; ++i) { request.push(text.charCodeAt(i)); }
@@ -86,6 +99,26 @@ function writeMessage()
   midiOutput().send(sysex);
   log("Sent message");
   midiLogOut(sysex);
+}
+
+function writePreset()
+{
+  if(!isCompatible('write preset')) { return; }
+ 
+  midiOutput().send(presetSysex);
+  // The FH-2 sysex timing cannot receive large sysex from Linux/mioXL
+  // UNLESS it's sent 3 times a 1/2 second apart
+  // Likely a bug in the event loop on the FH-2
+  if(checked('retry-mode'))
+  {
+    midiOutput().send(presetSysex, performance.now() +  500);
+    midiOutput().send(presetSysex, performance.now() + 1000);
+  }
+
+  log("Sent preset")
+  midiLogOut(presetSysex);
+  
+  if(checked('flash-mode')) { flashPreset(num('preset-slot')); }
 }
 
 function checkConnection()

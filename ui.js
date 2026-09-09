@@ -25,6 +25,8 @@ function put(id, value  ) { document.getElementById(id).value   = value; }
 function check(id, value) { document.getElementById(id).checked = value; }
 function num(id)          { Number(document.getElementById(id).value);   }
 
+function checked(id)      { return(document.getElementById(id).checked); }
+
 function initTooltips()
 {
   const tooltips = document.querySelectorAll(".tooltip");
@@ -219,6 +221,8 @@ function log(message)
   if (!logElement) { console.error("Log element missing", message); return; }
   logElement.textContent += `[${timestamp}] ${message}\n`;
   logElement.scrollTop = logElement.scrollHeight;
+  
+  document.getElementById('io-feedback').textContent = message;
 }
 
 function nybbleChar( n )

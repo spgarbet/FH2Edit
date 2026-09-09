@@ -34,6 +34,7 @@
   <script src="app.js"    ></script>
   <script src="parser.js" ></script>
   <script src="render.js" ></script>
+  <script src="model.js"  ></script>
 </head>
 
 <body>
@@ -46,8 +47,8 @@
         <span id="browser-status-text"                >Browser: Checking&hellip;</span></div>
       <div class="status-item alarm" id="fh2-status"  >FH-2: Disconnected</div>
       <!-- <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div> -->
-      <div class="status-item" id="config-name-status">Configuration:</div>
       <div class="status-item" id="preset-name-status">Preset:</div>
+      <div class="status-item" id="config-name-status">Configuration:</div>
     </div>
   </header>
 
@@ -132,7 +133,7 @@
               <button id="write-config-fh2">Write Configuration to FH-2</button>
 
               <button id="read-preset-fh2" >Read Preset from FH-2</button>
-              <button id="write-preset-fh2">Write Preset to FH-2</button>
+              <button id="write-preset-fh2" onclick="writePreset()">Write Preset to FH-2</button>
 
               <button id="load-config"     >Load Configuration from File</button>
               <button id="save-config"     >Save Configuration to File</button>
@@ -179,8 +180,8 @@
           <legend>Preset</legend>
           <div>
             <label for="preset-name" class="name-label">Preset: </label>
-            <input type="text" id="preset-name" placeholder="Name" maxlength="16">
-    
+            <input type="text" id="preset-name" placeholder="Name" maxlength="16"
+                    onchange="setPresetName(this.value)">
             <label for="preset-slot">Slot: </label>
             <select id="preset-slot">
               <option value="0">Current</option>

@@ -1,4 +1,4 @@
-// FH2Edit An Expert Sleepers Configuration/Preset Edit Tool
+// FH2Edit An Expert Sleepers FH-2 Configuration/Preset Edit Tool
 // Copyright (C) 2026 Shawn Garbett
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,10 +18,12 @@
 
 function renderPreset(data)
 {
+  presetSysex  = data;
   const reader = new ByteReader(data);
   const preset = parsePreset(reader);
   
   put('preset-name',  preset.name);
+  document.getElementById("preset-name-status").textContent = "Preset: "+preset.name.trimEnd();
   put('tempo',        preset.tempo);
   put('swing_type',   preset.swingType);
   put('swing_amount', preset.swingAmount);
