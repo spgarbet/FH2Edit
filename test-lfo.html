@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<!--
+    FH-2 LFO Designer
+    Copyright (C) 2026 Shawn Garbett
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -71,6 +88,33 @@
       padding: 0.5rem 1rem;
       font-size: 1rem;
     }
+    
+    #waveform-container
+    {
+      display: grid;
+      grid-template-columns: 512px auto;
+      column-gap: 12px;
+      align-items: start;
+    }
+    
+    #waveform-stats
+    {
+      display: grid;
+      grid-template-columns: auto auto auto;
+      column-gap: 2em;
+      row-gap: 0.5em;
+      align-items: baseline;
+    }
+    
+    #waveform-stats output
+    {
+      text-align: right;
+    }
+    
+    .stats-header
+    {
+      white-space: nowrap;
+    } 
   </style>
 </head>
 
@@ -176,6 +220,24 @@
   
   <div id="waveform-container">
     <canvas id="waveform" width="512" height="316"></canvas>
+  
+    <div id="waveform-stats">
+      <div></div>
+      <div class="stats-header">±5 V</div>
+      <div class="stats-header">0–10 V</div>
+  
+      <div>Min</div>
+      <output id="stat-min-pm5">0.000</output>
+      <output id="stat-min-010">0.000</output>
+  
+      <div>Max</div>
+      <output id="stat-max-pm5">0.000</output>
+      <output id="stat-max-010">0.000</output>
+  
+      <div>Avg</div>
+      <output id="stat-avg-pm5">0.000</output>
+      <output id="stat-avg-010">0.000</output>
+    </div>
   </div>
 
   <script src="lfo.js"></script>
@@ -291,48 +353,43 @@
       const randomWalkFrame =
         Math.floor(Math.random() * LFO_STOCHASTIC_FRAMES);
     
-      const samples =
-        generateLFO(parameters, noiseStart, randomWalkFrame);
-    
-      const width = canvas.width;
-      const height = canvas.height;
-      const middle = height / 2;
+      const lfo     = generateLFOWithStats(parameters, noiseStart, randomWalkFrame);
+      const width   = canvas.width;
+      const height  = canvas.height;
+      const middle  = height / 2;
       
       context.clearRect(0, 0, width, height);
-
       drawGuidelines();
     
       context.beginPath();
-      context.moveTo(0, middle-samples[0]*middle);
+      context.moveTo(0, middle-lfo.samples[0]*middle);
     
       for (let x = 0; x < width; ++x)
       {
-        const sampleIndex =
-          Math.floor(x * LFO_SAMPLE_COUNT / width);
-    
-        const y =
-          middle - samples[sampleIndex] * middle;
+        const sampleIndex = Math.floor(x * LFO_SAMPLE_COUNT / width);
+        const y           = middle - lfo.samples[sampleIndex] * middle;
     
         context.lineTo(x, y);
       }
       context.strokeStyle = "black";
       context.stroke();
+      
+      // Update Stats
+      document.getElementById("stat-min-pm5").value = (5*lfo.min).toFixed(3);
+      document.getElementById("stat-max-pm5").value = (5*lfo.max).toFixed(3);
+      document.getElementById("stat-avg-pm5").value = (5*lfo.avg).toFixed(3);
+      document.getElementById("stat-min-010").value = (5*(lfo.min+1)).toFixed(3);
+      document.getElementById("stat-max-010").value = (5*(lfo.max+1)).toFixed(3);
+      document.getElementById("stat-avg-010").value = (5*(lfo.avg+1)).toFixed(3);
     }
 
     for (const id in parameters)
     {
       const control = document.getElementById(id);
 
-      control.addEventListener("input", function()
-      {
-        updateControl(id);
-      });
+      control.addEventListener("input", function() { updateControl(id); });
     }
 
-    // document.getElementById("render").addEventListener("click", function()
-    // {
-    //   drawWaveform();
-    // });
     document.getElementById("animate").addEventListener("click", function()
     {
       if (animationRunning)

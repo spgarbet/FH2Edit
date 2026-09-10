@@ -220,3 +220,29 @@ function generateLFO(parameters, noiseStart = 0, randomWalkFrame = 0)
 
   return smoothWaveform(parameters.smoothing);
 }
+
+// With statistics
+function generateLFOWithStats(parameters, noiseStart = 0, randomWalkFrame = 0)
+{
+  const samples = generateLFO(parameters, noiseStart, randomWalkFrame);
+  let min       = samples[0];
+  let max       = samples[0];
+  let sum       = samples[0];
+
+  for (let i = 1; i < samples.length; ++i)
+  {
+    const value = samples[i];
+
+    if (value < min) { min = value; }
+    if (value > max) { max = value; }
+    sum += value;
+  }
+
+  return {
+    samples: samples,
+    min:     min,
+    max:     max,
+    avg:     sum / samples.length
+  };
+}
+
