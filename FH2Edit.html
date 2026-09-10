@@ -187,12 +187,13 @@
             <div>
               <label for="tempo" class="tooltip" data-tooltip="Tempo of the internal clock, set directly or via tap-tempo.">Internal Tempo</label>
               <input  id="tempo" type="number" min="0" max="999.9"
-                                 step="0.1" value="100" size="6">
+                                 step="0.1" value="100" size="6"
+                                 onchange="setTempo(this.value)">
               <span class="unit">BPM</span>
             </div>
             <div>
               <label for="swing_type" class="tooltip" data-tooltip="Swing applies globally to all features driven by the FH-2’s internal timebase, including clock outputs, Euclidean patterns, and sequencers. Select a tuplet option to adjust the placement of the four 16th notes within each quarter note.">Swing Type</label>
-              <select id='swing_type'>
+              <select id='swing_type' onchange="setPresetU8(29, this.value)">
                 <option value=0 selected>Off</option>
                 <option value=1>16th note</option>
                 <option value=2>8th note</option>
@@ -205,19 +206,19 @@
             </div>
             <div>
               <label for="swing_amount" class="tooltip" data-tooltip="Amount of swing applied.">&emsp;&emsp;Amount</label>
-              <select id="swing_amount"><script>u7PercentRange(0);</script></select>
+              <select id="swing_amount" onchange="setPresetU8(30, this.value)"><script>u7PercentRange(0);</script></select>
             </div>
             <div>
               <label for="swing_pos1">&emsp;&emsp;Position 1</label>
-              <select id="swing_pos1"><script>optionRange(2,9,2);</script></select>
+              <select id="swing_pos1" onchange="setPresetU8(2528, this.value)"><script>optionRange(2,9,2);</script></select>
             </div>
             <div>
               <label for="swing_pos2">&emsp;&emsp;Position 2</label>
-              <select id="swing_pos2"><script>optionRange(2,9,4);</script></select>
+              <select id="swing_pos2" onchange="setPresetU8(2529, this.value)"><script>optionRange(2,9,4);</script></select>
             </div>
             <div>
               <label for="swing_pos3">&emsp;&emsp;Position 3</label>
-              <select id="swing_pos3"><script>optionRange(2,9,5);</script></select>
+              <select id="swing_pos3" onchange="setPresetU8(2530, this.value)"><script>optionRange(2,9,5);</script></select>
             </div>
           </div>
         </fieldset>
@@ -238,48 +239,48 @@
             <div>
               <label for="glb_legvel" class="tooltip" data-tooltip="When enabled, playing legato in monophonic MIDI/CV modes will use the note velocity only from the first note in a phrase.">
                 Legato Velocity</label>
-              <input  id="glb_legvel" type="checkbox" checked>
+              <input  id="glb_legvel" type="checkbox" onchange="setConfigU8(31,this.checked)">
             </div>
             <div>
               <label for="glb_transpose" class="tooltip" data-tooltip="Transposition for all MIDI/CV note values">
                 Global Transpose</label>
-              <select id="glb_transpose"><script>optionRange(-48,48,0);</script></select>
+              <select id="glb_transpose" onchange="setConfigS8(30,this.value)"><script>optionRange(-48,48,0);</script></select>
             </div>
             <div>
               <label for="glb_triglen" class="tooltip" data-tooltip="Length of all triggers.">
                 Global Trigger Length</label>
-              <select id="glb_triglen"><script>optionRange(1,100,50);</script></select>
+              <select id="glb_triglen" onchange="setConfigU8(29,this.value)"><script>optionRange(1,100,50);</script></select>
               <span class="unit">milliseconds</span>
             </div>
             <div>
               <label for="glb_extclkmult" class="tooltip" data-tooltip="Sets the multiplier relating the (incoming) external clock to the internal 24ppqn timebase. Example values for would be '24' for quarter note clocks, and '1' for 24ppqn clocks e.g. a DINsync clock.">
                 External Clock Multiplier</label>
-              <select id="glb_extclkmult"><script>optionRange(1,96,24);</script></select>
+              <select id="glb_extclkmult" onchange="setConfigU8(32,this.value)"><script>optionRange(1,96,24);</script></select>
             </div>
             <div>
               <label for="glb_extclkrun" class="tooltip" data-tooltip="'None'&mdash;the external clock is considered to start as soon as a clock pulse is received on the X input, and to stop when clock pulses stop arriving. The module waits up to 2 seconds after each clock pulse, and if another clock does not arrive in that time, the clock is considered to have stopped.
 
 'Run/Stop on Y'&mdash;the Y input is used as a DINsync-style run/stop control. The clock runs while the signal is high, and stops when it is low.">
                 External Clock Run Control</label>
-              <select id="glb_extclkrun">
+              <select id="glb_extclkrun" onchange="setConfigU8(33,this.value)">
                 <option value=0>None</option><option value=1>Run/Stop on Y</option>
               </select>
             </div>
             <div>
               <label for="glb_eucaccent" class="tooltip" data-tooltip="Amount Euclidean unaccented pulses are scaled down.">Euclidean Unaccented</label>
-              <select id="glb_eucaccent"><script>u7PercentRange(78);</script></select>
+              <select id="glb_eucaccent" onchange="setConfigU8(2935,this.value)"><script>u7PercentRange(78);</script></select>
             </div>
             <div>              
               <label for="glb_presetprogch" class="tooltip" data-tooltip="MIDI channel on which to respond to program change messages by changing the current preset.">
                 Preset Program Change</label>
-              <select id="glb_presetprogch">
+              <select id="glb_presetprogch" onchange="setConfigU8(34,this.value)">
                 <option value='0'>Off</option><script>optionRange(1, 16);</script>
               </select>
             </div>
             <div>              
               <label for="glb_softtakeover" class="tooltip" data-tooltip="When enabled, an incoming MIDI CC will not control its target parameter until the CC has passed through the value matching the last loaded preset.">
                 Soft Takeover</label>
-              <input type="checkbox" id="glb_softtakeover">
+              <input type="checkbox" id="glb_softtakeover" onchange="setConfigU8(35,this.checked)">
             </div>
           </div>
         </fieldset>

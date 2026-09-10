@@ -73,22 +73,6 @@ class ByteReader
     return value;
   }
 
-/*
-  screenWord()
-  {
-    const value = this.uShort()         | (this.uShort() << 8) |
-                  (this.uShort() << 16) | (this.uShort() << 24);
-    return value >>> 0;
-  }
-*/
-  screenWord()
-  {
-    return this.uShort() |
-           (this.uShort() << 8) |
-           (this.uShort() << 16) |
-           (this.uShort() << 24);
-  }
-
   uLong()
   {
     const value = this.u32LE();
@@ -97,6 +81,12 @@ class ByteReader
            ((value >> 1) & 0x3f80)   |
            ((value >> 2) & 0x1fc000) |
            ((value >> 3) & 0xfe00000);
+  }
+  
+  screenWord()
+  {
+    return this.uShort()         | (this.uShort() << 8) |
+           (this.uShort() << 16) | (this.uShort() << 24);
   }
 
   bytes(length)
