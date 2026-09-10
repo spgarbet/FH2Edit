@@ -87,19 +87,18 @@ function precomputeRandom()
 {
   // The step size is deliberately small enough that the walk evolves
   // gradually over a waveform period.
-  // NOTE: May need tweaking
-  const step = 1 / LFO_SAMPLE_COUNT;
-
   for (let i=0; i<lfoNoise.length; ++i)
   {
     lfoNoise[i] = Math.random() * 2 - 1;
   }
+  const step = 5 / Math.sqrt(LFO_SAMPLE_COUNT);
   lfoRandomWalk[0] = (Math.random() * 2 - 1) * step;
   for (let i=1; i<lfoRandomWalk.length; ++i)
   {
     lfoRandomWalk[i] = Math.max(-1, Math.min(1, 
       lfoRandomWalk[i-1] + (Math.random() * 2 - 1) * step));
   }
+ 
 }
 
 // Choose a new noise starting position.
@@ -149,8 +148,8 @@ function smoothWaveform(smoothing)
 {
   if (smoothing <= 0) { return lfoSamples; }
 
-  const amount       = smoothing / LFO_COMPONENT_MAX;
-  const alpha        = Math.pow(1 - amount, 4);
+  const amount = smoothing / LFO_COMPONENT_MAX;
+  const alpha  = Math.pow(0.001, amount);
   const periods      = 4;
   const totalSamples = LFO_SAMPLE_COUNT * periods;
   let   previous     = lfoSamples[0];
@@ -164,11 +163,11 @@ function smoothWaveform(smoothing)
 
     if (i >= LFO_SAMPLE_COUNT * (periods - 1))
     {
-      lfoSmoothSamples[sourceIndex] = previous;
+      lfoSmoothed[sourceIndex] = previous;
     }
   }
 
-  return lfoSmoothSamples;
+  return lfoSmoothed;
 }
 
 
@@ -186,17 +185,15 @@ function smoothWaveform(smoothing)
 //
 function generateLFO(parameters, noiseStart = 0, randomWalkFrame = 0)
 {
-  const center     = (parameters.center - LFO_CENTER_MIDPOINT) / LFO_CENTER_MAX;
-  const level      = parameters.level    / LFO_LEVEL_MAX;
-  const sine       = parameters.sine     / LFO_COMPONENT_MAX;
-  const square     = parameters.square   / LFO_COMPONENT_MAX;
-  const pulseWidth = parameters.pw       / LFO_COMPONENT_MAX;
-  const triangle   = parameters.triangle / LFO_COMPONENT_MAX;
-  const saw        = parameters.saw      / LFO_COMPONENT_MAX;
-  const random     = parameters.random   / LFO_COMPONENT_MAX;
-  const noise      = parameters.noise    / LFO_COMPONENT_MAX;
-  const phase      = parameters.phase    / LFO_COMPONENT_MAX;
-
+  const center       = (parameters.center - LFO_CENTER_MIDPOINT) / LFO_CENTER_MAX;
+  const level        = parameters.level    / LFO_LEVEL_MAX;
+  const sine         = parameters.sine     / LFO_COMPONENT_MAX;
+  const square       = parameters.square   / LFO_COMPONENT_MAX;
+  const pulseWidth   = parameters.pw       / LFO_COMPONENT_MAX;
+  const triangle     = parameters.triangle / LFO_COMPONENT_MAX;
+  const saw          = parameters.saw      / LFO_COMPONENT_MAX;
+  const random       = parameters.random   / LFO_COMPONENT_MAX;
+  const noise        = parameters.noise    / LFO_COMPONENT_MAX;
   const phaseSamples = phaseOffset(parameters.phase);
 
   for (let i=0; i<LFO_SAMPLE_COUNT; ++i)

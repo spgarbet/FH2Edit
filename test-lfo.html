@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FH-2 LFO Test</title>
+
+  <style>
+    body
+    {
+      margin: 0;
+      padding: 2rem;
+      font-family: sans-serif;
+    }
+
+    h1
+    {
+      margin-top: 0;
+    }
+
+    #controls
+    {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 2rem;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .control
+    {
+      display: grid;
+      grid-template-columns: 100px 1fr 50px;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control label
+    {
+      font-family: monospace;
+    }
+
+    .control output
+    {
+      text-align: right;
+      font-family: monospace;
+    }
+
+    input[type="range"]
+    {
+      width: 100%;
+    }
+
+    #waveform-container
+    {
+      width: 512px;
+    }
+
+    canvas
+    {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1.618;
+      border: 1px solid #999;
+    }
+
+    #render
+    {
+      margin-bottom: 2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>FH-2 LFO Test</h1>
+
+  <div id="controls">
+
+    <div class="control">
+      <label for="center">Center</label>
+      <input id="center" type="range" min="0" max="16383" value="8192">
+      <output id="center-value">8192</output>
+    </div>
+
+    <div class="control">
+      <label for="level">Level</label>
+      <input id="level" type="range" min="0" max="16383" value="16383">
+      <output id="level-value">16383</output>
+    </div>
+
+    <div class="control">
+      <label for="sine">Sine</label>
+      <input id="sine" type="range" min="0" max="127" value="127">
+      <output id="sine-value">127</output>
+    </div>
+
+    <div class="control">
+      <label for="square">Square</label>
+      <input id="square" type="range" min="0" max="127" value="0">
+      <output id="square-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="pw">PW</label>
+      <input id="pw" type="range" min="0" max="127" value="64">
+      <output id="pw-value">64</output>
+    </div>
+
+    <div class="control">
+      <label for="triangle">Triangle</label>
+      <input id="triangle" type="range" min="0" max="127" value="0">
+      <output id="triangle-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="saw">Saw</label>
+      <input id="saw" type="range" min="0" max="127" value="0">
+      <output id="saw-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="random">Random</label>
+      <input id="random" type="range" min="0" max="127" value="0">
+      <output id="random-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="noise">Noise</label>
+      <input id="noise" type="range" min="0" max="127" value="0">
+      <output id="noise-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="phase">Phase</label>
+      <input id="phase" type="range" min="0" max="127" value="0">
+      <output id="phase-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="fade">Fade</label>
+      <input id="fade" type="range" min="0" max="127" value="0">
+      <output id="fade-value">0</output>
+    </div>
+
+    <div class="control">
+      <label for="smoothing">Smoothing</label>
+      <input id="smoothing" type="range" min="0" max="127" value="0">
+      <output id="smoothing-value">0</output>
+    </div>
+
+  </div>
+
+  <div class="control">
+    <label for="fps">FPS</label>
+    <input id="fps" type="range" min="1" max="60" value="20">
+    <output id="fps-value">20</output>
+  </div>
+  <button id="render" type="button">Render Waveform</button>
+
+  <div id="waveform-container">
+    <canvas id="waveform" width="512" height="512"></canvas>
+  </div>
+
+  <script src="lfo.js"></script>
+
+  <script>
+    const parameters =
+    {
+      center: 8192,
+      level: 16383,
+      sine: 127,
+      square: 0,
+      pw: 64,
+      triangle: 0,
+      saw: 0,
+      random: 0,
+      noise: 0,
+      phase: 0,
+      fade: 0,
+      smoothing: 0
+    };
+
+    const canvas = document.getElementById("waveform");
+    const context = canvas.getContext("2d");
+
+    function updateControl(id)
+    {
+      const control = document.getElementById(id);
+      const output = document.getElementById(id + "-value");
+
+      parameters[id] = Number(control.value);
+      output.value = control.value;
+    }
+
+    function updateAllControls()
+    {
+      for (const id in parameters)
+      {
+        updateControl(id);
+      }
+    }
+
+    function drawWaveform()
+    {
+      const noiseStart = chooseNoiseStart();
+      const randomWalkFrame =
+        Math.floor(Math.random() * LFO_STOCHASTIC_FRAMES);
+    
+      const samples =
+        generateLFO(parameters, noiseStart, randomWalkFrame);
+    
+      const width = canvas.width;
+      const height = canvas.height;
+      const middle = height / 2;
+    
+      context.clearRect(0, 0, width, height);
+    
+      context.beginPath();
+      context.moveTo(0, middle);
+    
+      for (let x = 0; x < width; ++x)
+      {
+        const sampleIndex =
+          Math.floor(x * LFO_SAMPLE_COUNT / width);
+    
+        const y =
+          middle - samples[sampleIndex] * middle;
+    
+        context.lineTo(x, y);
+      }
+    
+      context.stroke();
+    }
+
+    for (const id in parameters)
+    {
+      const control = document.getElementById(id);
+
+      control.addEventListener("input", function()
+      {
+        updateControl(id);
+      });
+    }
+
+    document.getElementById("render").addEventListener("click", function()
+    {
+      drawWaveform();
+    });
+
+    initLFO();
+    updateAllControls();
+    drawWaveform();
+  </script>
+
+</body>
+</html>
