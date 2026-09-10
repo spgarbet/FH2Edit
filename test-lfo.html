@@ -159,8 +159,9 @@
     <input id="fps" type="range" min="1" max="60" value="20">
     <output id="fps-value">20</output>
   </div>
-  <button id="render" type="button">Render Waveform</button>
-
+  
+  <button id="animate" type="button">Start Animation</button>
+  
   <div id="waveform-container">
     <canvas id="waveform" width="512" height="512"></canvas>
   </div>
@@ -168,6 +169,10 @@
   <script src="lfo.js"></script>
 
   <script>
+    let animationFPS = 20;
+    let animationRunning = false;
+    let animationFrame = 0;
+    let lastFrameTime = 0;
     const parameters =
     {
       center: 8192,
@@ -186,6 +191,41 @@
 
     const canvas = document.getElementById("waveform");
     const context = canvas.getContext("2d");
+    
+    function animate(timestamp)
+    {
+      if (!animationRunning)
+      {
+        return;
+      }
+    
+      const frameInterval = 1000 / animationFPS;
+    
+      if (timestamp - lastFrameTime >= frameInterval)
+      {
+        drawWaveform();
+        lastFrameTime = timestamp;
+      }
+    
+      requestAnimationFrame(animate);
+    }
+    
+    function startAnimation()
+    {
+      if (animationRunning)
+      {
+        return;
+      }
+    
+      animationRunning = true;
+      lastFrameTime = 0;
+      requestAnimationFrame(animate);
+    }
+    
+    function stopAnimation()
+    {
+      animationRunning = false;
+    }
 
     function updateControl(id)
     {
@@ -246,14 +286,28 @@
       });
     }
 
-    document.getElementById("render").addEventListener("click", function()
+    // document.getElementById("render").addEventListener("click", function()
+    // {
+    //   drawWaveform();
+    // });
+    document.getElementById("animate").addEventListener("click", function()
     {
-      drawWaveform();
+      if (animationRunning)
+      {
+        stopAnimation();
+        this.textContent = "Start Animation";
+      }
+      else
+      {
+        startAnimation();
+        this.textContent = "Stop Animation";
+      }
     });
 
     initLFO();
     updateAllControls();
     drawWaveform();
+    startAnimation();
   </script>
 
 </body>
