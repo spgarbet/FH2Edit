@@ -26,8 +26,7 @@ function renderPreset(data)
   
   // Globals
   preset.swing = clampSwing(preset.swing);
-  elem("preset-name-status").textContent = 
-    "Preset: "+preset.name.trimEnd();
+  elem("preset-name-status").textContent =  "Preset: "+preset.name.trimEnd();
   put('preset-name',  preset.name);
   put('tempo',        preset.tempo);
   put('swing_type',   preset.swingType);
@@ -118,8 +117,17 @@ function renderConfig(data)
   
   if (config === null) { return false; }
   
-  put('config-name', config.name);
-  elem("config-name-status").textContent = "Preset: "+config.name.trimEnd();
+  put("config-name", config.name);
+  elem("config-name-status").textContent = "Config: "+config.name.trimEnd();
+  check("glb_legvel",       config.globals.legvel);
+  put(  "glb_transpose",    config.globals.transpose);
+  put(  "glb_triglen",      config.globals.triglen);
+  put(  "glb_extclkmult",   config.globals.extclkmult);
+  put(  "glb_extclkrun",    config.globals.extclkrun);
+  put(  "glb_eucaccent",    config.globalMidi.eucAccent);
+  put(  "glb_presetprogch", config.globals.presetprogch);
+  check("glb_softtakeover", config.globals.softtakeover);
+  
 /*
   for (let j = 0; j < ac.length; ++j)
   {
