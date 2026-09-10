@@ -63,6 +63,11 @@
       text-align: right;
       font-family: monospace;
     }
+    
+    .control button
+    {
+      grid-column: span 2;
+    }
 
     input[type="range"]
     {
@@ -214,10 +219,13 @@
              onchange="drawWaveform()">
       <output id="fps-value">20</output>
     </div>
+    
+    <div class="control">
+      <button id="animate" type="button">Stop Animation</button>
+    </div>
   </div>
   
-  <button id="animate" type="button">Stop Animation</button>
-  
+
   <div id="waveform-container">
     <canvas id="waveform" width="512" height="316"></canvas>
   
