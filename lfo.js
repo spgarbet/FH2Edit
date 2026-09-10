@@ -124,9 +124,9 @@ function getNoiseSample(start, index)
 }
 
 // Return a sample from one random-walk frame.
-function getRandomWalkSample(frame, index)
+function getRandomWalkSample(start, index)
 {
-  const position = frame * LFO_SAMPLE_COUNT + index;
+  const position = (start + index) % lfoNoise.length;
 
   return lfoRandomWalk[position];
 }
@@ -183,7 +183,10 @@ function smoothWaveform(smoothing)
 //
 // Both can remain unchanged when only deterministic parameters change.
 //
-function generateLFO(parameters, noiseStart = 0, randomWalkFrame = 0)
+function generateLFO(
+  parameters,
+  noiseStart  = chooseNoiseStart(),
+  randomStart = chooseNoiseStart())
 {
   const center       = (parameters.center - LFO_CENTER_MIDPOINT) / LFO_CENTER_MAX;
   const level        = parameters.level    / LFO_LEVEL_MAX;
@@ -202,7 +205,7 @@ function generateLFO(parameters, noiseStart = 0, randomWalkFrame = 0)
     const periodicPosition = position / LFO_SAMPLE_COUNT;
     const squareValue      = periodicPosition < pulseWidth ? 1 : -1;
     const noiseValue       = getNoiseSample(noiseStart, i);
-    const randomWalkValue  = getRandomWalkSample(randomWalkFrame, i);
+    const randomWalkValue  = getRandomWalkSample(randomStart, i);
 
     // Combine the waveform components.
     const waveform =
@@ -222,7 +225,7 @@ function generateLFO(parameters, noiseStart = 0, randomWalkFrame = 0)
 }
 
 // With statistics
-function generateLFOWithStats(parameters, noiseStart = 0, randomWalkFrame = 0)
+function generateLFOWithStats(parameters, noiseStart, randomWalkFrame)
 {
   const samples = generateLFO(parameters, noiseStart, randomWalkFrame);
   let min       = samples[0];

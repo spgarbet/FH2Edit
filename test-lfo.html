@@ -349,11 +349,7 @@
 
     function drawWaveform()
     {
-      const noiseStart = chooseNoiseStart();
-      const randomWalkFrame =
-        Math.floor(Math.random() * LFO_STOCHASTIC_FRAMES);
-    
-      const lfo     = generateLFOWithStats(parameters, noiseStart, randomWalkFrame);
+      const lfo     = generateLFOWithStats(parameters);
       const width   = canvas.width;
       const height  = canvas.height;
       const middle  = height / 2;
