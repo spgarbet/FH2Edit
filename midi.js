@@ -184,7 +184,7 @@ function checkConnection()
 
 function updateMIDIInput()
 {
-  var inputSelector  = document.getElementById("midi-input");
+  var inputSelector  = elem("midi-input");
   var selectedInput  = inputSelector.value;
   var str            = "";
   var inputs         = midi.inputs.values();
@@ -228,7 +228,7 @@ function updateMIDIInput()
 
 function updateMIDIOutput()
 {
-  var outputSelector = document.getElementById("midi-output");
+  var outputSelector = elem("midi-output");
   var selectedOutput = outputSelector.value;
   var str            = "";
   var outputs        = midi.outputs.values();
@@ -339,7 +339,7 @@ function onStateChange()
 // Save the selected MIDI port to persistent storage
 function changeInput()
 {
-	let inputSelector = document.getElementById("midi-input");
+	let inputSelector = elem("midi-input");
 	if (inputSelector.value != "")
 	{
 	  fh2InPortName = inputSelector.options[inputSelector.selectedIndex].text;
@@ -348,7 +348,7 @@ function changeInput()
 }
 function changeOutput()
 {
-	var outputSelector = document.getElementById("midi-output"); 
+	var outputSelector = elem("midi-output"); 
   if (outputSelector.value != "")
   {
     fh2OutPortName = outputSelector.options[outputSelector.selectedIndex].text;

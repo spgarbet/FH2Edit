@@ -20,14 +20,16 @@
 
 const flashModeKey        = "flashmode";
 
+function elem(id)         { return document.getElementById(id); }
+
 // Putters
-function put(id, value  ) { document.getElementById(id).value   = value; }
-function check(id, value) { document.getElementById(id).checked = value; }
+function put(id, value  ) { elem(id).value   = value;           }
+function check(id, value) { elem(id).checked = value;           }
 
 // Getters
-function get(id)          { return(document.getElementById(id).value);   }
-function num(id)          { Number(get(id));                             }
-function checked(id)      { return(document.getElementById(id).checked); }
+function get(id)          { return(elem(id).value);             }
+function num(id)          { Number(get(id));                    }
+function checked(id)      { return(elem(id).checked);           }
 
 // Helpers
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -75,14 +77,14 @@ function dumpSysex( data, id )
 		h += " ";
 		if (( i & 0xf ) === 0xf) { h += "\n"; }
 	} 
-	document.getElementById(id).textContent = h + "\n";
+	elem(id).textContent = h + "\n";
 }
 
 function showChainPrompt(message, onConfirm)
 {
-  let prompt  = document.getElementById('chain-prompt');
-  let msgEl   = document.getElementById('chain-prompt-message');
-  let okBtn   = document.getElementById('chain-prompt-ok');
+  let prompt  = elem('chain-prompt');
+  let msgEl   = elem('chain-prompt-message');
+  let okBtn   = elem('chain-prompt-ok');
 
   msgEl.textContent = message;
   prompt.style.display = 'block';
@@ -243,14 +245,14 @@ function initTabs()
 
 function initFileChooser()
 {
-  document.getElementById('chooseFiles').addEventListener('change', handleFileSelect, false);
+  elem('chooseFiles').addEventListener('change', handleFileSelect, false);
 }
 
 // Main UI Functions
 
 function updateFH2Status()
 {
-  const status = document.getElementById("fh2-status");  
+  const status = elem("fh2-status");  
   const text   = status;
   
   if(appState.compatible)
@@ -270,8 +272,8 @@ function updateFH2Status()
 
 function updateBrowserStatus()
 {
-  const status = document.getElementById("browser-status");
-  const text   = document.getElementById("browser-status-text");
+  const status = elem("browser-status");
+  const text   = elem("browser-status-text");
   const popup  = status.querySelector(".tooltip-popup");
   
   if (appState.webMIDI)
@@ -289,14 +291,14 @@ function updateBrowserStatus()
 
 function log(message)
 {
-  const logElement = document.getElementById("midi-log");
+  const logElement = elem("midi-log");
   const timestamp  = new Date().toLocaleTimeString();
 
   if (!logElement) { console.error("Log element missing", message); return; }
   logElement.textContent += `[${timestamp}] ${message}\n`;
   logElement.scrollTop = logElement.scrollHeight;
   
-  document.getElementById('io-feedback').textContent = message;
+  elem('io-feedback').textContent = message;
 }
 
 function midiLogOut(sysex) { dumpSysex( sysex, "raw-midi-output" ); }
@@ -353,7 +355,7 @@ function onInitConfig()
   renderConfig(configSysex);
 }
 
-function onLoad() { document.getElementById('chooseFiles').click(); }
+function onLoad() { elem('chooseFiles').click(); }
 
 function handleFileSelect(evt)
 {

@@ -26,7 +26,7 @@ function renderPreset(data)
   
   // Globals
   preset.swing = clampSwing(preset.swing);
-  document.getElementById("preset-name-status").textContent = 
+  elem("preset-name-status").textContent = 
     "Preset: "+preset.name.trimEnd();
   put('preset-name',  preset.name);
   put('tempo',        preset.tempo);
@@ -118,8 +118,8 @@ function renderConfig(data)
   
   if (config === null) { return false; }
   
-  put('config-name',  config.name);
-  document.getElementById("config-name-status").textContent = "Preset: "+config.name.trimEnd();
+  put('config-name', config.name);
+  elem("config-name-status").textContent = "Preset: "+config.name.trimEnd();
 /*
   for (let j = 0; j < ac.length; ++j)
   {
@@ -131,7 +131,7 @@ function renderConfig(data)
       put(chid, -1);
       put(ccid, -1);
 
-      document.getElementById(ccid).style.display = "none";
+      elem(ccid).style.display = "none";
     }
   }
 
@@ -162,7 +162,7 @@ function renderConfig(data)
     put(global_mappable[i] + "_ch", -1);
     put(global_mappable[i] + "_cc", -1);
 
-    document.getElementById(global_mappable[i] + "_cc").style.display = "none";
+    elem(global_mappable[i] + "_cc").style.display = "none";
   }
 
   for (let i = 0; i < config.mappings.length; ++i)
@@ -386,7 +386,7 @@ function renderConfig(data)
 
     if (ccid !== "")
     {
-      const relativeElement = document.getElementById(ccid + "_rel");
+      const relativeElement = elem(ccid + "_rel");
 
       if (relativeElement) { relativeElement.checked = relative; }
     }
@@ -400,6 +400,6 @@ function renderScreenshot(data)
 {
   const reader = new ByteReader(data);
   const canvas = parseScreenshot(reader);
-  document.getElementById("fh2-screenshot").src = canvas.toDataURL();
-  document.getElementById("fh2-screenshot").hidden = false;
+  elem("fh2-screenshot").src = canvas.toDataURL();
+  elem("fh2-screenshot").hidden = false;
 }

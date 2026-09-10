@@ -25,7 +25,7 @@ function setPresetName(name)
     presetSysex[offset + i] =  i < bytes.length ? bytes[i] : 0;
   }
   
-  document.getElementById("preset-name-status").textContent = "Preset: "+name.trimEnd();
+  elem("preset-name-status").textContent = "Preset: "+name.trimEnd();
 }
 
 function setConfigName(name)
@@ -37,7 +37,7 @@ function setConfigName(name)
     configSysex[offset + i] =  i < bytes.length ? bytes[i] : 0;
   }
   
-  document.getElementById("config-name-status").textContent = "Config: "+name.trimEnd();
+  elem("config-name-status").textContent = "Config: "+name.trimEnd();
 }
 
 function setUByte(i, v)    { presetSysex[i] = v & 0x7f; }
