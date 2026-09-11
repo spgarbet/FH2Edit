@@ -394,7 +394,7 @@ body
 .outputs-panel img
 {
   display: block;
-  height: 400px;
+  height: 275px;
   width: auto;
 }
 
@@ -407,7 +407,7 @@ body
   font-size: 1.2rem;
 }
 
-.outputs-voltage
+.outputs-range
 {
   grid-column: 3;
   width: 80px;
