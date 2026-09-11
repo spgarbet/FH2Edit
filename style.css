@@ -18,7 +18,10 @@ body
   flex-direction: column;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 14px;
+  min-width: 0;
 }
+
+/* Status */
 
 #status-bar
 {
@@ -51,6 +54,8 @@ body
 {
   color: darkred;
 }
+
+/* Tabs */
 
 #tab-bar
 {
@@ -286,30 +291,69 @@ body
 
 #output-editor
 {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  width: fit-content;
   min-width: 0;
   overflow: auto;
   padding-left: 1rem;
 }
 
-/* Other screens */
-
 .placeholder
 {
   padding: 2rem;
   border: 1px dashed #aaa;
+  width: fit-content;
 }
+
+/* Footer */
 
 #footer
 {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
-  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 0.5rem 1rem;
   padding: 0.5rem 1rem;
   align-items: center;
   border-top: 1px solid #ccc;
   justify-content: flex-end;
+  min-width: 0;
 }
+
+#footer > *
+{
+  min-width: 0;
+}
+
+.icon-credits
+{
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.icon-credits summary
+{
+  cursor: pointer;
+}
+
+.icon-credits .icon-credit
+{
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  width: 40rem;
+  max-width: 90vw;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  background: Canvas;
+  border: 1px solid #ccc;
+  overflow-wrap: anywhere;
+}
+
+/* Tooltip */
 
 .tooltip
 {
