@@ -30,7 +30,7 @@ You need to include one line for each author (not for each icon).
 
 ## Icon Attributions
 
-- [MIDI](https://www.flaticon.com/free-icon/piano_14793127?term=midi&page=1&position=3&origin=search&related_id=14793127) icon made by [Amazona Adorada](https://www.flaticon.com/authors/amazona-adorada) from [Flaticon](https://flaticon.com)
+- [MIDI](https://www.flaticon.com/free-icon/midi_8584932?term=midi+synthesizer&page=1&position=5&origin=search&related_id=8584932) icon made by [Amazona Adorada](https://www.flaticon.com/authors/amazona-adorada) from [Flaticon](https://flaticon.com)
 - [LFO](https://www.flaticon.com/free-icon/sine_9838157?related_id=9838157) icon made by [judanna](https://www.flaticon.com/authors/judanna) from [Flaticon](https://flaticon.com)
 - [Controller](https://www.flaticon.com/free-icon/adjust_19025337?term=slider+music&page=1&position=16&origin=search&related_id=19025337) icon made by [Shashank Singh](https://www.flaticon.com/authors/shashank-singh) from [Flaticon](https://flaticon.com)
 - [Sequencer](https://www.flaticon.com/free-icon/music_16418845?term=music&page=1&position=62&origin=search&related_id=16418845) icon made by [Ahsan B](https://www.flaticon.com/authors/ahsan-b) from [Flaticon](https://flaticon.com)
