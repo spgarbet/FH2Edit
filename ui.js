@@ -283,12 +283,18 @@ function buildOutputs()
       
       range.addEventListener("change", function(){setConfigU8(loc+36, this.value);});
       
-      const icon         = document.createElement("div");
-      icon.className     = "outputs-icon";
+      const icons        = document.createElement("div");
+      icons.className    = "outputs-icon";
     
       element.appendChild(number);
       element.appendChild(range);
-      element.appendChild(icon);
+      element.appendChild(icons);
+      
+      const addIcon      = document.createElement("img");
+      addIcon.className  = "icon icon-add";
+      addIcon.src        = "icons/curly-plus.png";
+      addIcon.alt        = "Add Output";
+      icons.appendChild(addIcon);
     }
 
     list.appendChild(element);

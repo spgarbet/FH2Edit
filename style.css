@@ -402,28 +402,32 @@ body
   grid-column: 1 / -1;
 }
 
-#outputs-list
+#output-list
 {
-  display: flex;
-  flex-direction: column;
-  gap: 2em;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: auto;
+  border-right: 1px solid #ccc;
+  padding-right: 1rem;
 }
 
 #output-editor
 {
-  grid-column: 2;
-  grid-row: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto;
+  padding-left: 1rem;
 }
 
 .outputs-unit
 {
   display: grid;
-  grid-template-columns: 160px 48px 80px 40px;
+  grid-template-columns: 160px 48px 80px minmax(32px, 1fr);
   grid-template-rows: repeat(8, 1fr);
   column-gap: 12px;
   row-gap: 4px;
   align-items: center;
-  width: max-content;
+  width: 100%;
 }
 
 .outputs-panel
@@ -459,14 +463,40 @@ body
 
 .outputs-icon
 {
-  grid-column: 4;
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 3px;
   border: 1px dashed #999;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
 }
 
 .outputs-unit[hidden]
 {
   display: none;
 }
+
+.outputs-icon
+{
+  min-width: 32px;
+  min-height: 32px;
+  padding: 3px;
+  border: 1px dashed #999;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.outputs-icon img
+{
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
