@@ -280,13 +280,17 @@ body
   min-height: 0;
 }
 
-#output-list
+#outputs-list
 {
   flex: 0 0 35%;
   min-width: 20rem;
   overflow: auto;
   border-right: 1px solid #ccc;
   padding-right: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
 #output-editor
