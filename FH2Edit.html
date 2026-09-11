@@ -53,11 +53,11 @@
   </header>
 
   <nav id="tab-bar" aria-label="Main navigation">
-    <button class="tab active" data-target="io-screen"         >I/O</button>
-    <button class="tab"        data-target="globals-screen"    >Globals</button>
-    <button class="tab"        data-target="outputs-screen"    >Outputs</button>
-    <button class="tab"        data-target="controllers-screen">Controllers</button>
-    <button class="tab"        data-target="sequencers-screen" >Sequencers</button>
+    <button type="button" class="tab active" data-target="io-screen"         >I/O</button>
+    <button type="button" class="tab"        data-target="globals-screen"    >Globals</button>
+    <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
+    <button type="button" class="tab"        data-target="controllers-screen">Controllers</button>
+    <button type="button" class="tab"        data-target="sequencers-screen" >Sequencers</button>
   </nav>
 
   <main id="main">
@@ -288,25 +288,28 @@
     </section>
 
     <!-- Outputs -->
-
     <section class="screen" id="outputs-screen">
-
+    
       <div class="screen-header"><h2>Outputs</h2></div>
-
+    
       <div class="screen-content" id="outputs-layout">
-
-        <aside id="output-list">
-          <!-- Output/source list will be generated here. -->
-        </aside>
-
+    
+        <div id="outputs-controls">
+          <label for="expanders">Expanders</label>
+          <select id="expanders" onchange="setExpanders(this.value)">
+            <script>
+              optionRange(0, 7, localStorage.getItem(expandersKey) || "0");
+            </script>
+          </select>
+        </div>
+    
+        <div id="outputs-list"></div>
+    
         <section id="output-editor">
-          <div class="placeholder">
-            Select an output source to configure it.
-          </div>
+          <div class="placeholder">Select an output source to configure it.</div>
         </section>
-
       </div>
-
+    
     </section>
 
 

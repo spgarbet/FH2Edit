@@ -16,17 +16,18 @@
 
 const appState =
 {
-  webMIDI:    false,  // Is the browser compatible (false until proven)
+  webMIDI:    false,  // Is the browser compatible (false until proven)?
   connection: false,  // Is there a MIDI port that connects to an FH-2?
-  compatible: false,  // Is the FH-2 a compatible version
-  presetReq:  false,  // Is a preset request been sent?
-  configReq:  false   // Is a config request been sent?
+  compatible: false,  // Is the FH-2 a compatible version?
+  presetReq:  false,  // Has a preset request been sent?
+  configReq:  false   // Has a config request been sent?
 };
 
 document.addEventListener("DOMContentLoaded", () =>
 {
   initTabs();
   initTooltips();
+  buildOutputs();
   initMIDI();
   renderPreset(presetSysex);
   renderConfig(configSysex);

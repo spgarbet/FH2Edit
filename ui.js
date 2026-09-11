@@ -19,6 +19,7 @@
 // - event handlers that write to the Sysex in memory
 
 const flashModeKey        = "flashmode";
+const expandersKey        = "expanders";
 
 function elem(id)         { return document.getElementById(id); }
 
@@ -51,7 +52,7 @@ function optionRange(low, high, selected = null, valueOffset = 0)
 {
   for ( let i=low; i<=high; ++i)
   {
-    const isSelected = i === selected ? ' selected' : '';
+    const isSelected = String(i) === String(selected) ? ' selected' : '';
     document.write(`<option value="${i-valueOffset}"${isSelected}>${i}</option>`);
   }
 }
@@ -248,6 +249,52 @@ function initFileChooser()
   elem('chooseFiles').addEventListener('change', handleFileSelect, false);
 }
 
+function buildOutputs()
+{
+  const list      = elem("outputs-list");
+  const expanders = Number(localStorage.getItem(expandersKey)) || 0;
+
+  for (let unit = 0; unit < 8; ++unit)
+  {
+    const element       = document.createElement("div");
+    element.id          = "outputs-unit" + unit;
+    element.className   = "outputs-unit";
+    element.hidden      = unit > expanders;
+    const panel         = document.createElement("div");
+    panel.className     = "outputs-panel";
+    panel.style.gridRow = "1 / span 8";
+    panel.innerHTML =
+      "<img src=\"" +
+      (unit === 0 ? "assets/fh-2-panel.png" : "assets/fhx-8cv-panel.png") +
+      "\" alt=\"FH-2 output panel\">";
+    
+    element.appendChild(panel);
+
+    for (let output = 0; output < 8; ++output)
+    {
+      const number       = document.createElement("div");
+      number.className   = "outputs-output";
+      number.textContent = (unit === 0 ? "" : unit+ "/") + (output + 1);
+      const range        = document.createElement("select");
+      const loc          = unit*8+output;
+      range.id           = "rng_"+loc;
+      range.className    = "outputs-range";
+      range.innerHTML    = "<option value=0>0-10V</option><option value=1>&plusmn;5V</option><option value=2>0-1V</option><option value=3>0-5V</option><option value=4>0-8V</option>";
+      
+      range.addEventListener("change", function(){setConfigU8(loc+36, this.value);});
+      
+      const icon         = document.createElement("div");
+      icon.className     = "outputs-icon";
+    
+      element.appendChild(number);
+      element.appendChild(range);
+      element.appendChild(icon);
+    }
+
+    list.appendChild(element);
+  }
+}
+
 // Main UI Functions
 
 function updateFH2Status()
@@ -410,3 +457,14 @@ function onWrite()       { onWritePreset(); onWriteConfig(); }
 async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
 function onFlash()       { onFlashPreset(); onFlashConfig(); }
 function onInitialize()  { onInitPreset();  onInitConfig();  }
+
+function setExpanders(v)
+{
+  localStorage.setItem(expandersKey, v);
+  
+  const expanders = Number(localStorage.getItem(expandersKey)) || 0;
+  for (let unit = 0; unit < 8; ++unit)
+  {
+    elem('outputs-unit'+unit).hidden = unit > expanders;
+  }
+}

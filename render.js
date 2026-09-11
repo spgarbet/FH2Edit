@@ -128,6 +128,8 @@ function renderConfig(data)
   put(  "glb_presetprogch", config.globals.presetprogch);
   check("glb_softtakeover", config.globals.softtakeover);
   
+  for(let i=0; i<64; ++i) { put("rng_"+i, config.outputRanges[i]); }
+  
 /*
   for (let j = 0; j < ac.length; ++j)
   {

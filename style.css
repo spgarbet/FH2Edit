@@ -344,3 +344,86 @@ body
   opacity: 1;
   visibility: visible;
 }
+
+#outputs-layout
+{
+  display: grid;
+  grid-template-columns: max-content minmax(400px, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 16px 24px;
+}
+
+#outputs-controls
+{
+  grid-column: 1 / -1;
+}
+
+#outputs-list
+{
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+#output-editor
+{
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.outputs-unit
+{
+  display: grid;
+  grid-template-columns: 160px 48px 80px 40px;
+  grid-template-rows: repeat(8, 1fr);
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  width: max-content;
+}
+
+.outputs-panel
+{
+  grid-column: 1;
+  grid-row: 1 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.outputs-panel img
+{
+  display: block;
+  height: 400px;
+  width: auto;
+}
+
+.outputs-output
+{
+  grid-column: 2;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.outputs-voltage
+{
+  grid-column: 3;
+  width: 80px;
+}
+
+.outputs-icon
+{
+  grid-column: 4;
+  width: 32px;
+  height: 32px;
+  border: 1px dashed #999;
+  box-sizing: border-box;
+}
+
+
+.outputs-unit[hidden]
+{
+  display: none;
+}
