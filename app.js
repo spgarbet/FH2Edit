@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () =>
   initTabs();
   initTooltips();
   buildOutputs();
+  buildIconPicker();
+  renderOutputs();
+  renderOutputEditor();
   initMIDI();
   renderPreset(presetSysex);
   renderConfig(configSysex);

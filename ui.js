@@ -18,9 +18,35 @@
 // - helpers to construct the interface
 // - event handlers that write to the Sysex in memory
 
+
+// UI State and Keys
 const flashModeKey        = "flashmode";
 const expandersKey        = "expanders";
 
+const iconState =
+{
+  midi:  Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
+  clock: Array.from({ length: 32 }, () => ({ enabled: false, output: null })),
+  lfo:   Array.from({ length: 64 }, () => ({ enabled: false, output: null }))
+};
+
+let selectedIcon   = null;
+let selectedOutput = null;
+
+const ICON_DEFS =
+{
+  midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
+  lfo:       { label: "LFO",        src: "icons/lfo.png",      total: 64 },
+  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 } /*,
+  control:   { label: "Controller", src: "icons/clock.png",    total: 32 },
+  arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 32 },
+  envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 32 },
+  euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 32 },
+  sequencer: { label: "Sequencer",  src: "icons/sequencer.png",total: 32 },
+  shift_reg: { label: "Shift Reg",  src: "icons/shift_reg.png",total: 32 } */
+};
+
+// Elements
 function elem(id)         { return document.getElementById(id); }
 
 // Putters
@@ -284,17 +310,14 @@ function buildOutputs()
       range.addEventListener("change", function(){setConfigU8(loc+36, this.value);});
       
       const icons        = document.createElement("div");
+      icons.id           = "outputs-unit"+unit+"-icons" + output;
       icons.className    = "outputs-icon";
     
       element.appendChild(number);
       element.appendChild(range);
       element.appendChild(icons);
       
-      const addIcon      = document.createElement("img");
-      addIcon.className  = "icon icon-add";
-      addIcon.src        = "icons/curly-plus.png";
-      addIcon.alt        = "Add Output";
-      icons.appendChild(addIcon);
+      renderOutputIcons(loc, icons);
     }
 
     list.appendChild(element);
@@ -473,4 +496,373 @@ function setExpanders(v)
   {
     elem('outputs-unit'+unit).hidden = unit > expanders;
   }
+}
+
+// Icon Code
+
+function nextAvailableIcon(type)
+{
+  const state = iconState[type];
+
+  for (let i = 0; i < state.length; ++i)
+  {
+    if (!state[i].enabled) { return i; }
+  }
+
+  return -1;
+}
+
+function canAddLfo(output) { return !iconState.lfo[output].enabled; }
+
+function addIcon(type, output)
+{
+  let index;
+  const previousOutput = selectedIcon ? selectedIcon.output : null;
+
+
+  if (type === "lfo")
+  {
+    if (iconState.lfo[output].enabled) { return false; }
+    index = output;
+  }
+  else
+  {
+    index = nextAvailableIcon(type);
+    if (index < 0) { return false; }
+  }
+
+  iconState[type][index].enabled = true;
+  iconState[type][index].output = output;
+
+  selectedIcon =
+  {
+    type:   type,
+    index:  index,
+    output: output
+  };
+
+  selectedOutput = output;
+
+  if (previousOutput !== null && previousOutput !== output)
+  {
+    renderOutputIconsFor(previousOutput);
+  }
+  renderOutputIconsFor(output);
+  renderOutputEditor();
+
+  return true;
+}
+
+
+function removeIcon(type, index)
+{
+  const icon = iconState[type][index];
+
+  if (!icon.enabled) { return; }
+  
+  const output = icon.output;
+
+  icon.enabled = false;
+  icon.output = null;
+
+  selectedIcon   = null;
+  selectedOutput = output;
+
+  renderOutputIconsFor(output);
+  renderOutputEditor();
+}
+
+function selectIcon(type, index, output)
+{
+  selectedIcon =
+  {
+    type: type,
+    index: index,
+    output: output
+  };
+
+  selectedOutput = output;
+
+  renderOutputs();
+  renderOutputEditor();
+}
+
+function renderOutputIcons(output, container)
+{
+  container.replaceChildren();
+
+  const addButton     = document.createElement("button");
+  addButton.type      = "button";
+  addButton.className = "outputs-icon-add";
+  addButton.title     = "Add output source";
+  const addImage      = document.createElement("img");
+  addImage.src        = "icons/curly-plus.png";
+  addImage.alt        = "Add";
+
+  addButton.appendChild(addImage);
+
+  addButton.addEventListener("click", function(event)
+  {
+    event.stopPropagation();
+    showIconPicker(output, addButton);
+  });
+
+  container.appendChild(addButton);
+
+  for (let type of ["midi", "lfo", "clock"])
+  {
+    const state = iconState[type];
+
+    for (let i = 0; i < state.length; ++i)
+    {
+      if (!state[i].enabled || state[i].output !== output) { continue; }
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "outputs-icon-item";
+
+      if (
+        selectedIcon &&
+        selectedIcon.type === type &&
+        selectedIcon.index === i
+      )
+      {
+        button.classList.add("selected");
+      }
+
+      button.title = ICON_DEFS[type].label + " " + (i + 1);
+
+      const image = document.createElement("img");
+
+      image.src = ICON_DEFS[type].src;
+      image.alt = ICON_DEFS[type].label;
+
+      button.appendChild(image);
+
+      button.addEventListener("click", function()
+      {
+        selectIcon(type, i, output);
+      });
+
+      container.appendChild(button);
+    }
+  }
+}
+
+function buildIconPicker()
+{
+  const picker = elem("icon-picker");
+
+  for (let type of ["midi", "lfo", "clock"])
+  {
+    const button        = document.createElement("button");
+    button.type         = "button";
+    button.className    = "icon-picker-item";
+    button.dataset.type = type;
+    const image         = document.createElement("img");
+    image.src           = ICON_DEFS[type].src;
+    image.alt           = ICON_DEFS[type].label;
+
+    button.appendChild(image);
+
+    button.addEventListener("click", function(event)
+    {
+      event.stopPropagation();
+      
+      const output = Number(picker.dataset.output);
+
+      if(addIcon(type, output)) { hideIconPicker(); }
+    });
+
+    picker.appendChild(button);
+  }
+}
+
+function showIconPicker(output, anchor)
+{
+  const picker = elem("icon-picker");
+
+  picker.dataset.output = output;
+
+  for (const button of picker.children)
+  {
+    const type = button.dataset.type;
+    const available = 
+      type === "lfo"
+        ? !iconState.lfo[output].enabled
+        : nextAvailableIcon(type) >= 0;
+
+    button.disabled = !available;
+    button.classList.toggle("disabled", !available);
+  }
+
+  const rect = anchor.getBoundingClientRect();
+
+  picker.style.left = rect.left + "px";
+  picker.style.top  = (rect.bottom + 4) + "px";
+  picker.hidden     = false;
+}
+
+function hideIconPicker()
+{
+  const picker = elem("icon-picker");
+  picker.hidden = true;
+  delete picker.dataset.output;
+}
+
+document.addEventListener("click", function() { hideIconPicker(); });
+
+function renderMidiEditor(index, output)
+{
+  const editor = elem("output-editor");
+
+  const heading = document.createElement("h3");
+  heading.textContent = "MIDI " + (index + 1);
+
+  const info = document.createElement("div");
+  info.textContent = "Output " + (output + 1);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.textContent = "Remove MIDI";
+
+  remove.addEventListener("click", function()
+  {
+    removeIcon("midi", index);
+  });
+
+  editor.appendChild(heading);
+  editor.appendChild(info);
+  editor.appendChild(remove);
+}
+
+function renderLfoEditor(output)
+{
+  const editor = elem("output-editor");
+
+  const heading = document.createElement("h3");
+  heading.textContent = "LFO";
+
+  const info = document.createElement("div");
+  info.textContent = "Output " + (output + 1);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.textContent = "Remove LFO";
+
+  remove.addEventListener("click", function()
+  {
+    removeIcon("lfo", output);
+  });
+
+  editor.appendChild(heading);
+  editor.appendChild(info);
+  editor.appendChild(remove);
+}
+
+function renderClockEditor(index, output)
+{
+  const editor = elem("output-editor");
+
+  const heading = document.createElement("h3");
+  heading.textContent = "Clock " + (index + 1);
+
+  const info = document.createElement("div");
+  info.textContent = "Output " + (output + 1);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.textContent = "Remove Clock";
+
+  remove.addEventListener("click", function()
+  {
+    removeIcon("clock", index);
+  });
+
+  editor.appendChild(heading);
+  editor.appendChild(info);
+  editor.appendChild(remove);
+}
+
+function renderOutputEditor()
+{
+  const editor = elem("output-editor");
+
+  editor.replaceChildren();
+
+  if (!selectedIcon)
+  {
+    const placeholder       = document.createElement("div");
+    placeholder.className   = "placeholder";
+    placeholder.textContent = "Select an output source to configure it.";
+
+    editor.appendChild(placeholder);
+    return;
+  }
+
+  switch (selectedIcon.type)
+  {
+    case "midi":
+      renderMidiEditor(selectedIcon.index, selectedIcon.output);
+      break;
+
+    case "lfo":
+      renderLfoEditor(selectedIcon.output);
+      break;
+
+    case "clock":
+      renderClockEditor(selectedIcon.index, selectedIcon.output);
+      break;
+  }
+}
+
+function renderOutputs()
+{
+  for (let unit = 0; unit < 8; ++unit)
+  {
+    const element = document.getElementById("outputs-unit" + unit);
+
+    if (!element) { continue; }
+
+    for (let output = 0; output < 8; ++output)
+    {
+      const icons = element.querySelector(
+        "#outputs-unit" + unit + "-icons" + output
+      );
+
+      if (icons)
+      {
+        renderOutputIcons(unit * 8 + output, icons);
+      }
+    }
+  }
+}
+
+function renderOutputIconsFor(output)
+{
+  const unit      = Math.floor(output / 8);
+  const port      = output % 8;
+  const id        = "outputs-unit" + unit + "-icons" + port;
+  const container = elem(id);
+
+  if (!container) { console.error("Missing icon container:", id); return; }
+
+  renderOutputIcons(output, container);
+}
+
+function removeSelectedIcon()
+{
+  if (!selectedIcon) { return; }
+
+  const icon    = iconState[selectedIcon.type][selectedIcon.index];
+  icon.enabled  = false;
+  icon.output   = null;
+  
+  const output  = selectedIcon.output;
+  selectedIcon  = null;
+  selectedOutput = output;
+
+  renderOutputIconsFor(output);
+  renderOutputEditor();
 }
