@@ -18,11 +18,10 @@
 
 function renderPreset(data)
 {
-  presetSysex  = data;
   const reader = new ByteReader(data);
   const preset = parsePreset(reader);
-  
   if (preset === null) { return false; }
+  presetSysex  = data;
   
   // Globals
   preset.swing = clampSwing(preset.swing);
@@ -128,11 +127,10 @@ function scaleVoltage(range, level)
 
 function renderConfig(data)
 {
-  configSysex  = data;
   const reader = new ByteReader(data);
   const config = parseConfig(reader);
-  
   if (config === null) { return false; }
+  configSysex  = data;
   
   put("config-name", config.name);
   elem("config-name-status").textContent = "Config: "+config.name.trimEnd();
@@ -151,8 +149,10 @@ function renderConfig(data)
     put("lowgate_"+i,       config.gateLevels[i].low);  
     put("highgate_"+i,      config.gateLevels[i].high);
 
-    elem("lowgate_lbl_"+i ).textContent = scaleVoltage(config.outputRanges[i], config.gateLevels[i].low );
-    elem("highgate_lbl_"+i).textContent = scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
+    elem("lowgate_lbl_"+i ).textContent =
+      scaleVoltage(config.outputRanges[i], config.gateLevels[i].low );
+    elem("highgate_lbl_"+i).textContent = 
+      scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
   }
  
 /*

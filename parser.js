@@ -526,6 +526,28 @@ function parseMcv(reader)  // 32 bytes total
   });
 }
 
+function parseConfigClocks(reader)
+{
+  // Clocks
+  reader.seek(2148);
+  var clocks = [];    
+  for (let i = 0; i < 32; ++i)
+  {
+    clocks.push(
+      {
+        type:   reader.u8(),
+        base:   reader.u8(),
+        mult:   reader.u8(),
+        len:    reader.u8(),
+        output: reader.u8(),
+        shift:  reader.u8()
+      }
+    );
+    reader.skip(2);
+  }
+  return(clocks);
+}
+
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -580,24 +602,8 @@ function parseConfig(reader)
       }
     );
   }
-
-  // Clocks
-  config.clocks = [];                      // 2148
-  for (let i = 0; i < 32; ++i)
-  {
-    config.clocks.push(
-      {
-        type:   reader.u8(),
-        base:   reader.u8(),
-        mult:   reader.u8(),
-        len:    reader.u8(),
-        output: reader.u8(),
-        shift:  reader.u8()
-      }
-    );
-
-    reader.skip(2);
-  }
+  
+  config.clocks = parseConfigClocks(reader); // 2148
 
   // Gate levels
   config.gateLevels = [];                  // 2404

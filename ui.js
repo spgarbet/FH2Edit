@@ -714,6 +714,12 @@ function buildIconPicker()
 
     picker.appendChild(button);
   }
+  
+  elem("clock-editor-trash").addEventListener("click", function()
+  {
+    setConfigU8(2148+selectedIcon.index,0); // Turn off clock
+    removeIcon("clock", selectedIcon.index);
+  });
 }
 
 function showIconPicker(output, anchor)
@@ -770,12 +776,25 @@ function renderLfoEditor()
 
 function renderClockEditor()
 {
-  const output = selectedIcon.output;
-  const index  = selectedIcon.index;
-  const clock  = iconState.lfo[output];
+  const index  = selectedIcon.index;  // Number in clock pool
+  const clocks = parseConfigClocks(new ByteReader(configSysex));
+  if (clocks === null) { console.error("Unable to parse clocks"); return; }
+  const clock  = clocks[index];
   
+  // Activate the clock properly based on icon position
+  if(clock.type === 0)
+  {
+    clock.type = 1;
+    setConfigU8(2148+index, 1);
+  }
+  setConfigU8(2152, selectedIcon.output); // Set Output
+
   elem("clock-editor-name").textContent = "Clock "+(index+1);
-  <!-- Pull from parsed structure here -->
+  put("clock-editor-type",  clock.type );
+  put("clock-editor-base",  clock.base );
+  put("clock-editor-mult",  clock.mult );
+  put("clock-editor-len",   clock.len  );
+  put("clock-editor-shift", clock.shift);
 }
 
 function renderOutputEditor()
