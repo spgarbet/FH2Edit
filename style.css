@@ -431,12 +431,49 @@ body
 .outputs-unit
 {
   display: grid;
-  grid-template-columns: 100px 36px 70px 70px 60px minmax(32px, 1fr);
+  grid-template-columns: 100px 36px 70px 25px 70px 25px 70px 36px minmax(32px, 1fr);
   grid-template-rows: repeat(8, 1fr);
   column-gap: 12px;
   row-gap: 4px;
   align-items: center;
   width: 100%;
+}
+
+.outputs-header
+{
+  display: grid;
+  grid-template-columns: 100px 36px 70px 25px 70px 25px 70px 36px minmax(32px, 1fr);
+  column-gap: 12px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  font-weight: bold;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ccc;
+}
+
+.outputs-header-range
+{
+  grid-column: 3;
+  text-align: center;
+}
+
+.outputs-header-gate
+{
+  grid-column: 4 / 6;
+  text-align: center;
+}
+
+.outputs-header-source
+{
+  grid-column: 6 / 8;
+  text-align: center;
+}
+
+.outputs-unit label
+{
+  font-size: 0.8em;
 }
 
 .outputs-panel
@@ -619,3 +656,17 @@ body
   object-fit: contain;
 }
 
+input[type="range"]
+{
+  width: 100%;
+  accent-color: #0cf;
+  height: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb
+{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  cursor: pointer;
+}

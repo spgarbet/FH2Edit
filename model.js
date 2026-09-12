@@ -16,28 +16,14 @@
 
 // Models apply constraints and write to sysex for use in onchange events
 
-/* Given that the parser uses 
-  uLong()
-  {
-    const value = this.u32LE();
-  
-    return (value & 0x7f)            |
-           ((value >> 1) & 0x3f80)   |
-           ((value >> 2) & 0x1fc000) |
-           ((value >> 3) & 0xfe00000);
-  }
-  
-  What is inverse setPresetLong(i, v) look like? Does the call need rounding 
-  from the html as it gets a number from onchange (this.value)?
-*/
-
-
 // Helpers (sysex safe writes)
-function setPresetU8(i, v)    { presetSysex[i] = v & 0x7f; }
-function setConfigU8(i, v)    { configSysex[i] = v & 0x7f; }
-function setS8(i, v, f)       { f(i, v < 0 ? v + 128 : v); }
-function setPresetS8(i, v)    { setS8(i, v, setPresetU8);  }
-function setConfigS8(i, v)    { setS8(i, v, setConfigU8);  }
+function setShort(i, v, f)
+{
+  v = Math.round(v);
+  
+  f(i,     v);
+  f(i + 1, v >> 7);
+}
 function setLong(i, v, f)
 {
   v = Math.round(v);
@@ -48,8 +34,15 @@ function setLong(i, v, f)
   f(i + 3, v >> 21);
 }
 
-function setPresetLong(i, v) { setLong(i, v, setPresetU8); }
-function setConfigLong(i, v) { setLong(i, v, setConfigU8); }
+function setPresetU8(i, v)    { presetSysex[i] = v & 0x7f;   }
+function setConfigU8(i, v)    { configSysex[i] = v & 0x7f;   }
+function setS8(i, v, f)       { f(i, v < 0 ? v + 128 : v);   }
+function setPresetS8(i, v)    { setS8(i, v, setPresetU8);    }
+function setConfigS8(i, v)    { setS8(i, v, setConfigU8);    }
+function setPresetShort(i, v) { setShort(i, v, setPresetU8); }
+function setConfigShort(i, v) { setShort(i, v, setConfigU8); }
+function setPresetLong(i, v)  { setLong( i, v, setPresetU8); }
+function setConfigLong(i, v)  { setLong( i, v, setConfigU8); }
 
   ////////////////////////////////////////////////////////
  // 

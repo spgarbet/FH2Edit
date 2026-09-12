@@ -306,28 +306,51 @@ function buildOutputs()
       range.id           = "rng_"+loc;
       range.className    = "outputs-range";
       range.innerHTML    = "<option value=0>0-10V</option><option value=1>&plusmn;5V</option><option value=2>0-1V</option><option value=3>0-5V</option><option value=4>0-8V</option>";
+      range.addEventListener("change", function()
+      {
+        setConfigU8(loc+36, this.value);
+        elem("lowgate_lbl_"+loc).textContent = scaleVoltage(this.value, get("lowgate_"+loc) );
+        elem("highgate_lbl_"+loc).textContent  = scaleVoltage(this.value, get("highgate_"+loc));
+      });
       
-      const lowGate      = document.createElement("input");
-      lowGate.id         = "lowgate_"+loc;
-      lowGate.type       = "range";
-      lowGate.min        = 0;
-      lowGate.max        = 16383;
+      const lowGate         = document.createElement("input");
+      lowGate.id            = "lowgate_"+loc;
+      lowGate.type          = "range";
+      lowGate.min           = 0;
+      lowGate.max           = 16383;
+      const lowLabel        = document.createElement("label");
+      lowLabel.id           = "lowgate_lbl_"+loc;
+      lowLabel.htmlFor      = lowGate.id;
+      lowLabel.textContent  = "-10.00";
+      lowGate.addEventListener("change", function()
+      {
+        setConfigShort(2*loc+2404, this.value);
+        elem("lowgate_lbl_"+loc).textContent = scaleVoltage(get("rng_"+loc), this.value);
+      });
       
-      const highGate      = document.createElement("input");
-      highGate.id         = "highgate_"+loc;
-      highGate.type       = "range";
-      highGate.min        = 0;
-      highGate.max        = 16383;
-      
-      range.addEventListener("change", function(){setConfigU8(loc+36, this.value);});
-      
-      const icons        = document.createElement("div");
-      icons.id           = "outputs-unit"+unit+"-icons" + output;
-      icons.className    = "outputs-icon";
+      const highGate        = document.createElement("input");
+      highGate.id           = "highgate_"+loc;
+      highGate.type         = "range";
+      highGate.min          = 0;
+      highGate.max          = 16383;
+      const highLabel       = document.createElement("label");
+      highLabel.id          = "highgate_lbl_"+loc;
+      highLabel.htmlFor     = highGate.id;
+      highLabel.textContent = "-10.00";      
+      highGate.addEventListener("change", function()
+      {
+        setConfigShort(2*loc+2406, this.value);
+        elem("highgate_lbl_"+loc).textContent = scaleVoltage(get("rng_"+loc), this.value);
+      });
+      const icons           = document.createElement("div");
+      icons.id              = "outputs-unit"+unit+"-icons" + output;
+      icons.className       = "outputs-icon";
     
       element.appendChild(number);
       element.appendChild(range);
+      element.appendChild(lowLabel);
       element.appendChild(lowGate);
+      element.appendChild(highLabel);
       element.appendChild(highGate);
       element.appendChild(icons);
       

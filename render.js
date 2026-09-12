@@ -109,6 +109,23 @@ function renderMcv(mcv, m)
   changeType(m);
 }
 
+function scaleVoltage(range, level)
+{
+  let rng  = 0;
+  let base = 0;
+  switch(Number(range))
+  {
+    case 0:  rng = 10;  base =  0;  break;
+    case 1:  rng = 10;  base = -5;  break;
+    case 2:  rng =  1;  base =  0;  break;
+    case 3:  rng =  5;  base =  0;  break;
+    case 4:  rng =  8;  base =  0;  break;
+    default: throw new Error("voltage scaling not supported "+range+" "+level);
+  }
+  
+  return ((level/16383) * rng + base).toFixed(3);
+}
+
 function renderConfig(data)
 {
   configSysex  = data;
@@ -128,8 +145,16 @@ function renderConfig(data)
   put(  "glb_presetprogch", config.globals.presetprogch);
   check("glb_softtakeover", config.globals.softtakeover);
   
-  for(let i=0; i<64; ++i) { put("rng_"+i, config.outputRanges[i]); }
-  
+  for(let i=0; i<64; ++i)
+  { 
+    put("rng_"+i,           config.outputRanges[i]);  
+    put("lowgate_"+i,       config.gateLevels[i].low);  
+    put("highgate_"+i,      config.gateLevels[i].high);
+
+    elem("lowgate_lbl_"+i ).textContent = scaleVoltage(config.outputRanges[i], config.gateLevels[i].low );
+    elem("highgate_lbl_"+i).textContent = scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
+  }
+ 
 /*
   for (let j = 0; j < ac.length; ++j)
   {
