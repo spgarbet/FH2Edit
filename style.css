@@ -423,10 +423,15 @@ body
   padding-left: 1rem;
 }
 
+#output-editor [hidden]
+{
+  display: none;
+}
+
 .outputs-unit
 {
   display: grid;
-  grid-template-columns: 160px 48px 80px minmax(32px, 1fr);
+  grid-template-columns: 100px 36px 70px 70px 60px minmax(32px, 1fr);
   grid-template-rows: repeat(8, 1fr);
   column-gap: 12px;
   row-gap: 4px;
@@ -462,7 +467,7 @@ body
 .outputs-range
 {
   grid-column: 3;
-  width: 80px;
+  width: 4.4em;
 }
 
 .outputs-icon
@@ -587,3 +592,30 @@ body
 {
   border: none !important;
 }
+
+.editor-header
+{
+  display: flex; 
+  align-items: center;
+  gap: 1em;
+}
+
+.outputs-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.outputs-button img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+

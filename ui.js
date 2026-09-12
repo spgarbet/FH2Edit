@@ -307,6 +307,18 @@ function buildOutputs()
       range.className    = "outputs-range";
       range.innerHTML    = "<option value=0>0-10V</option><option value=1>&plusmn;5V</option><option value=2>0-1V</option><option value=3>0-5V</option><option value=4>0-8V</option>";
       
+      const lowGate      = document.createElement("input");
+      lowGate.id         = "lowgate_"+loc;
+      lowGate.type       = "range";
+      lowGate.min        = 0;
+      lowGate.max        = 16383;
+      
+      const highGate      = document.createElement("input");
+      highGate.id         = "highgate_"+loc;
+      highGate.type       = "range";
+      highGate.min        = 0;
+      highGate.max        = 16383;
+      
       range.addEventListener("change", function(){setConfigU8(loc+36, this.value);});
       
       const icons        = document.createElement("div");
@@ -315,6 +327,8 @@ function buildOutputs()
     
       element.appendChild(number);
       element.appendChild(range);
+      element.appendChild(lowGate);
+      element.appendChild(highGate);
       element.appendChild(icons);
       
       renderOutputIcons(loc, icons);
@@ -713,107 +727,48 @@ function hideIconPicker()
 
 document.addEventListener("click", function() { hideIconPicker(); });
 
-function renderMidiEditor(index, output)
+function renderMidiEditor()
 {
-  const editor = elem("output-editor");
+  const output = selectedIcon.output;
+  const index  = selectedIcon.index;
+  const midi   = iconState.midi[index];
 
-  const heading = document.createElement("h3");
-  heading.textContent = "MIDI " + (index + 1);
 
-  const info = document.createElement("div");
-  info.textContent = "Output " + (output + 1);
-
-  const remove = document.createElement("button");
-  remove.type = "button";
-  remove.textContent = "Remove MIDI";
-
-  remove.addEventListener("click", function()
-  {
-    removeIcon("midi", index);
-  });
-
-  editor.appendChild(heading);
-  editor.appendChild(info);
-  editor.appendChild(remove);
+  <!-- Pull from parsed structure here -->
 }
 
-function renderLfoEditor(output)
+function renderLfoEditor()
 {
-  const editor = elem("output-editor");
-
-  const heading = document.createElement("h3");
-  heading.textContent = "LFO";
-
-  const info = document.createElement("div");
-  info.textContent = "Output " + (output + 1);
-
-  const remove = document.createElement("button");
-  remove.type = "button";
-  remove.textContent = "Remove LFO";
-
-  remove.addEventListener("click", function()
-  {
-    removeIcon("lfo", output);
-  });
-
-  editor.appendChild(heading);
-  editor.appendChild(info);
-  editor.appendChild(remove);
+  const output = selectedIcon.output;
+  const lfo    = iconState.lfo[output];
+  
+  <!-- Pull from parsed structure here -->
 }
 
-function renderClockEditor(index, output)
+function renderClockEditor()
 {
-  const editor = elem("output-editor");
-
-  const heading = document.createElement("h3");
-  heading.textContent = "Clock " + (index + 1);
-
-  const info = document.createElement("div");
-  info.textContent = "Output " + (output + 1);
-
-  const remove = document.createElement("button");
-  remove.type = "button";
-  remove.textContent = "Remove Clock";
-
-  remove.addEventListener("click", function()
-  {
-    removeIcon("clock", index);
-  });
-
-  editor.appendChild(heading);
-  editor.appendChild(info);
-  editor.appendChild(remove);
+  const output = selectedIcon.output;
+  const index  = selectedIcon.index;
+  const clock  = iconState.lfo[output];
+  
+  elem("clock-editor-name").textContent = "Clock "+(index+1);
+  <!-- Pull from parsed structure here -->
 }
 
 function renderOutputEditor()
 {
-  const editor = elem("output-editor");
+  let sel = selectedIcon?.type || "placeholder";
 
-  editor.replaceChildren();
-
-  if (!selectedIcon)
+  for(let x of ["placeholder", "midi", "lfo", "clock"])
   {
-    const placeholder       = document.createElement("div");
-    placeholder.className   = "placeholder";
-    placeholder.textContent = "Select an output source to configure it.";
-
-    editor.appendChild(placeholder);
-    return;
+    elem(x+"-editor").hidden = sel !== x;
   }
 
-  switch (selectedIcon.type)
+  switch (sel)
   {
-    case "midi":
-      renderMidiEditor(selectedIcon.index, selectedIcon.output);
-      break;
-
-    case "lfo":
-      renderLfoEditor(selectedIcon.output);
-      break;
-
-    case "clock":
-      renderClockEditor(selectedIcon.index, selectedIcon.output);
-      break;
+    case "midi":  renderMidiEditor();  break;
+    case "lfo":   renderLfoEditor();   break;
+    case "clock": renderClockEditor(); break;
   }
 }
 
@@ -831,10 +786,7 @@ function renderOutputs()
         "#outputs-unit" + unit + "-icons" + output
       );
 
-      if (icons)
-      {
-        renderOutputIcons(unit * 8 + output, icons);
-      }
+      if (icons){ renderOutputIcons(unit * 8 + output, icons); }
     }
   }
 }
