@@ -331,64 +331,66 @@
               <button id="clock-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Clock"></button>
               <h3 id="clock-editor-name">Clock Editor</h3>
             </div>
-            <div>
-              <label for="clock-editor-type" class="tooltip" data-tooltip="Clock: A clock output, using the other parameters for configuration.
-Run/Stop: Outputs a high gate level when the transport is running, low otherwise.
-Stop/Run: Outputs a low gate level when the transport is running, high otherwise.
-Start/Cont: Outputs a trigger pulse when the transport starts or continues
-Stop: Outputs a trigger pulse when the transport stops.
-All Trig: Outputs a trigger pulse when the transport starts, continues, or stops.
-Start: Outputs a trigger pulse when the transport starts, but not when it continues.
-Start/Stop: Outputs a trigger pulse when the transport starts and stops but not when it
-continues.">Type</label>
-              <select id="clock-editor-type" onchange="setConfigU8(2148+selectedIcon.index,this.value)">
-                <option value='1' selected>Clock</option>
-                <option value='2'>Run/Stop</option>
-                <option value='3'>Stop/Run</option>
-                <option value='4'>Start/Continue Trigger</option>
-                <option value='5'>Stop Trigger</option>
-                <option value='6'>Start/Continue/Stop Trigger</option>
-                <option value='7'>Start Only Trigger</option>
-                <option value='8'>Start/Stop Trigger</option>
-              </select>
-            </div>
-            <div>
-              <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses. Some convenient values include:
-24 quarter notes
-12 eighth notes
-8 eighth note triplets
-6 sixteenth notes">Base</label>
-              <select id="clock-editor-base"
-                onchange="setConfigU8(2149+selectedIcon.index,this.value)">
-                <script>optionRange(1, 96);</script>
-              </select>
-            </div>
-            <div>
-              <label for="clock-editor-mult" class="tooltip" data-tooltip="Multiplies the 'clock base' to give the actual clock rate. So for example if 'clock base' is 12 (1/8th notes) and 'multiplier' is 3, the clock will run at a rate of 3/8th notes.">Multiplier</label>
-              <select id="clock-editor-mult"
-                onchange="setConfigU8(2150+selectedIcon.index,this.value)">
-                <script>optionRange(1, 96, 1);</script>
-              </select>
-            </div>
-            <div>
-              <label for="clock-editor-len" class="tooltip" data-tooltip="The length of the clock pulse in milliseconds. The special value '0' means that the clock is not a pulse, but a 50% duty cycle square wave.">Pulse Length</label>
-              <select id="clock-editor-len"
-                onchange="setConfigU8(2151+selectedIcon.index,this.value)">
-                <option value="0">50% duty square</option></option>
-                <script>
-                  for ( let i=1; i<=127; ++i)
-                  {
-                    document.write(`<option value="${i}">${i} milliseconds</option>`);
-                  }
-                </script>
-              </select>
-            </div>
-            <div>
-              <label for="clock-editor-shift" class="tooltip" data-tooltip="The amount by which to advance the clock, in terms of 24ppqn pulses. For example a half note clock advanced by a quarter note will fall on the off beats (2 & 4 of a 4/4 pattern).">Shift</label>
-              <select id="clock-editor-shift"
-                onchange="setConfigU8(2153+selectedIcon.index,this.value)">
-                <script>optionRange(0, 127, 1);</script>
-              </select>
+            <div class="singleline">
+              <div>
+                <label for="clock-editor-type" class="tooltip" data-tooltip="Clock: A clock output, using the other parameters for configuration.
+  Run/Stop: Outputs a high gate level when the transport is running, low otherwise.
+  Stop/Run: Outputs a low gate level when the transport is running, high otherwise.
+  Start/Cont: Outputs a trigger pulse when the transport starts or continues
+  Stop: Outputs a trigger pulse when the transport stops.
+  All Trig: Outputs a trigger pulse when the transport starts, continues, or stops.
+  Start: Outputs a trigger pulse when the transport starts, but not when it continues.
+  Start/Stop: Outputs a trigger pulse when the transport starts and stops but not when it
+  continues.">Type</label>
+                <select id="clock-editor-type" onchange="setConfigU8(2148+selectedIcon.index,this.value)">
+                  <option value='1' selected>Clock</option>
+                  <option value='2'>Run/Stop</option>
+                  <option value='3'>Stop/Run</option>
+                  <option value='4'>Start/Continue Trigger</option>
+                  <option value='5'>Stop Trigger</option>
+                  <option value='6'>Start/Continue/Stop Trigger</option>
+                  <option value='7'>Start Only Trigger</option>
+                  <option value='8'>Start/Stop Trigger</option>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses. Some convenient values include:
+  24 quarter notes
+  12 eighth notes
+  8 eighth note triplets
+  6 sixteenth notes">Base</label>
+                <select id="clock-editor-base"
+                  onchange="setConfigU8(2149+selectedIcon.index,this.value)">
+                  <script>optionRange(1, 96);</script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-mult" class="tooltip" data-tooltip="Multiplies the 'clock base' to give the actual clock rate. So for example if 'clock base' is 12 (1/8th notes) and 'multiplier' is 3, the clock will run at a rate of 3/8th notes.">Multiplier</label>
+                <select id="clock-editor-mult"
+                  onchange="setConfigU8(2150+selectedIcon.index,this.value)">
+                  <script>optionRange(1, 96, 1);</script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-len" class="tooltip" data-tooltip="The length of the clock pulse in milliseconds. The special value '0' means that the clock is not a pulse, but a 50% duty cycle square wave.">Pulse Length</label>
+                <select id="clock-editor-len"
+                  onchange="setConfigU8(2151+selectedIcon.index,this.value)">
+                  <option value="0">50% duty square</option></option>
+                  <script>
+                    for ( let i=1; i<=127; ++i)
+                    {
+                      document.write(`<option value="${i}">${i} milliseconds</option>`);
+                    }
+                  </script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-shift" class="tooltip" data-tooltip="The amount by which to advance the clock, in terms of 24ppqn pulses. For example a half note clock advanced by a quarter note will fall on the off beats (2 & 4 of a 4/4 pattern).">Shift</label>
+                <select id="clock-editor-shift"
+                  onchange="setConfigU8(2153+selectedIcon.index,this.value)">
+                  <script>optionRange(0, 127, 1);</script>
+                </select>
+              </div>
             </div>
           </div>
         
