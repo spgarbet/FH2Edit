@@ -154,7 +154,17 @@ function renderConfig(data)
     elem("highgate_lbl_"+i).textContent = 
       scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
   }
- 
+  
+  const clockState = iconState["clock"];
+  for(let i=0; i<32; ++i)
+  {
+    if(config.clocks[i].type > 0)
+    {
+      iconState["clock"][i].enabled=true;
+      iconState["clock"][i].output=config.clocks[i].output;
+      renderOutputIconsFor(config.clocks[i].output);
+    }
+  }
 /*
   for (let j = 0; j < ac.length; ++j)
   {

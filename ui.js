@@ -637,13 +637,11 @@ function renderOutputIcons(output, container)
   addImage.alt        = "Add";
 
   addButton.appendChild(addImage);
-
   addButton.addEventListener("click", function(event)
   {
     event.stopPropagation();
     showIconPicker(output, addButton);
   });
-
   container.appendChild(addButton);
 
   for (let type of ["midi", "lfo", "clock"])
@@ -654,14 +652,13 @@ function renderOutputIcons(output, container)
     {
       if (!state[i].enabled || state[i].output !== output) { continue; }
 
-      const button = document.createElement("button");
-
-      button.type = "button";
+      const button     = document.createElement("button");
+      button.type      = "button";
       button.className = "outputs-icon-item";
 
       if (
-        selectedIcon &&
-        selectedIcon.type === type &&
+        selectedIcon                &&
+        selectedIcon.type  === type &&
         selectedIcon.index === i
       )
       {
@@ -669,11 +666,9 @@ function renderOutputIcons(output, container)
       }
 
       button.title = ICON_DEFS[type].label + " " + (i + 1);
-
-      const image = document.createElement("img");
-
-      image.src = ICON_DEFS[type].src;
-      image.alt = ICON_DEFS[type].label;
+      const image  = document.createElement("img");
+      image.src    = ICON_DEFS[type].src;
+      image.alt    = ICON_DEFS[type].label;
 
       button.appendChild(image);
 
@@ -789,7 +784,7 @@ function renderClockEditor()
   }
   setConfigU8(2152, selectedIcon.output); // Set Output
 
-  elem("clock-editor-name").textContent = "Clock "+(index+1);
+  elem("clock-editor-name").textContent = "Clock "+(selectedIcon.output+1);
   put("clock-editor-type",  clock.type );
   put("clock-editor-base",  clock.base );
   put("clock-editor-mult",  clock.mult );
@@ -835,6 +830,7 @@ function renderOutputs()
 
 function renderOutputIconsFor(output)
 {
+  console.log("renderOutputIconsFor("+output+")")
   const unit      = Math.floor(output / 8);
   const port      = output % 8;
   const id        = "outputs-unit" + unit + "-icons" + port;
