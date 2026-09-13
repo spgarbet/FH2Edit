@@ -875,3 +875,158 @@ function centerToSelected(id)
   editor.style.top = `${top}px`;
   updateTooltips();
 }
+
+// LFO Code
+
+// FIXME: This should be from sysex somehow
+const parameters =
+{
+  center: 8192,
+  level: 16383,
+  sine: 127,
+  square: 0,
+  pw: 64,
+  triangle: 0,
+  saw: 0,
+  random: 0,
+  noise: 0,
+  phase: 0,
+  fade: 0,
+  smoothing: 0
+};
+
+function animate(timestamp)
+{
+  if (!appState.animationRunning) { return; }
+
+  const frameInterval = 1000 / appState.animationFPS;
+
+  if (timestamp - appState.lastFrameTime >= frameInterval)
+  {
+    drawWaveform();
+    appState.lastFrameTime = timestamp;
+  }
+  
+  requestAnimationFrame(animate);
+}
+    
+function startAnimation()
+{
+  if (appState.animationRunning) { return; }
+
+  appState.animationRunning = true;
+  appState.lastFrameTime    = 0;
+  requestAnimationFrame(animate);
+}
+    
+function stopAnimation()
+{
+  appState.animationRunning = false;
+}
+
+function updateControl(id)
+{
+  const control  = elem(id);
+  const output   = elem(id + "-value");
+// FIXME This should be to the sysex...
+  parameters[id] = Number(control.value);
+  output.value   = control.value;
+}
+    
+function updateFPS()
+{
+  const control          = elem("fps");
+  const output           = elem("fps-value");
+  appState.animationFPS  = Number(control.value);
+  output.value           = control.value;
+}
+
+function updateAllControls()
+{
+  for (const id in parameters)
+  {
+    updateControl(id);
+  }
+}
+    
+function drawGuidelines(canvas, context)
+{
+  const width  = canvas.width;
+  const height = canvas.height;
+  const middle = height / 2;
+  
+  for(let i = -4; i < 5; ++i)
+  {
+    const y = middle-0.2*i*middle;
+    context.beginPath();
+    context.moveTo(0,     y);
+    context.lineTo(width, y);
+    if (i == 0) { context.strokeStyle="red";  context.setLineDash([]);}
+    else        { context.strokeStyle="lightblue"; context.setLineDash([5,5]);   }
+    context.stroke();
+  }
+  context.strokeStyle = "black";
+  context.setLineDash([]);
+}
+
+function drawWaveform()
+{
+  const canvas  = elem("waveform");
+  const context = canvas.getContext("2d");
+  const lfo     = generateLFOWithStats(parameters);
+  const width   = canvas.width;
+  const height  = canvas.height;
+  const middle  = height / 2;
+  
+  context.clearRect(0, 0, width, height);
+  drawGuidelines(canvas, context);
+  
+  context.beginPath();
+  context.moveTo(0, middle-lfo.samples[0]*middle);
+  for (let x = 0; x < width; ++x)
+  {
+    const sampleIndex = Math.floor(x * LFO_SAMPLE_COUNT / width);
+    const y           = middle - lfo.samples[sampleIndex] * middle;
+
+    context.lineTo(x, y);
+  }
+  context.strokeStyle = "black";
+  context.stroke();
+  
+  // Update Stats
+  put("stat-min-pm5", (5*lfo.min    ).toFixed(3) );
+  put("stat-max-pm5", (5*lfo.max    ).toFixed(3) );
+  put("stat-avg-pm5", (5*lfo.avg    ).toFixed(3) );
+  put("stat-min-010", (5*(lfo.min+1)).toFixed(3) );
+  put("stat-max-010", (5*(lfo.max+1)).toFixed(3) );
+  put("stat-avg-010", (5*(lfo.avg+1)).toFixed(3) );
+}
+
+function initLfoUI()
+{
+  for (const id in parameters)
+  {
+    elem(id).addEventListener("input", function() { 
+      updateControl(id); 
+    });
+  }
+
+  elem("animate").addEventListener("click", function()
+  {
+    if (appState.animationRunning)
+    {
+      stopAnimation();
+      this.textContent = "Start Animation";
+    }
+    else
+    {
+      startAnimation();
+      this.textContent = "Stop Animation";
+    }
+  });
+      
+  elem("fps").addEventListener("input", function()
+  {
+    updateFPS();
+  });
+}

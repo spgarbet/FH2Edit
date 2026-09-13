@@ -22,8 +22,15 @@ const appState =
   presetReq:  false,  // Has a preset request been sent?
   configReq:  false,  // Has a config request been sent?
   slider:     null,   // Is a slider active?
-  shiftKey:   false   // Is the shift key depressed
+  shiftKey:   false,  // Is the shift key depressed
+  
+  // LFO Animation
+  animationFPS:     20,
+  animationRunning: false,
+  lastFrameTime:    0
 };
+
+
 
 const FAST_STEP = "164";
 const SLOW_STEP = "1";
@@ -78,4 +85,8 @@ document.addEventListener("DOMContentLoaded", () =>
   renderPreset(presetSysex);
   renderConfig(configSysex);
   initFileChooser();
+  initLFO();
+  initLfoUI()
+  updateAllControls();
+  updateFPS();
 });
