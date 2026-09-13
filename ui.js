@@ -130,12 +130,12 @@ function initTooltips()
 
   for (const tooltip of tooltips)
   {
-    const popup = document.createElement("span");
-
-    popup.className = "tooltip-popup";
-    popup.textContent = tooltip.dataset.tooltip;
-
-    tooltip.appendChild(popup);
+    const popup          = document.createElement("span");
+    popup.className      = "tooltip-popup";
+    popup.textContent    = tooltip.dataset.tooltip;
+    popup.tooltipTarget  = tooltip;
+    tooltip.tooltipPopup = popup;
+    document.body.appendChild(popup);
 
     tooltip.addEventListener("mouseenter", () =>
     {
@@ -165,84 +165,58 @@ function initTooltips()
 
 function showTooltip(tooltip)
 {
-  const popup = tooltip.querySelector(".tooltip-popup");
+  const popup = tooltip.tooltipPopup;
   if (!popup) { return; }
+  if(popup.tooltipTarget !== tooltip) {console.error("popup target not a tooltip"); return; }
   popup.classList.add("visible");
-
-  positionTooltip(tooltip);
+  positionTooltip(popup);
 }
-
 
 function hideTooltip(tooltip)
 {
-  const popup = tooltip.querySelector(".tooltip-popup");
-  if (!popup) { return; }
-  popup.classList.remove("visible");
+  for (const popup of document.querySelectorAll(".tooltip-popup"))
+  {
+    if (popup.tooltipTarget === tooltip)
+    {
+      popup.classList.remove("visible");
+    }
+  }
 }
 
-
-function positionTooltip(tooltip)
+function positionTooltip(popup)
 {
-  const popup = tooltip.querySelector(".tooltip-popup");
-  if (!popup || !popup.classList.contains("visible")) { return; }
-  const anchor = tooltip.getBoundingClientRect();
-
-  /*
-   * Start with the tooltip above the control.
-   * We need it visible before measuring it.
-   */
-  popup.style.left = "0px";
-  popup.style.top = "0px";
+  const target  = popup.tooltipTarget;
+  if(!target) { return; }
+  const rect    = target.getBoundingClientRect();
+  let left      = rect.left;
+  let top       = rect.bottom + 6;
 
   const popupRect = popup.getBoundingClientRect();
 
-  const gap = 8;
-  const margin = 8;
-
-  const viewportWidth  = document.documentElement.clientWidth;
-  const viewportHeight = document.documentElement.clientHeight;
-
-  // Prefer above.
-  let top = anchor.top - popupRect.height - gap;
-
-  // If there isn't enough room above, put it below.
-  if (top < margin) { top = anchor.bottom + gap; }
-
-  // If it doesn't fit below either, clamp it vertically.
-  if (top + popupRect.height > viewportHeight - margin)
+  if (left + popupRect.width > window.innerWidth)
   {
-    top = Math.max(
-      margin,
-      viewportHeight - popupRect.height - margin
-    );
+    left = window.innerWidth - popupRect.width - 8;
   }
 
-  // Center horizontally on the control.
-  let left = anchor.left + (anchor.width - popupRect.width) / 2;
-
-  // Keep the tooltip inside the left edge.
-  if (left < margin) { left = margin; }
-
-  // Keep the tooltip inside the right edge.
-  if (left + popupRect.width > viewportWidth - margin)
+  if (top + popupRect.height > window.innerHeight)
   {
-    left = viewportWidth - popupRect.width - margin;
+    top = rect.top - popupRect.height - 6;
   }
 
-  // Apply the final position.
+  left = Math.max(8, left);
+  top  = Math.max(8, top);
+
   popup.style.left = `${left}px`;
   popup.style.top  = `${top}px`;
 }
 
 function updateTooltips()
 {
-  const visible = document.querySelectorAll(
-    ".tooltip-popup.visible"
-  );
+  const visible = document.querySelectorAll(".tooltip-popup.visible");
 
   for (const popup of visible)
   {
-    positionTooltip(popup.parentElement);
+    positionTooltip(popup);
   }
 }
 
@@ -828,6 +802,7 @@ function renderOutputEditor()
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
   }
+  updateTooltips();
 }
 
 function renderOutputs()
@@ -898,4 +873,5 @@ function centerToSelected(id)
   top = Math.max(0, Math.min(top, maxTop));
   
   editor.style.top = `${top}px`;
+  updateTooltips();
 }
