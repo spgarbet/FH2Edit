@@ -540,7 +540,13 @@ function setExpanders(v)
   {
     if(state[i].enabled && state[i].output >= 8*(expanders+1))
     {
-      setConfigU8(2148+8*i, 0);
+      let loc = 2048+8*i;
+      setConfigU8(loc,   0);
+      setConfigU8(loc+1, 1);
+      setConfigU8(loc+2, 1);
+      setConfigU8(loc+3, 0);
+      setConfigU8(loc+4, 0);
+      setConfigU8(loc+5, 0);
       removeIcon("clock", i);
     }
   }
@@ -567,7 +573,6 @@ function addIcon(type, output)
   let index;
   const previousOutput = selectedIcon ? selectedIcon.output : null;
 
-
   if (type === "lfo")
   {
     if (iconState.lfo[output].enabled) { return false; }
@@ -586,7 +591,8 @@ function addIcon(type, output)
   {
     type:   type,
     index:  index,
-    output: output
+    output: output,
+    elem:   null
   };
 
   selectedOutput = output;
@@ -625,9 +631,10 @@ function selectIcon(type, index, output)
 {
   selectedIcon =
   {
-    type: type,
-    index: index,
-    output: output
+    type:   type,
+    index:  index,
+    output: output,
+    elem:   null
   };
 
   selectedOutput = output;
@@ -668,13 +675,13 @@ function renderOutputIcons(output, container)
       button.type      = "button";
       button.className = "outputs-icon-item";
 
-      if (
-        selectedIcon                &&
-        selectedIcon.type  === type &&
-        selectedIcon.index === i
+      if (selectedIcon                &&
+          selectedIcon.type  === type &&
+          selectedIcon.index === i
       )
       {
         button.classList.add("selected");
+        selectedIcon.elem = button;
       }
 
       button.title = ICON_DEFS[type].label + " " + (i + 1);
@@ -812,6 +819,8 @@ function renderOutputEditor()
   {
     elem(x+"-editor").hidden = sel !== x;
   }
+  
+  if(sel != "placeholder") { centerToSelected(sel+"-editor"); }
 
   switch (sel)
   {
@@ -866,4 +875,27 @@ function removeSelectedIcon()
 
   renderOutputIconsFor(output);
   renderOutputEditor();
+}
+
+function centerToSelected(id)
+{
+  if (!selectedIcon.elem) { return; }
+  const selected        = selectedIcon.elem;
+  const editor          = elem(id);
+  const container       = elem('output-editor');
+  const containerRect   = container.getBoundingClientRect();
+  const selectedRect    = selected.getBoundingClientRect();
+  const editorHeight    = editor.offsetHeight;
+  // Center of the selected element, relative to the container's top
+  const selectedCenterY = (selectedRect.top - containerRect.top) +
+                          (selectedRect.height / 2);
+
+  // Desired top for the editor so its center matches the selected element's center
+  let top = selectedCenterY - (editorHeight / 2);
+
+  // Clamp so the editor stays fully within the container
+  const maxTop = containerRect.height - editorHeight;
+  top = Math.max(0, Math.min(top, maxTop));
+  
+  editor.style.top = `${top}px`;
 }

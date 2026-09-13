@@ -290,8 +290,16 @@ body
   flex: 0 1 auto;
   width: fit-content;
   min-width: 0;
-  overflow: auto;
+  overflow: visible;
   padding-left: 1rem;
+  position: relative;
+}
+
+#output-editor > div
+{
+  width: fit-content;
+  will-change: transform;
+  position: relative;
 }
 
 .placeholder
@@ -405,14 +413,6 @@ body
   overflow: auto;
   border-right: 1px solid #ccc;
   padding-right: 1rem;
-}
-
-#output-editor
-{
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: auto;
-  padding-left: 1rem;
 }
 
 #output-editor [hidden]
