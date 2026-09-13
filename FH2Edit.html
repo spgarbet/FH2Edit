@@ -342,7 +342,7 @@
   Start: Outputs a trigger pulse when the transport starts, but not when it continues.
   Start/Stop: Outputs a trigger pulse when the transport starts and stops but not when it
   continues.">Type</label>
-                <select id="clock-editor-type" onchange="setConfigU8(2148+selectedIcon.index,this.value)">
+                <select id="clock-editor-type" onchange="setConfigU8(2148+8*selectedIcon.index,this.value)">
                   <option value='1' selected>Clock</option>
                   <option value='2'>Run/Stop</option>
                   <option value='3'>Stop/Run</option>
@@ -360,21 +360,21 @@
   8 eighth note triplets
   6 sixteenth notes">Base</label>
                 <select id="clock-editor-base"
-                  onchange="setConfigU8(2149+selectedIcon.index,this.value)">
+                  onchange="setConfigU8(2149+8*selectedIcon.index,this.value)">
                   <script>optionRange(1, 96);</script>
                 </select>
               </div>
               <div>
                 <label for="clock-editor-mult" class="tooltip" data-tooltip="Multiplies the 'clock base' to give the actual clock rate. So for example if 'clock base' is 12 (1/8th notes) and 'multiplier' is 3, the clock will run at a rate of 3/8th notes.">Multiplier</label>
                 <select id="clock-editor-mult"
-                  onchange="setConfigU8(2150+selectedIcon.index,this.value)">
+                  onchange="setConfigU8(2150+8*selectedIcon.index,this.value)">
                   <script>optionRange(1, 96, 1);</script>
                 </select>
               </div>
               <div>
                 <label for="clock-editor-len" class="tooltip" data-tooltip="The length of the clock pulse in milliseconds. The special value '0' means that the clock is not a pulse, but a 50% duty cycle square wave.">Pulse Length</label>
                 <select id="clock-editor-len"
-                  onchange="setConfigU8(2151+selectedIcon.index,this.value)">
+                  onchange="setConfigU8(2151+8*selectedIcon.index,this.value)">
                   <option value="0">50% duty square</option></option>
                   <script>
                     for ( let i=1; i<=127; ++i)
@@ -387,7 +387,7 @@
               <div>
                 <label for="clock-editor-shift" class="tooltip" data-tooltip="The amount by which to advance the clock, in terms of 24ppqn pulses. For example a half note clock advanced by a quarter note will fall on the off beats (2 & 4 of a 4/4 pattern).">Shift</label>
                 <select id="clock-editor-shift"
-                  onchange="setConfigU8(2153+selectedIcon.index,this.value)">
+                  onchange="setConfigU8(2153+8*selectedIcon.index,this.value)">
                   <script>optionRange(0, 127, 1);</script>
                 </select>
               </div>

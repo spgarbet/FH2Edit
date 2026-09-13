@@ -533,6 +533,17 @@ function setExpanders(v)
   {
     elem('outputs-unit'+unit).hidden = unit > expanders;
   }
+  
+  // Clear any clocks hidden by removing expanders
+  var state=iconState['clock'];
+  for (let i = 0; i<32; ++i)
+  {
+    if(state[i].enabled && state[i].output >= 8*(expanders+1))
+    {
+      setConfigU8(2148+8*i, 0);
+      removeIcon("clock", i);
+    }
+  }
 }
 
 // Icon Code
@@ -593,6 +604,7 @@ function addIcon(type, output)
 
 function removeIcon(type, index)
 {
+  console.log("removeIcon("+type+", "+index+")");
   const icon = iconState[type][index];
 
   if (!icon.enabled) { return; }
@@ -780,7 +792,7 @@ function renderClockEditor()
   if(clock.type === 0)
   {
     clock.type = 1;
-    setConfigU8(2148+index, 1);
+    setConfigU8(2148+8*index, 1);
   }
   setConfigU8(2152, selectedIcon.output); // Set Output
 
@@ -830,7 +842,6 @@ function renderOutputs()
 
 function renderOutputIconsFor(output)
 {
-  console.log("renderOutputIconsFor("+output+")")
   const unit      = Math.floor(output / 8);
   const port      = output % 8;
   const id        = "outputs-unit" + unit + "-icons" + port;
