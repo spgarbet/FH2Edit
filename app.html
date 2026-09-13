@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<!--
+    FH2Edit An Expert Sleepers FH-2 Configuration/Preset Edit Tool
+    Copyright (C) 2026 Shawn Garbett
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FH-2 Editor</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="default.js"></script>
+  <script src="ui.js"     ></script>
+  <script src="midi.js"   ></script>
+  <script src="app.js"    ></script>
+  <script src="parser.js" ></script>
+  <script src="render.js" ></script>
+  <script src="model.js"  ></script>
+</head>
+
+<body>
+  <header id="status-bar">
+    <div id="app-title">FH-2 Editor</div>
+    <div id="status">
+      <div class="status-item tooltip"
+           id="browser-status"
+           data-tooltip="Web MIDI is required and must be allowed. Supported browsers include Google Chrome, Opera, and other Chromium-based browsers. Firefox and Safari do not currently provide the Web MIDI API.">
+        <span id="browser-status-text"                >Browser: Checking&hellip;</span></div>
+      <div class="status-item alarm" id="fh2-status"  >FH-2: Disconnected</div>
+      <!-- <div class="status-item" id="parameter-status"  >Parameters: Unmodified</div> -->
+      <div class="status-item" id="preset-name-status">Preset:</div>
+      <div class="status-item" id="config-name-status">Configuration:</div>
+    </div>
+  </header>
+
+  <nav id="tab-bar" aria-label="Main navigation">
+    <button type="button" class="tab active" data-target="io-screen"         >I/O</button>
+    <button type="button" class="tab"        data-target="globals-screen"    >Globals</button>
+    <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
+    <button type="button" class="tab"        data-target="controllers-screen">Controllers</button>
+    <button type="button" class="tab"        data-target="sequencers-screen" >Sequencers</button>
+  </nav>
+
+  <main id="main">
+
+    <!-- I/O -->
+
+    <section class="screen active" id="io-screen">
+
+      <div class="screen-header"><h2>MIDI and File Input/Output</h2></div>
+      <div class="screen-content" id="io-layout">
+        <div id="io-controls">
+          <div>
+            <label for="midi-input">MIDI Input</label>
+            <select id="midi-input" class="midi-src" onchange="changeInput()">
+              <option value="">None Available</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="midi-output">MIDI Output</label>
+            <select id="midi-output" class="midi-src" onchange="changeOutput()">
+              <option value="">None Available</option>
+            </select>
+          </div>
+
+        </div>
+        
+        <div id="io-options">
+          <br/>
+          <label>
+            <input type="checkbox" id="flash-mode" onchange="localStorage.setItem(flashModeKey, this.checked);">
+            <span class="tooltip" data-tooltip="See 'Globals' tab to configure slot">Flash Preset/Configuration to Slot on Write</span>
+          </label>
+          <script>check('flash-mode', localStorage.getItem(flashModeKey) === 'true');</script>
+        </div>
+
+        <div class="io-controls">
+          <div>
+            <input type="file" id="chooseFiles" name="files[]" multiple style="display:none" />
+            <div class="io-actions">
+              <button id="read-from-fh2" type="button" onclick="onRead()"       accesskey="r">Read from FH-2</button>
+              <button id="write-to-fh2"  type="button" onclick="onWrite()"      accesskey="w">Write to FH-2</button>
+              <button id="load-sysex"    type="button" onclick="onLoad()"       accesskey="l" class="tooltip" data-tooltip="This will load all preset/configuration sysex files selected. If multiple same types are selected the last one loaded will be the one live in the editor.">Load Sysex File(s)</button>
+              <button id="save-sysex"    type="button" onclick="onSave()"       accesskey="s">Save to Files</button>
+              <button id="screenshot"    type="button" onclick="onReadScreen()" accesskey="p">Screenshot</button>
+              <button id="flash"         type="button" onclick="onFlash()"      accesskey="f">Flash</button>
+              <button id="initialize"    type="button" onclick="onInitialize()" accesskey="i">Initialize</button>
+            </div>
+            <div id="io-feedback"></div>
+          </div>
+          <div class="io-screenshot">
+            <img id="fh2-screenshot" alt="FH-2 display screenshot" hidden>
+          </div>
+        </div>
+
+        <details id="io-advanced">
+
+          <summary>Advanced / Debug</summary>
+
+          <div id="io-advanced-content">
+            
+            <div class="io-actions">
+              <button id="read-version"     type="button" onclick="onReadVersion()" accesskey="v">Read Version from FH-2</button>
+              <button id="write-msg"        type="button" onclick="onWriteMessage()">Write Message to FH-2</button>
+              
+              <button id="read-config-fh2"  type="button" onclick="onReadConfig()" >Read Configuration from FH-2</button>
+              <button id="write-config-fh2" type="button" onclick="onWriteConfig()">Write Configuration to FH-2</button>
+
+              <button id="read-preset-fh2"  type="button" onclick="onReadPreset()" >Read Preset from FH-2</button>
+              <button id="write-preset-fh2" type="button" onclick="onWritePreset()">Write Preset to FH-2</button>
+
+              <button id="save-preset"      type="button" onclick="onSavePreset()" >Save Preset to File</button>
+              <button id="save-config"      type="button" onclick="onSaveConfig()" >Save Configuration to File</button>
+            
+              <button id="flash-preset"     type="button" onclick="onFlashPreset()">Flash Preset to Slot</button>
+              <button id="flash-config"     type="button" onclick="onFlashConfig()">Flash Configuration to Slot</button>
+              
+              <button id="init-preset"      type="button" onclick="onInitPreset()" >Initialize Preset</button>
+              <button id="init-config"      type="button" onclick="onInitConfig()" >Initialize Configuration</button>
+            </div>
+
+            <div id="io-advanced-raw">
+              <div>
+                <h3>Log</h3>
+                <div class="debug-box" id="midi-log" aria-label="MIDI log"></div>
+              </div>
+
+              <div>
+                <h3>Raw MIDI Output</h3>
+                <div class="debug-box" id="raw-midi-output" aria-label="Raw MIDI output"></div>
+              </div>
+  
+              <div>
+                <h3>Raw MIDI Input</h3>
+                <div class="debug-box" id="raw-midi-input" aria-label="Raw MIDI input">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </details>
+
+      </div>
+
+    </section>
+
+
+    <!-- Globals -->
+
+    <section class="screen" id="globals-screen">
+      <div class="screen-header"><h2>Parameters Global to FH-2</h2></div>
+      <div class="screen-content" id="globals-content">
+        <fieldset class="parameter-group">
+          <legend>Preset</legend>
+          <div>
+            <label for="preset-name" class="name-label">Preset: </label>
+            <input type="text" id="preset-name" placeholder="Name" maxlength="16"
+                   onchange="setPresetName(this.value)">
+            <label for="preset-slot">Slot: </label>
+            <select id="preset-slot">
+              <option value="0">Current</option>
+              <script>optionRange(1,30);</script>
+            </select>
+          </div>
+          <br>
+          <div class="singleline">
+            <div>
+              <label for="tempo" class="tooltip" data-tooltip="Tempo of the internal clock, set directly or via tap-tempo.">Internal Tempo</label>
+              <input  id="tempo" type="number" min="0" max="999.9"
+                                 step="0.1" value="100" size="6"
+                                 onchange="setTempo(this.value)">
+              <span class="unit">BPM</span>
+            </div>
+            <div>
+              <label for="swing_type" class="tooltip" data-tooltip="Swing applies globally to all features driven by the FH-2’s internal timebase, including clock outputs, Euclidean patterns, and sequencers. Select a tuplet option to adjust the placement of the four 16th notes within each quarter note.">Swing Type</label>
+              <select id='swing_type' onchange="setPresetU8(29, this.value)">
+                <option value=0 selected>Off</option>
+                <option value=1>16th note</option>
+                <option value=2>8th note</option>
+                <option value=3>Pentuplet</option>
+                <option value=4>Sextuplet</option>
+                <option value=5>Septuplet</option>
+                <option value=6>Octuplet</option>
+                <option value=7>Nonuplet</option>
+              </select>
+            </div>
+            <div>
+              <label for="swing_amount" class="tooltip" data-tooltip="Amount of swing applied.">&emsp;&emsp;Amount</label>
+              <select id="swing_amount" onchange="setPresetU8(30, this.value)"><script>u7PercentRange(0);</script></select>
+            </div>
+            <div>
+              <label for="swing_pos1">&emsp;&emsp;Position 1</label>
+              <select id="swing_pos1" onchange="setPresetU8(2528, this.value)"><script>optionRange(2,9,2);</script></select>
+            </div>
+            <div>
+              <label for="swing_pos2">&emsp;&emsp;Position 2</label>
+              <select id="swing_pos2" onchange="setPresetU8(2529, this.value)"><script>optionRange(2,9,4);</script></select>
+            </div>
+            <div>
+              <label for="swing_pos3">&emsp;&emsp;Position 3</label>
+              <select id="swing_pos3" onchange="setPresetU8(2530, this.value)"><script>optionRange(2,9,5);</script></select>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="parameter-group">
+          <legend>Configuration</legend>
+          <div>
+            <label for="config-name" class="name-label">Configuration: </label>
+            <input type="text" id="config-name" placeholder="Name" maxlength="16"
+                   onchange="setConfigName(this.value)">
+            <label for="config-slot">Slot: </label>
+            <select id="config-slot">
+              <option value="0">Current</option>
+              <script>optionRange(1,30);</script>
+            </select>
+          </div>
+          <br>
+          <div class="singleline">
+            <div>
+              <label for="glb_legvel" class="tooltip" data-tooltip="When enabled, playing legato in monophonic MIDI/CV modes will use the note velocity only from the first note in a phrase.">
+                Legato Velocity</label>
+              <input  id="glb_legvel" type="checkbox" onchange="setConfigU8(31,this.checked)">
+            </div>
+            <div>
+              <label for="glb_transpose" class="tooltip" data-tooltip="Transposition for all MIDI/CV note values">
+                Global Transpose</label>
+              <select id="glb_transpose" onchange="setConfigS8(30,this.value)"><script>optionRange(-48,48,0);</script></select>
+            </div>
+            <div>
+              <label for="glb_triglen" class="tooltip" data-tooltip="Length of all triggers.">
+                Global Trigger Length</label>
+              <select id="glb_triglen" onchange="setConfigU8(29,this.value)"><script>optionRange(1,100,50);</script></select>
+              <span class="unit">milliseconds</span>
+            </div>
+            <div>
+              <label for="glb_extclkmult" class="tooltip" data-tooltip="Sets the multiplier relating the (incoming) external clock to the internal 24ppqn timebase. Example values for would be '24' for quarter note clocks, and '1' for 24ppqn clocks e.g. a DINsync clock.">
+                External Clock Multiplier</label>
+              <select id="glb_extclkmult" onchange="setConfigU8(32,this.value)"><script>optionRange(1,96,24);</script></select>
+            </div>
+            <div>
+              <label for="glb_extclkrun" class="tooltip" data-tooltip="'None'&mdash;the external clock is considered to start as soon as a clock pulse is received on the X input, and to stop when clock pulses stop arriving. The module waits up to 2 seconds after each clock pulse, and if another clock does not arrive in that time, the clock is considered to have stopped.
+
+'Run/Stop on Y'&mdash;the Y input is used as a DINsync-style run/stop control. The clock runs while the signal is high, and stops when it is low.">
+                External Clock Run Control</label>
+              <select id="glb_extclkrun" onchange="setConfigU8(33,this.value)">
+                <option value=0>None</option><option value=1>Run/Stop on Y</option>
+              </select>
+            </div>
+            <div>
+              <label for="glb_eucaccent" class="tooltip" data-tooltip="Amount Euclidean unaccented pulses are scaled down.">Euclidean Unaccented</label>
+              <select id="glb_eucaccent" onchange="setConfigU8(2935,this.value)"><script>u7PercentRange(78);</script></select>
+            </div>
+            <div>              
+              <label for="glb_presetprogch" class="tooltip" data-tooltip="MIDI channel on which to respond to program change messages by changing the current preset.">
+                Preset Program Change</label>
+              <select id="glb_presetprogch" onchange="setConfigU8(34,this.value)">
+                <option value='0'>Off</option><script>optionRange(1, 16);</script>
+              </select>
+            </div>
+            <div>              
+              <label for="glb_softtakeover" class="tooltip" data-tooltip="When enabled, an incoming MIDI CC will not control its target parameter until the CC has passed through the value matching the last loaded preset.">
+                Soft Takeover</label>
+              <input type="checkbox" id="glb_softtakeover" onchange="setConfigU8(35,this.checked)">
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- Outputs -->
+    <section class="screen" id="outputs-screen">
+    
+      <div class="screen-header"><h2>Outputs</h2></div>
+    
+      <div class="screen-content" id="outputs-layout">
+    
+        <div id="outputs-controls">
+          <label for="expanders">FHX-8CV Expanders</label>
+          <select id="expanders" onchange="setExpanders(this.value)">
+            <script>
+              optionRange(0, 7, localStorage.getItem(expandersKey) || "0");
+            </script>
+          </select>
+        </div>
+    
+        <div id="icon-picker" class="icon-picker" hidden></div>
+        <div id="outputs-list">
+          <div class="outputs-header">
+            <div class="outputs-header-range">Range</div>
+            <div class="outputs-header-gate tooltip" data-tooltip="Define the low output values to be used if the output in question is used as a gate, clock, or trigger. Use arrows and shift for fine control.">Low Gate</div>
+            <div class="outputs-header-source tooltip" data-tooltip="Define the high output values to be used if the output in question is used as a gate, clock, or trigger. Use arrows and shift for fine control.">High Gate</div>
+          </div>
+        </div>
+    
+        <section id="output-editor">
+        
+          <div id="placeholder-editor">Select an output source to configure it.</div>
+        
+          <div id="midi-editor" hidden>
+            MIDI Editor
+            <!-- MIDI editor controls -->
+          </div>
+        
+          <div id="lfo-editor" hidden>
+            LFO Editor
+            <!-- LFO editor controls -->
+          </div>
+        
+          <div id="clock-editor" hidden>
+            <div class="editor-header">
+              <button id="clock-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Clock"></button>
+              <h3 id="clock-editor-name">Clock Editor</h3>
+            </div>
+            <div class="singleline">
+              <div>
+                <label for="clock-editor-type" class="tooltip" data-tooltip="Clock: A clock output, using the other parameters for configuration.
+  Run/Stop: Outputs a high gate level when the transport is running, low otherwise.
+  Stop/Run: Outputs a low gate level when the transport is running, high otherwise.
+  Start/Cont: Outputs a trigger pulse when the transport starts or continues
+  Stop: Outputs a trigger pulse when the transport stops.
+  All Trig: Outputs a trigger pulse when the transport starts, continues, or stops.
+  Start: Outputs a trigger pulse when the transport starts, but not when it continues.
+  Start/Stop: Outputs a trigger pulse when the transport starts and stops but not when it
+  continues.">Type</label>
+                <select id="clock-editor-type" onchange="setConfigU8(2148+8*selectedIcon.index,this.value)">
+                  <option value='1' selected>Clock</option>
+                  <option value='2'>Run/Stop</option>
+                  <option value='3'>Stop/Run</option>
+                  <option value='4'>Start/Continue Trigger</option>
+                  <option value='5'>Stop Trigger</option>
+                  <option value='6'>Start/Continue/Stop Trigger</option>
+                  <option value='7'>Start Only Trigger</option>
+                  <option value='8'>Start/Stop Trigger</option>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses. Some convenient values include:
+  24 quarter notes
+  12 eighth notes
+  8 eighth note triplets
+  6 sixteenth notes">Base</label>
+                <select id="clock-editor-base"
+                  onchange="setConfigU8(2149+8*selectedIcon.index,this.value)">
+                  <script>optionRange(1, 96);</script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-mult" class="tooltip" data-tooltip="Multiplies the 'clock base' to give the actual clock rate. So for example if 'clock base' is 12 (1/8th notes) and 'multiplier' is 3, the clock will run at a rate of 3/8th notes.">Multiplier</label>
+                <select id="clock-editor-mult"
+                  onchange="setConfigU8(2150+8*selectedIcon.index,this.value)">
+                  <script>optionRange(1, 96, 1);</script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-len" class="tooltip" data-tooltip="The length of the clock pulse in milliseconds. The special value '0' means that the clock is not a pulse, but a 50% duty cycle square wave.">Pulse Length</label>
+                <select id="clock-editor-len"
+                  onchange="setConfigU8(2151+8*selectedIcon.index,this.value)">
+                  <option value="0">50% duty square</option></option>
+                  <script>
+                    for ( let i=1; i<=127; ++i)
+                    {
+                      document.write(`<option value="${i}">${i} milliseconds</option>`);
+                    }
+                  </script>
+                </select>
+              </div>
+              <div>
+                <label for="clock-editor-shift" class="tooltip" data-tooltip="The amount by which to advance the clock, in terms of 24ppqn pulses. For example a half note clock advanced by a quarter note will fall on the off beats (2 & 4 of a 4/4 pattern).">Shift</label>
+                <select id="clock-editor-shift"
+                  onchange="setConfigU8(2153+8*selectedIcon.index,this.value)">
+                  <script>optionRange(0, 127, 1);</script>
+                </select>
+              </div>
+            </div>
+          </div>
+        
+        </section>
+      </div>
+    
+    </section>
+
+
+    <!-- Controllers -->
+
+    <section class="screen" id="controllers-screen">
+
+      <div class="screen-header"><h2>Controllers</h2></div>
+
+      <div class="screen-content" id="controllers-content">
+        <div class="placeholder">
+          MIDI controller configuration
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- Sequencers -->
+
+    <section class="screen" id="sequencers-screen">
+
+      <div class="screen-header"><h2>Sequencers</h2></div>
+
+      <div class="screen-content" id="sequencers-content">
+        <div class="placeholder">
+          Sequencer configuration
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+  
+  <footer id="footer">
+    <span><a href="https://github.com/spgarbet/FH2Edit" id="github-link">Source</a></span>
+    <span>Version 0.0.9999</span>
+    <span>©2026 <a href="https://garbett.org">Shawn Garbett</a></span>
+    <span>
+      <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+         class="tooltip"
+         data-tooltip="This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL-3.">
+         <img src="assets/gplv3-with-text-84x42.png" alt="GPL 3 Free as in Freedom"/>
+      </a>
+    </span>
+
+    <details class="icon-credits">
+      <summary>Icon credits</summary>
+  
+      <div class="icon-credit">
+        <ul>
+        <li><a href="https://www.flaticon.com/free-icon/midi_8584932?term=midi+synthesizer&page=1&position=5&origin=search&related_id=8584932" target="_blank" rel="noopener">MIDI</a>
+        icon made by <a href="https://www.flaticon.com/authors/amazona-adorada" target="_blank" rel="noopener">Amazona
+        Adorada</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/sine_9838157?related_id=9838157" target="_blank" rel="noopener">LFO</a>
+        icon made by <a href="https://www.flaticon.com/authors/judanna" target="_blank" rel="noopener">judanna</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/adjust_19025337?term=slider+music&amp;page=1&amp;position=16&amp;origin=search&amp;related_id=19025337" target="_blank" rel="noopener">Controller</a>
+        icon made by <a href="https://www.flaticon.com/authors/shashank-singh" target="_blank" rel="noopener">Shashank
+        Singh</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/music_16418845?term=music&amp;page=1&amp;position=62&amp;origin=search&amp;related_id=16418845" target="_blank" rel="noopener">Sequencer</a>
+        icon made by <a href="https://www.flaticon.com/authors/ahsan-b" target="_blank" rel="noopener">Ahsan
+        B</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/drums_2884318?term=drum&amp;page=1&amp;position=12&amp;origin=search&amp;related_id=2884318" target="_blank" rel="noopener">Euclidean</a>
+        icon made by <a href="https://www.flaticon.com/authors/icongeek26" target="_blank" rel="noopener">Icongeek26</a> from
+        <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/clock_2838794?term=clock&amp;page=1&amp;position=3&amp;origin=search&amp;related_id=2838794" target="_blank" rel="noopener">Clock</a>
+        icon made by <a href="https://www.flaticon.com/authors/manific" target="_blank" rel="noopener">Magnific</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/envelope_481659?term=envelope&amp;page=1&amp;position=2&amp;origin=search&amp;related_id=481659" target="_blank" rel="noopener">Envelope</a>
+        icon made by <a href="https://www.flaticon.com/authors/those-icons" target="_blank" rel="noopener">Those Icons</a> from
+        <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/chord_16085170?term=chord&amp;page=1&amp;position=65&amp;origin=search&amp;related_id=16085170" target="_blank" rel="noopener">Arpeggiator</a>
+        icon made by <a href="https://www.flaticon.com/authors/gravisio" target="_blank" rel="noopener">gravisio</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/shuffle_724979?term=random&amp;page=1&amp;position=1&amp;origin=search&amp;related_id=724979" target="_blank" rel="noopener">Shift
+        Register</a> icon created by <a href="https://www.flaticon.com/authors/pixel-perfect" target="_blank" rel="noopener">Pixel Perfect</a>
+        from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/curly-bracket_10769599?term=plus+bracket&amp;page=1&amp;position=2&amp;origin=search&amp;related_id=10769599" target="_blank" rel="noopener">Curly
+        Plus</a> icon created by <a href="https://www.flaticon.com/authors/cap-cool" target="_blank" rel="noopener">Cap Cool</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/trash_3096673?term=trash+can&page=1&position=2&origin=search&related_id=3096673" target="_blank" rel="noopener">Trashcan</a> icon created by <a href="https://www.flaticon.com/authors/bqlqn" target="_blank" rel="noopener">bqlqn</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a>
+        </li>
+        </ul>
+      </div>
+  
+      <!-- additional icon credits -->
+    </details>
+
+    
+  </footer>
+
+</body>
+</html>
