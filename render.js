@@ -33,6 +33,17 @@ function renderPreset(data)
   put('swing_pos1',   preset.swing[0]);
   put('swing_pos2',   preset.swing[1]);
   put('swing_pos3',   preset.swing[2]);
+  
+  const lfoState = iconState["lfo"];
+  for(let i=0; i<64; ++i)
+  {
+    if(preset.lfos[i].level > 0)
+    {
+      iconState["lfo"][i].enabled=true;
+      iconState["lfo"][i].output=i;
+      renderOutputIconsFor(i);
+    }
+  }
 
   return true;
 }
@@ -165,6 +176,7 @@ function renderConfig(data)
       renderOutputIconsFor(config.clocks[i].output);
     }
   }
+  
 /*
   for (let j = 0; j < ac.length; ++j)
   {

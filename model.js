@@ -43,7 +43,7 @@ function setLong(i, v, f)
   f(i + 3, v >> 21);
 }
 
-function setPresetU8(i, v)    { console.log("setPresetU8", i, v); presetSysex[i] = v & 0x7f;   }
+function setPresetU8(i, v)    { presetSysex[i] = v & 0x7f;   }
 function setConfigU8(i, v)    { configSysex[i] = v & 0x7f;   }
 function setS8(i, v, f)       { f(i, v < 0 ? v + 128 : v);   }
 function setPresetS8(i, v)    { setS8(i, v, setPresetU8);    }

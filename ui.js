@@ -523,6 +523,33 @@ function setExpanders(v)
       removeIcon("clock", i);
     }
   }
+  
+  // Clear any LFO's hidden by removing expanders
+  state=iconState['lfo'];
+  for (let i=8*(expanders+1); i<64; ++i)
+  {
+    if(state[i].enabled)
+    {
+      loc = 160 + 16*i;
+      setPresetShort(loc ,  0);  // Level off
+      setPresetShort(loc+2, 0); 
+      setPresetU8(loc+ 4,  24);
+      setPresetU8(loc+ 5,   1);
+      setPresetU8(loc+ 6,   0);
+      setPresetU8(loc+ 7,   0);
+      setPresetU8(loc+ 8,   0);
+      setPresetU8(loc+ 9,  64);
+      setPresetU8(loc+10,   0);
+      setPresetU8(loc+11,   0);
+      setPresetU8(loc+12,   0);
+      setPresetU8(loc+13,   0);
+      setPresetU8(loc+14,   0);
+      setPresetU8(loc+15,   0);
+      setPresetShort(32+2*i, 8192); // Center
+
+      removeIcon("lfo", i);
+    }
+  }
 }
 
 // Icon Code
@@ -706,6 +733,11 @@ function buildIconPicker()
     setConfigU8(2148+selectedIcon.index,0); // Turn off clock
     removeIcon("clock", selectedIcon.index);
   });
+  elem("lfo-editor-trash").addEventListener("click", function()
+  {
+    setPresetShort(2148+selectedIcon.output, 0); // Turn off LFO
+    removeIcon("lfo", selectedIcon.index);
+  });
 }
 
 function showIconPicker(output, anchor)
@@ -748,7 +780,6 @@ function renderMidiEditor()
   const index  = selectedIcon.index;
   const midi   = iconState.midi[index];
 
-
   <!-- Pull from parsed structure here -->
 }
 
@@ -756,6 +787,16 @@ function renderLfoEditor()
 {
   const output = selectedIcon.output;
   const lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
+  
+  // Activate the lfo properly based on icon position
+  if(lfo.level <= 0)
+  {
+    // Good defaults to start from
+    lfo.level  = 16383;
+    setPresetShort(160+16*output, lfo.level);
+    lfo.center = 8192;
+    setPresetShort(32+2*output, lfo.center);
+  }
   
   for(let param of ['center', 'sine', 'pw', 'saw', 'noise', 'fade', 'level',
                     'square','triangle', 'random', 'phase', 'smoothing'])
@@ -880,6 +921,20 @@ function centerToSelected(id)
 }
 
 // LFO Code
+
+function setLFOShort(id, value, base, block)
+{
+  put('lfo-'+id+'-value', value);
+  setPresetShort(base+block*selectedIcon.output, value);
+  drawWaveform();
+}
+
+function setLFOU8(id, value, base, block)
+{
+  put('lfo-'+id+'-value', value);
+  setPresetU8(base+block*selectedIcon.output, value);
+  drawWaveform();
+}
 
 function animate(timestamp)
 {

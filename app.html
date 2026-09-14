@@ -332,84 +332,84 @@
               <div class="control">
                 <label for="lfo-center">Center</label>
                 <input id="lfo-center" type="range" min="0" max="16383" value="8192"
-                       onchange="put('lfo-center-value',this.value); setPresetShort(32+4*selectedIcon.output, this.value); drawWaveform();">
+                       onchange="setLFOShort('center', this.value, 32, 2)">
                 <output id="lfo-center-value">8192</output>
               </div>
           
               <div class="control">
                 <label for="lfo-level">Level</label>
                 <input id="lfo-level" type="range" min="0" max="16383" value="14000"
-                       onchange="put('lfo-level-value', this.value); setPresetShort(160+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOShort('level', this.value, 160, 16)">
                 <output id="lfo-level-value">14000</output>
               </div>
           
               <div class="control">
                 <label for="lfo-sine">Sine</label>
                 <input id="lfo-sine" type="range" min="0" max="127" value="127"
-                       onchange="put('lfo-sine-value', this.value); setPresetU8(166+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('sine', this.value, 166, 16)">
                 <output id="lfo-sine-value">127</output> 
               </div>
           
               <div class="control">
                 <label for="lfo-square">Square</label>
                 <input id="lfo-square" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(167+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('square', this.value, 167, 16)">
                 <output id="lfo-square-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-pw">PW</label>
                 <input id="lfo-pw" type="range" min="0" max="127" value="64"
-                       onchange="setPresetU8(169+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('pw', this.value, 169, 16)">
                 <output id="lfo-pw-value">64</output>
               </div>
           
               <div class="control">
                 <label for="lfo-triangle">Triangle</label>
                 <input id="lfo-triangle" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(168+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('triangle', this.value, 168, 16)"> 
                 <output id="lfo-triangle-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-saw">Saw</label>
                 <input id="lfo-saw" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(170+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('saw', this.value, 170, 16)">
                 <output id="lfo-saw-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-random">Random</label>
                 <input id="lfo-random" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(171+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('random', this.value, 171, 16)">
                 <output id="lfo-random-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-noise">Noise</label>
                 <input id="lfo-noise" type="range" min="0" max="127" value="20"
-                       onchange="setPresetU8(172+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('noise', this.value, 172, 16)">
                 <output id="lfo-noise-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-phase">Phase</label>
                 <input id="lfo-phase" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(175+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('phase', this.value, 175, 16)">
                 <output id="lfo-phase-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-fade">Fade</label>
                 <input id="lfo-fade" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(173+16*selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('fade', this.value, 173, 16)">
                 <output id="lfo-fade-value">0</output>
               </div>
           
               <div class="control">
                 <label for="lfo-smoothing">Smoothing</label>
                 <input id="lfo-smoothing" type="range" min="0" max="127" value="0"
-                       onchange="setPresetU8(1184+selectedIcon.output, this.value); drawWaveform()">
+                       onchange="setLFOU8('smoothing', this.value, 1184, 1)">
                 <output id="lfo-smoothing-value">0</output>
               </div>
           

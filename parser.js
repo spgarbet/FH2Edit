@@ -137,11 +137,7 @@ function parsePresetDirectLevel(reader)
 {
   reader.seek(32);
   const direct = [];
-	for (let i = 0; i<64; ++i)
-	{ 
-	  direct.push(reader.uShort());
-	  reader.skip(2);
-	}
+	for (let i = 0; i<64; ++i) { direct.push(reader.uShort()); }
 	return direct;
 }
 
