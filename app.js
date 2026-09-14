@@ -30,51 +30,65 @@ const appState =
   lastFrameTime:    0
 };
 
-const FAST_STEP_SHORT = "164";
-const FAST_STEP_BYTE  = "8";
+
+function getFastStep(target) { return Number(target.max) > 127 ? 100 : 5; }
+
+function snapValue(target)
+{
+  const step = appState.shiftKey ? 1 : getFastStep(target);
+  const min  = Number(target.min) || 0;
+  const max  = Number(target.max);
+  const raw  = Number(target.value);
+  
+  if (raw > max - step/2) { target.value = max; console.log("Max triggered");     }
+  else                    { target.value = min + Math.round((raw-min)/step)*step; }
+}
 
 document.addEventListener('pointerdown', (e) =>
 {
-  if (e.target && e.target.type === 'range')
-  {
-    appState.slider = e.target;
-    e.target.step   = appState.shiftKey ? "1" : 
-      (Number(e.target.max) > 127 ? FAST_STEP_SHORT : FAST_STEP_BYTE);
-  }
+  if (e.target && e.target.type === 'range') { appState.slider = e.target; }
 });
 
-document.addEventListener('pointerup', () =>
+document.addEventListener('pointerup', () => { appState.slider = null; });
+
+/*
+document.addEventListener('input', (e) =>
 {
-  appState.slider = null;
+  if (e.target && e.target.type === 'range') { snapValue(e.target); }
+}); */
+
+document.addEventListener('keydown', (e) =>
+{
+  if (!e.target || e.target.type !== 'range') { return; }
+
+  const isUp   = e.key === 'ArrowUp'   || e.key === 'ArrowRight';
+  const isDown = e.key === 'ArrowDown' || e.key === 'ArrowLeft';
+
+  if (!isUp && !isDown) { return; }
+
+  e.preventDefault();
+
+  const target = e.target;
+  const step   = appState.shiftKey ? 1 : getFastStep(target);
+  const min    = Number(target.min) || 0;
+  const max    = Number(target.max);
+  let value    = Number(target.value) + (isUp ? step : -step);
+
+  value = Math.max(min, Math.min(max, value));
+
+  target.value = value;
+  target.dispatchEvent(new Event('input',  { bubbles: true }));
+  target.dispatchEvent(new Event('change', { bubbles: true }));
 });
 
-window.addEventListener('keydown', (e) => 
+window.addEventListener('keydown', (e) =>
 {
-  if (e.key === 'Shift')
-  {
-    appState.shiftKey=true;
-    if (!appState.slider &&
-        document.activeElement &&
-        document.activeElement.type === 'range') 
-    { document.activeElement.step = "1"; }
-  }
+  if (e.key === 'Shift') { appState.shiftKey = true; }
 });
 
-window.addEventListener('keyup', (e) => 
+window.addEventListener('keyup', (e) =>
 {
-  if (e.key === 'Shift')
-  {
-    appState.shiftKey=false;
-    if (!appState.slider &&
-       document.activeElement &&
-       document.activeElement.type === 'range')
-    { 
-      document.activeElement.step =
-        (Number(document.activeElement.step.max) > 127 ? 
-          FAST_STEP_SHORT : 
-          FAST_STEP_BYTE);
-    }
-  }
+  if (e.key === 'Shift') { appState.shiftKey = false; }
 });
 
 document.addEventListener("DOMContentLoaded", () =>

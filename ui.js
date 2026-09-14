@@ -530,23 +530,7 @@ function setExpanders(v)
   {
     if(state[i].enabled)
     {
-      loc = 160 + 16*i;
-      setPresetShort(loc ,  0);  // Level off
-      setPresetShort(loc+2, 0); 
-      setPresetU8(loc+ 4,  24);
-      setPresetU8(loc+ 5,   1);
-      setPresetU8(loc+ 6,   0);
-      setPresetU8(loc+ 7,   0);
-      setPresetU8(loc+ 8,   0);
-      setPresetU8(loc+ 9,  64);
-      setPresetU8(loc+10,   0);
-      setPresetU8(loc+11,   0);
-      setPresetU8(loc+12,   0);
-      setPresetU8(loc+13,   0);
-      setPresetU8(loc+14,   0);
-      setPresetU8(loc+15,   0);
-      setPresetShort(32+2*i, 8192); // Center
-
+      initLFO(i);
       removeIcon("lfo", i);
     }
   }
@@ -624,6 +608,8 @@ function removeIcon(type, index)
 
   renderOutputIconsFor(output);
   renderOutputEditor();
+  
+  if(type == "lfo") { initLfo(index); }
 }
 
 function selectIcon(type, index, output)
@@ -786,16 +772,14 @@ function renderMidiEditor()
 function renderLfoEditor()
 {
   const output = selectedIcon.output;
-  const lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
+  var   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
   
   // Activate the lfo properly based on icon position
   if(lfo.level <= 0)
   {
-    // Good defaults to start from
-    lfo.level  = 16383;
-    setPresetShort(160+16*output, lfo.level);
-    lfo.center = 8192;
-    setPresetShort(32+2*output, lfo.center);
+    initLFO(output);
+    setPresetShort(160+16*output, 16383);
+    lfo = parsePresetLFO(new ByteReader(presetSysex), output);
   }
   
   for(let param of ['center', 'sine', 'pw', 'saw', 'noise', 'fade', 'level',
@@ -1021,12 +1005,9 @@ function drawWaveform()
   context.stroke();
   
   // Update Stats
-  put("stat-min-pm5", (5*lfo.min    ).toFixed(3) );
-  put("stat-max-pm5", (5*lfo.max    ).toFixed(3) );
-  put("stat-avg-pm5", (5*lfo.avg    ).toFixed(3) );
-  put("stat-min-010", (5*(lfo.min+1)).toFixed(3) );
-  put("stat-max-010", (5*(lfo.max+1)).toFixed(3) );
-  put("stat-avg-010", (5*(lfo.avg+1)).toFixed(3) );
+  put("stat-min", (lfo.min    ).toFixed(3) );
+  put("stat-max", (lfo.max    ).toFixed(3) );
+  put("stat-avg", (lfo.avg    ).toFixed(3) );
 }
 
 function initLfoUI()

@@ -426,26 +426,15 @@
             
             <div id="waveform-container">
               <canvas id="waveform" width="512" height="316"></canvas>
-            
-              <div id="waveform-stats">
-                <div></div>
-                <div class="stats-header">±5 V</div>
-                <div class="stats-header">0–10 V</div>
-            
-                <div>Min</div>
-                <output id="stat-min-pm5">0.000</output>
-                <output id="stat-min-010">0.000</output>
-            
-                <div>Max</div>
-                <output id="stat-max-pm5">0.000</output>
-                <output id="stat-max-010">0.000</output>
-            
-                <div>Avg</div>
-                <output id="stat-avg-pm5">0.000</output>
-                <output id="stat-avg-010">0.000</output>
-              </div>
             </div>
+            <div id="waveform-stats">
+              <div>Min: <output id="stat-min">0.000</output></div>
+              <div>Max: <output id="stat-max">0.000</output></div>
+              <div>Avg: <output id="stat-avg">0.000</output></div>
+            </div>
+            <div>Approximate representation.</div>
           </div>
+          
         
           <div id="clock-editor" hidden>
             <div class="editor-header">

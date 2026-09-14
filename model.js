@@ -93,6 +93,27 @@ function clampSwing(swing)
   return( swing );
 }
 
+function initLfo(i)
+{
+  console.log("initLfo",i);
+  loc = 160 + 16*i;
+  setPresetShort(loc ,  0);  // Level off
+  setPresetShort(loc+2, 0); 
+  setPresetU8(loc+ 4,  24);
+  setPresetU8(loc+ 5,   1);
+  setPresetU8(loc+ 6,   0);
+  setPresetU8(loc+ 7,   0);
+  setPresetU8(loc+ 8,   0);
+  setPresetU8(loc+ 9,  64);
+  setPresetU8(loc+10,   0);
+  setPresetU8(loc+11,   0);
+  setPresetU8(loc+12,   0);
+  setPresetU8(loc+13,   0);
+  setPresetU8(loc+14,   0);
+  setPresetU8(loc+15,   0);
+  setPresetShort(32+2*i, 8192); // Center
+}
+
   ////////////////////////////////////////////////////////
  // 
 // Config Model
