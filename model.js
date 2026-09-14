@@ -104,7 +104,7 @@ function initLfo(i)
   setPresetU8(loc+ 7,   0);
   setPresetU8(loc+ 8,   0);
   setPresetU8(loc+ 9,  64);
-  setPresetU8(loc+10,   0);
+  setPresetU8(loc+10,  64);
   setPresetU8(loc+11,   0);
   setPresetU8(loc+12,   0);
   setPresetU8(loc+13,   0);

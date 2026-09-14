@@ -1079,10 +1079,11 @@ function short14ToHz(x)
 
 function setLfoSpeed(v)
 {
-  const speed = Number(v);
-  const loc   = 16*selectedIcon.output;
-  if(!speed || speed <= 0)
+  var speed = Number(v);
+  const loc = 16*selectedIcon.output;
+  if(!speed || speed < 0.1)
   {
+    elem("lfo-speed").value = 0;
     elem("lfo-base").disabled = false;
     elem("lfo-mult").disabled = false;
     put("lfo-base", 24);
@@ -1100,7 +1101,9 @@ function setLfoSpeed(v)
     put("lfo-base", 0);
     put("lfo-mult", 0);
     
-    let bits = bitsForHz(v);
+    if(speed > 10.0) { speed = 10.0; }
+    
+    let bits = bitsForHz(speed);
     elem("lfo-speed").value = short14ToHz(bits).toFixed(5);
     
     setPresetShort(162+loc, bits); // speed
