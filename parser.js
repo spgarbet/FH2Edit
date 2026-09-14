@@ -170,7 +170,7 @@ function parsePresetLFO(reader, index)
   // If a specific LFO is requested, grab the direct and smoothing
   if(index !== undefined)
   {
-    reader.seek(32+4*index);
+    reader.seek(32+2*index);
     lfo.center = reader.uShort();
     reader.seek(1184+index);
     lfo.smoothing = reader.u8();
