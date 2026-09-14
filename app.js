@@ -51,12 +51,6 @@ document.addEventListener('pointerdown', (e) =>
 
 document.addEventListener('pointerup', () => { appState.slider = null; });
 
-/*
-document.addEventListener('input', (e) =>
-{
-  if (e.target && e.target.type === 'range') { snapValue(e.target); }
-}); */
-
 document.addEventListener('keydown', (e) =>
 {
   if (!e.target || e.target.type !== 'range') { return; }
