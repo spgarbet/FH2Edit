@@ -119,7 +119,7 @@ function renderMcv(mcv, m)
   changeType(m);
 }
 
-function scaleVoltage(range, level)
+function scaleVoltage(range, level, scale=16383)
 {
   let rng  = 0;
   let base = 0;
@@ -133,7 +133,7 @@ function scaleVoltage(range, level)
     default: throw new Error("voltage scaling not supported "+range+" "+level);
   }
   
-  return ((level/16383) * rng + base).toFixed(3);
+  return ((level/scale) * rng + base).toFixed(3);
 }
 
 function renderConfig(data)

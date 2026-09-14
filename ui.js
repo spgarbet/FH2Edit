@@ -773,13 +773,45 @@ function renderLfoEditor()
 {
   const output = selectedIcon.output;
   var   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
+  const loc    = 16*output;
   
   // Activate the lfo properly based on icon position
   if(lfo.level <= 0)
   {
     initLFO(output);
-    setPresetShort(160+16*output, 16383);
+    setPresetShort(160+loc, 16383);
     lfo = parsePresetLFO(new ByteReader(presetSysex), output);
+  }
+  
+  if(lfo['speed'] === 0)
+  {
+    put("lfo-speed", 0);
+    setPresetU8(174+loc, 1);      // use base/mult
+    if(lfo['base'] === 0)
+    {
+      setPresetU8(164+loc, 24);   // base
+      lfo['base'] = 24;
+    }
+    if(lfo['multiplier'] === 0)
+    {
+      setPresetU8(165+loc, 1);    // mult
+      lfo['multiplier']=1;
+    }
+
+    put("lfo-base",  lfo['base']);
+    put("lfo-mult",  lfo['multiplier']);
+    elem("lfo-base").disabled = false;
+    elem("lfo-mult").disabled = false;
+  } else
+  {
+     put("lfo-speed", short14ToHz(lfo['speed']).toFixed(5));
+     put("lfo-base",  0);
+     put("lfo-mult",  0); 
+     setPresetU8(174+loc, 0);    // use base/mult
+     setPresetU8(164+loc, 0);    // base
+     setPresetU8(165+loc, 0);    // mult
+     elem("lfo-base").disabled = true;
+     elem("lfo-mult").disabled = true;
   }
   
   for(let param of ['center', 'sine', 'pw', 'saw', 'noise', 'fade', 'level',
@@ -1005,9 +1037,9 @@ function drawWaveform()
   context.stroke();
   
   // Update Stats
-  put("stat-min", (lfo.min    ).toFixed(3) );
-  put("stat-max", (lfo.max    ).toFixed(3) );
-  put("stat-avg", (lfo.avg    ).toFixed(3) );
+  put("stat-min", scaleVoltage(get("rng_"+selectedIcon.output), lfo.min+1, 2) );
+  put("stat-max", scaleVoltage(get("rng_"+selectedIcon.output), lfo.max+1, 2) );
+  put("stat-avg", scaleVoltage(get("rng_"+selectedIcon.output), lfo.avg+1, 2) );
 }
 
 function initLfoUI()

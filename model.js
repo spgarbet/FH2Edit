@@ -95,7 +95,6 @@ function clampSwing(swing)
 
 function initLfo(i)
 {
-  console.log("initLfo",i);
   loc = 160 + 16*i;
   setPresetShort(loc ,  0);  // Level off
   setPresetShort(loc+2, 0); 
@@ -109,7 +108,7 @@ function initLfo(i)
   setPresetU8(loc+11,   0);
   setPresetU8(loc+12,   0);
   setPresetU8(loc+13,   0);
-  setPresetU8(loc+14,   0);
+  setPresetU8(loc+14,   1);
   setPresetU8(loc+15,   0);
   setPresetShort(32+2*i, 8192); // Center
 }
