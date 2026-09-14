@@ -194,9 +194,10 @@ function generateLFO(
   const square       = parameters.square   / LFO_COMPONENT_MAX;
   const pulseWidth   = parameters.pw       / LFO_COMPONENT_MAX;
   const triangle     = parameters.triangle / LFO_COMPONENT_MAX;
-  const saw          = parameters.saw      / LFO_COMPONENT_MAX;
   const random       = parameters.random   / LFO_COMPONENT_MAX;
   const noise        = parameters.noise    / LFO_COMPONENT_MAX;
+  const saw          = parameters.saw===64 ? 0 : (parameters.saw-63.5) / 63.5;
+
   const phaseSamples = phaseOffset(parameters.phase);
 
   for (let i=0; i<LFO_SAMPLE_COUNT; ++i)
