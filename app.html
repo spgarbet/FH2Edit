@@ -327,8 +327,19 @@
               <button id="lfo-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove LFO"></button>
               <h3 id="lfo-editor-name">LFO Editor</h3>
             </div>
+            <div id="lfo-speeds">
+                <label for="lfo-speed">Speed</label>
+                <input id="lfo-speed" type="number" min="0" max="10.0"
+                       step="0.1" value="1" size="6"
+                       onchange="setLfoSpeed(this.value)">
+                <span class="unit">Hz</span>
+                <label for="lfo-base">Base</label>
+                <select id="lfo-base" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+                <label for="lfo-mult">Multipler</label>
+                <select id="lfo-mult" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+            </div> 
             <div id="lfo-controls">
-          
+        
               <div class="control">
                 <label for="lfo-center">Center</label>
                 <input id="lfo-center" type="range" min="0" max="16383" value="8192"

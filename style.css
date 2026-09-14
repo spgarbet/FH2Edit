@@ -647,6 +647,16 @@ input[type="range"]::-webkit-slider-thumb
   margin-bottom: 2rem;
 }
 
+#lfo-speeds
+{
+  margin-bottom: 0.75em;
+}
+
+#lfo-speeds > span
+{
+  margin-right: 2em;
+}
+
 .control
 {
   display: grid;
@@ -669,7 +679,7 @@ input[type="range"]
 {
   width: 100%;
 }
-    
+
 #waveform-container
 {
   width: 512px;

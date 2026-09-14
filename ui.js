@@ -1031,3 +1031,49 @@ function initLfoUI()
     updateFPS();
   });
 }
+
+const LOG10 = 2.302585092994046;
+
+// Best guess at what Expert Sleepers means "logarithmic scaled"
+function bitsForHz(x)
+{
+  return Math.round(16382*((Math.log(x)+LOG10) / LOG10 / 2) + 1);
+}
+
+function short14ToHz(x)
+{
+  return Math.exp(2*LOG10*(x-1)/16382-LOG10);
+}
+
+function setLfoSpeed(v)
+{
+  const speed = Number(v);
+  const loc   = 16*selectedIcon.output;
+  if(!speed || speed <= 0)
+  {
+    elem("lfo-base").disabled = false;
+    elem("lfo-mult").disabled = false;
+    put("lfo-base", 24);
+    put("lfo-mult", 1);
+    
+    setPresetShort(162+loc, 0); // speed
+    setPresetU8(164+loc, 24);   // base
+    setPresetU8(165+loc, 1);    // mult
+    setPresetU8(174+loc, 1);    // use
+  }
+  else
+  {
+    elem("lfo-base").disabled = true;
+    elem("lfo-mult").disabled = true;
+    put("lfo-base", 0);
+    put("lfo-mult", 0);
+    
+    let bits = bitsForHz(v);
+    elem("lfo-speed").value = short14ToHz(bits).toFixed(5);
+    
+    setPresetShort(162+loc, bits); // speed
+    setPresetU8(164+loc, 0);       // base
+    setPresetU8(165+loc, 0);       // mult
+    setPresetU8(174+loc, 0);       // use
+  }
+}
