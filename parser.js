@@ -133,10 +133,71 @@ class ByteReader
   get position() { return this.offset; }
 }
 
+function parsePresetDirectLevel(reader)
+{
+  reader.seek(32);
+  const direct = [];
+	for (let i = 0; i<64; ++i)
+	{ 
+	  direct.push(reader.uShort());
+	  reader.skip(2);
+	}
+	return direct;
+}
+
+// Unfortunate bit of logical coupling
+// Smoothing was an addendum, and it out of sequence when parsing
+// This can be used to pull a specific lfo by specifying lfo number
+// or if lfo is undefined, just parses the main body without smoothing
+// addendum
+function parsePresetLFO(reader, index)
+{
+  if(index !== undefined) { reader.seek(160+16*index); }
+  const lfo =
+  {                               // Relative offsets
+    level:      reader.uShort(),  //  0
+    speed:      reader.uShort(),  //  2
+    base:       reader.u8(),      //  4
+    multiplier: reader.u8(),      //  5
+    sine:       reader.u8(),      //  6
+    square:     reader.u8(),      //  7
+    triangle:   reader.u8(),      //  8
+    pw:         reader.u8(),      //  9
+    saw:        reader.u8(),      // 10
+    random:     reader.u8(),      // 11
+    noise:      reader.u8(),      // 12
+    fade:       reader.u8(),      // 13
+    use:        reader.u8(),      // 14
+    phase:      reader.u8()       // 15
+  };
+  
+  // If a specific LFO is requested, grab the direct and smoothing
+  if(index !== undefined)
+  {
+    reader.seek(32+4*index);
+    lfo.center = reader.uShort();
+    reader.seek(1184+index);
+    lfo.smoothing = reader.u8();
+  }
+  
+  return lfo;
+}
+
+function parsePresetLFOs(reader)
+{
+  reader.seek(160);
+  
+  const lfos = [];
+  for (let i=0; i<64; ++i) { lfos.push(parsePresetLFO(reader)); }
+  for (let i=0; i<64; ++i) { lfos[i].smo = reader.u8();         } 
+  
+  return lfos;
+}
+
 function parsePreset(reader)
 {
   reader.skip(8);
-  const version = reader.u32LE();                 // 8
+  const version = reader.u32LE();                          //   8
   if (version !== 8)
   {
     log("Preset Version Unsupported");
@@ -144,44 +205,16 @@ function parsePreset(reader)
     return null;
   }
 
-  const name = reader.fixedString(16).trimEnd();  // 12
+  const name = reader.fixedString(16).trimEnd();          //   12
   reader.skip(1);
-  const swingType   = reader.u8();                // 29
-  const swingAmount = reader.u8();                // 30
+  const swingType   = reader.u8();                        //   29
+  const swingAmount = reader.u8();                        //   30
   reader.skip(1);
-
-  const faders = [];                              // 32
-	for (let i = 0; i<64; ++i) { faders.push(reader.sShort()); }
-	
-  const outputs = [];                             // 160
-  for (let i = 0; i < 64; ++i)
-  {
-    const output =
-    {
-      mlt: reader.sShort(),
-      lfo: reader.sShort(),
-      clk: reader.u8(),
-      clkm: reader.u8(),
-      sin: reader.u8(),
-      sqr: reader.u8(),
-      tri: reader.u8(),
-      pw:  reader.u8(),
-      saw: reader.u8(),
-      rnd: reader.u8(),
-      nse: reader.u8(),
-      fad: reader.u8(),
-      mus: reader.u8(),
-      phs: reader.u8()
-    };
-
-    outputs.push(output);
-  }
-
-  const smoothing = [];                                   // 1184
-  for (let i=0; i<64; ++i) { smoothing.push(reader.u8());}
+	const directLevel = parsePresetDirectLevel(reader);     //   32
+	const lfos        = parsePresetLFOs(reader);            //  160
 
   const arpeg = [];                                       // 1248
-  for (let i = 0; i < 16; ++i)
+  for (let i=0; i<16; ++i)
   {
     arpeg.push(
       {
@@ -470,9 +503,8 @@ function parsePreset(reader)
     name,
     swingType,
     swingAmount,
-    faders,
-    outputs,
-    smoothing,
+    directLevel,
+    lfos,
     arpeg,
     tempo,
     euclidean,

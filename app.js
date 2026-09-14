@@ -30,17 +30,16 @@ const appState =
   lastFrameTime:    0
 };
 
-
-
-const FAST_STEP = "164";
-const SLOW_STEP = "1";
+const FAST_STEP_SHORT = "164";
+const FAST_STEP_BYTE  = "8";
 
 document.addEventListener('pointerdown', (e) =>
 {
   if (e.target && e.target.type === 'range')
   {
     appState.slider = e.target;
-    e.target.step   = appState.shiftKey ? SLOW_STEP : FAST_STEP;
+    e.target.step   = appState.shiftKey ? "1" : 
+      (Number(e.target.max) > 127 ? FAST_STEP_SHORT : FAST_STEP_BYTE);
   }
 });
 
@@ -54,10 +53,10 @@ window.addEventListener('keydown', (e) =>
   if (e.key === 'Shift')
   {
     appState.shiftKey=true;
-    if(appState.slider)
-      { appState.slider = SLOW_STEP; }
-    else if (document.activeElement && document.activeElement.type === 'range') 
-      { document.activeElement.step = SLOW_STEP; }
+    if (!appState.slider &&
+        document.activeElement &&
+        document.activeElement.type === 'range') 
+    { document.activeElement.step = "1"; }
   }
 });
 
@@ -66,10 +65,15 @@ window.addEventListener('keyup', (e) =>
   if (e.key === 'Shift')
   {
     appState.shiftKey=false;
-    if(appState.slider)
-      { appState.slider = FAST_STEP; }
-    else if (document.activeElement && document.activeElement.type === 'range')
-      { document.activeElement.step = FAST_STEP; }
+    if (!appState.slider &&
+       document.activeElement &&
+       document.activeElement.type === 'range')
+    { 
+      document.activeElement.step =
+        (Number(document.activeElement.step.max) > 127 ? 
+          FAST_STEP_SHORT : 
+          FAST_STEP_BYTE);
+    }
   }
 });
 
@@ -87,6 +91,5 @@ document.addEventListener("DOMContentLoaded", () =>
   initFileChooser();
   initLFO();
   initLfoUI()
-  updateAllControls();
   updateFPS();
 });

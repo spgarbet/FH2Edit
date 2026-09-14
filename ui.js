@@ -38,7 +38,7 @@ const ICON_DEFS =
   midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
   lfo:       { label: "LFO",        src: "icons/lfo.png",      total: 64 },
   clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 } /*,
-  control:   { label: "Controller", src: "icons/clock.png",    total: 32 },
+  control:   { label: "Controller", src: "icons/controller.png",total: 32 },
   arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 32 },
   envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 32 },
   euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 32 },
@@ -72,7 +72,6 @@ function nybbleChar( n )
 	if ( n >= 10 ) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
 	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
 }
-
 
 function optionRange(low, high, selected = null, valueOffset = 0)
 {
@@ -584,7 +583,6 @@ function addIcon(type, output)
 
 function removeIcon(type, index)
 {
-  console.log("removeIcon("+type+", "+index+")");
   const icon = iconState[type][index];
 
   if (!icon.enabled) { return; }
@@ -757,16 +755,21 @@ function renderMidiEditor()
 function renderLfoEditor()
 {
   const output = selectedIcon.output;
-  const lfo    = iconState.lfo[output];
+  const lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
   
-  <!-- Pull from parsed structure here -->
+  for(let param of ['center', 'sine', 'pw', 'saw', 'noise', 'fade', 'level',
+                    'square','triangle', 'random', 'phase', 'smoothing'])
+  {
+    put("lfo-"+param,          lfo[param]);
+    put("lfo-"+param+"-value", lfo[param]);
+  }
+  drawWaveform();
 }
 
 function renderClockEditor()
 {
   const index  = selectedIcon.index;  // Number in clock pool
   const clocks = parseConfigClocks(new ByteReader(configSysex));
-  if (clocks === null) { console.error("Unable to parse clocks"); return; }
   const clock  = clocks[index];
   
   // Activate the clock properly based on icon position
@@ -878,23 +881,6 @@ function centerToSelected(id)
 
 // LFO Code
 
-// FIXME: This should be from sysex somehow
-const parameters =
-{
-  center: 8192,
-  level: 16383,
-  sine: 127,
-  square: 0,
-  pw: 64,
-  triangle: 0,
-  saw: 0,
-  random: 0,
-  noise: 0,
-  phase: 0,
-  fade: 0,
-  smoothing: 0
-};
-
 function animate(timestamp)
 {
   if (!appState.animationRunning) { return; }
@@ -923,15 +909,6 @@ function stopAnimation()
 {
   appState.animationRunning = false;
 }
-
-function updateControl(id)
-{
-  const control  = elem(id);
-  const output   = elem(id + "-value");
-// FIXME This should be to the sysex...
-  parameters[id] = Number(control.value);
-  output.value   = control.value;
-}
     
 function updateFPS()
 {
@@ -939,14 +916,6 @@ function updateFPS()
   const output           = elem("fps-value");
   appState.animationFPS  = Number(control.value);
   output.value           = control.value;
-}
-
-function updateAllControls()
-{
-  for (const id in parameters)
-  {
-    updateControl(id);
-  }
 }
     
 function drawGuidelines(canvas, context)
@@ -973,7 +942,10 @@ function drawWaveform()
 {
   const canvas  = elem("waveform");
   const context = canvas.getContext("2d");
-  const lfo     = generateLFOWithStats(parameters);
+  const lfo     = generateLFOWithStats(  // Sysex is source of truth
+                    parsePresetLFO( 
+                      new ByteReader(presetSysex),
+                      selectedIcon.output));
   const width   = canvas.width;
   const height  = canvas.height;
   const middle  = height / 2;
@@ -1004,13 +976,6 @@ function drawWaveform()
 
 function initLfoUI()
 {
-  for (const id in parameters)
-  {
-    elem(id).addEventListener("input", function() { 
-      updateControl(id); 
-    });
-  }
-
   elem("animate").addEventListener("click", function()
   {
     if (appState.animationRunning)
