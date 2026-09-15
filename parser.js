@@ -129,7 +129,7 @@ class ByteReader
 
     this.offset = offset;
   }
-
+  
   get position() { return this.offset; }
 }
 
@@ -576,6 +576,30 @@ function parseConfigClocks(reader)
   return(clocks);
 }
 
+function parseMapping(reader, slot, move=true)
+{
+  if(move) { reader.seek(612+4*slot); }
+  return {
+    channel: reader.u8(),
+    cc:      reader.u8(),
+    type0:   reader.u8(),
+    type1:   reader.u8(),
+    slot
+  };
+}
+
+function parseMappings(reader)
+{
+  reader.seek(612);
+
+  mappings = [];                    
+  for (let i = 0; i < 384; ++i)
+  {
+    mappings.push(parseMapping(reader, i, false));
+  }
+  return transformMappings(mappings);
+}
+
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -617,21 +641,8 @@ function parseConfig(reader)
   config.mcvs = [];                        // 100
   for (let i = 0; i < 16; ++i) { config.mcvs.push(parseMcv(reader));    }
 
-  // MIDI mappings
-  config.mappings = [];                    // 612
-  for (let i = 0; i < 384; ++i)
-  {
-    config.mappings.push(
-      {
-        channel: reader.u8(),
-        cc:      reader.u8(),
-        type0:   reader.u8(),
-        type1:   reader.u8()
-      }
-    );
-  }
-  
-  config.clocks = parseConfigClocks(reader); // 2148
+  config.mappings = parseMappings(reader);     //  612 
+  config.clocks   = parseConfigClocks(reader); // 2148
 
   // Gate levels
   config.gateLevels = [];                  // 2404
