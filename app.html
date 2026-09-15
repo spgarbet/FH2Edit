@@ -446,8 +446,32 @@ Smoothing applies to every function of the FH-2: direct control, LFOs, sequencer
               <div>Avg: <output id="stat-avg">0.000</output></div>
             </div>
             <div>Approximate representation.</div>
+            
+            <!--
+            <div id="lfo-midi">
+              <h3>MIDI Control of LFO (Configuration)</h3>
+              <div>
+                <span>Direct Control</span>
+                <label for="lfo-midi-dc-chan">Channel</label>
+                <select id="lfo-midi-dc-chan"><option value="0">--</option></option><script>optionRange(1,16)</script></select>
+                <label for="lfo-midi-dc-cc">CC</label>
+                <select id="lfo-midi-dc-dd"><option value="-1">--</option><script>optionRange(0,127)</script></select>
+                <label for="lfo-midi-dc-rel">Rel</label>
+                <input id="lfo-midi-dc-rel" type="checkbox">
+              </div>
+              <div>
+                <span>LFO Speed</span>
+                <label for="lfo-midi-speed-chan">Channel</label>
+                <select id="lfo-midi-speed-chan"><option value="0">--</option></option><script>optionRange(1,16)</script></select>
+                <label for="lfo-midi-speed-cc">CC</label>
+                <select id="lfo-midi-speed-dd"><option value="-1">--</option><script>optionRange(0,127)</script></select>
+                <label for="lfo-midi-speed-rel">Rel</label>
+                <input id="lfo-midi-speed-rel" type="checkbox">
+              </div>
+            </div>
+            -->
           </div>
-          
+        
         
           <div id="clock-editor" hidden>
             <div class="editor-header">

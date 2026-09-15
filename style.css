@@ -270,6 +270,12 @@ body
   background-color: #fffade;
 }
 
+
+#lfo-midi > div:nth-child(even)
+{
+  background-color: #fffade;
+}
+
 /* Outputs */
 
 #outputs-list
