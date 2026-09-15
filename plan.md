@@ -1,7 +1,8 @@
 
 # Known Bugs
 
-* Bugs: Changing expanders loses focus on LFO
+* Changing expanders loses focus on LFO
+* Default configuration has every LFO turned on. 
 
 Existing:
 
@@ -36,6 +37,7 @@ Existing:
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
   - (ICON-Lighting) 64 Triggers, (? channel/cc)
 - Tunings 32 slots for Scala/Keyboard
+- Gates tab (edit things on Gates like Expanders)
 - Outputs (cont)
   - (ICON-Game Controller) 32 HID Gamepad, assign to output
   - (ICON-Keyboard) 32 HID Keyboard, assign to output
