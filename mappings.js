@@ -123,7 +123,7 @@ function compileMapping(raw)
 
     if (dest !== null && dest !== undefined)
     {
-      return compileMapping(raw, "lfo", raw.t1 & 0x3f, dest);
+      return mapping(raw, "lfo", raw.t1 & 0x3f, dest);
     }
 
     throw new Error("invalid mapping type code", raw);
@@ -139,20 +139,16 @@ function compileMapping(raw)
     case 15: return decodeMapping(raw, "srr",   (raw.t1 >> 3), srrControls  );
     case 16: return decodeMapping(raw, "mcv3",  (raw.t1 >> 3), mcv3Controls );
     case 13:
-      index = map.t1 >> 4;
+      index = raw.t1 >> 4;
       if (index < 4)
-      {
-        return decodeMapping(raw, "seq",  index,   seqControls);
-      }
+      { return decodeMapping(raw, "seq",  index,   seqControls); }
       else
-      {
-        return decodeMapping(raw, "dseq", index-4, dseqControls);
-      }
+      { return decodeMapping(raw, "dseq", index-4, dseqControls); }
     default:
       if (typeCode >= 69 && typeCode <= 79)
       {
         const dest = globalControls[typeCode - 69];
-        if (dest !== null && dest !== undefined) { return compileMapping(raw,"glb",0,dest); }
+        if (dest !== null && dest !== undefined) { return mapping(raw,"glb",0,dest); }
       }
   }
   throw new Error("Invalid mapping", raw);

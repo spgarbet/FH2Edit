@@ -576,14 +576,14 @@ function parseConfigClocks(reader)
   return(clocks);
 }
 
-function parseMapping(reader, slot, move=true)
+function parseMapping(reader, slot, seek=true)
 {
-  if(move) { reader.seek(612+4*slot); }
+  if(seek) { reader.seek(612+4*slot); }
   return {
     channel: reader.u8(),
     cc:      reader.u8(),
-    type0:   reader.u8(),
-    type1:   reader.u8(),
+    t0:      reader.u8(),
+    t1:      reader.u8(),
     slot
   };
 }
