@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet"
+          href="https://code.jquery.com/qunit/qunit-2.20.0.css">
+    <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
+    <script src="../default.js"></script>
+    <script src="../model.js"></script>
+    <script src="../parser.js"></script>
+    <script src="../mappings.js"></script>
+    <script>
+      QUnit.module("Parse Mappings")
+      QUnit.test("Calls works", function(assert) 
+      {
+        assert.ok(parseMapping(new ByteReader(configSysex), 4));
+        assert.ok(parseMappings(new ByteReader(configSysex)));
+      });
+      
+      QUnit.test("Returns default 4", function(assert)
+      {
+        let x = parseMapping(new ByteReader(configSysex), 4);
+        assert.equal(x.channel, 48);
+        assert.equal(x.cc,       4);
+        assert.equal(x.type0,    0);
+        assert.equal(x.type1,    4);
+        assert.equal(x.slot,     4);
+      });
+      
+      QUnit.module("nextMappingSlot")
+      QUnit.test("Find Empty", function(assert)
+      {
+        assert.equal(nextMappingSlot(), 8);
+        assert.equal(clearMapping(3), undefined);
+        assert.equal(nextMappingSlot(), 3);
+        assert.equal(writeMapping(3, "lfo", 3, "DC", 1, 0, false), undefined);
+        assert.equal(nextMappingSlot(), 8);
+      });
+      
+      QUnit.module("InverseLUT");
+      QUnit.test("Finds Entry", function(assert)
+      {
+        assert.equal(inverseLUT("LFO", lfoLowControls), 1);
+        
+      });
+      QUnit.test("Fails gracefully", function(assert)
+      {
+        assert.equal(inverseLUT("LFO", []), null);
+        assert.equal(inverseLUT("XXX", lfoLowControls), null);
+      });
+      
+      /*
+      function roundTrip(mapping)
+      {
+        writeMapping(
+          mapping.slot,
+          mapping.type,
+          mapping.index,
+          mapping.dest,
+          mapping.channel,
+          mapping.cc,
+          mapping.relative
+        );
+      
+        const raw    = parseMapping(new ByteReader(configSysex), mapping.slot);
+        return transformMapping(raw, mapping.type, mapping.index, mapping.dest);
+      }*/
+      
+      /*
+      function testAllMappings()
+      {
+        const types =
+        {
+          lfo:   [lfoLowControls, lfoHighControls],
+          arp:   [arpControls],
+          euc:   [eucControls],
+          mcv:   [mcvControls],
+          mcv2:  [mcv2Controls],
+          seq:   [seqControls],
+          dseq:  [dseqControls],
+          dseql: [dseqlControls],
+          srr:   [srrControls],
+          mcv3:  [mcv3Controls],
+          glb:   [globalControls]
+        };
+      
+        for (const [type, tables] of Object.entries(types))
+        {
+          for (const table of tables)
+          {
+            QUnit.module("Mapping functions "+type);
+            for (let index = 0; index < table.length; ++index)
+            {
+              const dest = table[index];
+              if (dest === null) { continue; }
+      
+              QUnit.test("Mapping round-trip "+type+" "+dest,
+                function (assert) {
+                  let x = 
+                  {
+                    slot:     Math.floor(Math.random() * 364),
+                    channel:  Math.floor(Math.random() *  16),
+                    cc:       Math.floor(Math.random() * 128),
+                    relative: Math.random() < 0.5,
+                    type,
+                    index:    Math.floor(Math.random() *  16),
+                    dest
+                  };
+                  assert.equal(JSON.stringify(x), JSON.stringify(roundTrip(x)));
+                });
+
+            }
+          }
+        }
+      }
+      
+      testAllMappings();
+      */
+
+      
+      /*
+      let x = 
+          {
+            slot:     Math.floor(Math.random() * 384),
+            channel:  Math.floor(Math.random() *  16),
+            cc:       Math.floor(Math.random() * 128),
+            relative: Math.random() < 0.5,
+            type:     "lfo",
+            index:    Math.floor(Math.random() *  16),
+            dest:     "SAW"
+          };
+      QUnit.module("Mapping lfo");
+      QUnit.test("Mapping round-trip SAW",
+        function (assert) {
+          assert.deepEqual(x, roundTrip(x));
+        });*/
+    </script>
+  </head>
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+  </body>
+</html>
+
+
+

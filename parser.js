@@ -597,7 +597,7 @@ function parseMappings(reader)
   {
     mappings.push(parseMapping(reader, i, false));
   }
-  return transformMappings(mappings);
+  return mappings;
 }
 
 function parseConfig(reader)
