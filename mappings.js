@@ -99,15 +99,7 @@ function mapping(map, type, index, dest)
 
 function decodeMapping(map, type, index, controls)
 {
-  const k = map.t1 & 0x07;
-
-  if (k >= controls.length)
-  {
-    console.error("Invalid mapping", map);
-    return null;
-  }
-
-  return mapping(map, type, index, controls[k]);
+  return mapping(map, type, index, controls[map.t1 & 0x07]);
 }
 
 function compileMapping(raw)
