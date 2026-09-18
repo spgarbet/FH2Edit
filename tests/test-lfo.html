@@ -145,7 +145,7 @@
 
     <div class="control">
       <label for="sine">Sine</label>
-      <input id="sine" type="range" min="0" max="127" value="127"
+      <input id="sine" type="range" min="0" max="127" value="64"
              onchange="drawWaveform()">
       <output id="sine-value">127</output>
     </div>
@@ -173,7 +173,7 @@
 
     <div class="control">
       <label for="saw">Saw</label>
-      <input id="saw" type="range" min="0" max="127" value="0"
+      <input id="saw" type="range" min="0" max="127" value="64"
              onchange="drawWaveform()">
       <output id="saw-value">0</output>
     </div>
@@ -248,7 +248,7 @@
     </div>
   </div>
 
-  <script src="lfo.js"></script>
+  <script src="../lfo.js"></script>
 
   <script>
     let animationFPS = 20;
@@ -259,11 +259,11 @@
     {
       center: 8192,
       level: 16383,
-      sine: 127,
+      sine: 0,
       square: 0,
       pw: 64,
       triangle: 0,
-      saw: 0,
+      saw: 64,
       random: 0,
       noise: 0,
       phase: 0,

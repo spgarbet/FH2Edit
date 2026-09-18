@@ -37,7 +37,7 @@
     - Ghost icons to show consumed outputs.
   - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
-  - (ICON-Lighting) 64 Triggers, (? channel/cc)
+  - (ICON-Lightning) 64 Triggers, (? channel/cc)
 - Tunings 32 slots for Scala/Keyboard
 - Gates tab (edit things on Gates like Expanders)
 - Outputs (cont)
@@ -50,11 +50,3 @@
 Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/drum requests?
   - 4x4 4 channel MIDI 32 step sequencer  (spits MIDI out)
   - 1x26 1 drum 32 step sequencer         (spits trigs out)
-
-
-
-
-
-
-
-
