@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FH-2 LFO Designer</title>
+  <script src="../default.js" ></script>
+  <script src="../model.js"   ></script>
+  <script src="../parser.js"  ></script>
+  <script src="../mappings.js"></script>
+  <script src="../ui.js"      ></script>
+  
+  <script>
+function initMidiMapButtons()
+{
+  const buttons = document.querySelectorAll(".midi-map-button");
+
+  for (const button of buttons)
+  {
+    button.addEventListener("click", function(event)
+    {
+      event.stopPropagation();
+      showMidiMapPopup(this);
+    });
+  }
+
+  elem("midi-map-close").addEventListener("click", hideMidiMapPopup);
+
+  elem("midi-map-remove").addEventListener("click", function()
+  {
+    lfoMidiMaps[midiMapParam] = null;
+    renderMidiMapButton(midiMapButton, null);
+    hideMidiMapPopup();
+  });
+
+  elem("midi-map-channel").addEventListener("change", updateMidiMap);
+  elem("midi-map-cc").addEventListener("change", updateMidiMap);
+  elem("midi-map-relative").addEventListener("change", updateMidiMap);
+}
+
+document.addEventListener("DOMContentLoaded", () =>
+{
+  initMidiMapButtons();
+});
+function showMidiMapPopup(button)
+{
+  midiMapButton = button;
+  midiMapParam = button.dataset.param;
+
+  const mapping = lfoMidiMaps[midiMapParam];
+
+  elem("midi-map-channel").value =
+    mapping ? mapping.channel : 0;
+
+  elem("midi-map-cc").value =
+    mapping ? mapping.cc : 0;
+
+  elem("midi-map-relative").checked =
+    mapping ? mapping.relative : false;
+
+  const rect = button.getBoundingClientRect();
+  const popup = elem("midi-map-popup");
+
+  popup.hidden = false;
+  popup.style.left =
+    `${rect.left + window.scrollX}px`;
+  popup.style.top =
+    `${rect.bottom + window.scrollY + 4}px`;
+}
+function updateMidiMap()
+{
+  if (midiMapParam === null) { return; }
+
+/* NO WAY THIS WILL WORK
+  lfoMidiMaps[midiMapParam] =
+  {
+    channel: Number(elem("midi-map-channel").value),
+    cc: Number(elem("midi-map-cc").value),
+    relative: elem("midi-map-relative").checked
+  };
+*/
+  renderMidiMapButton(
+    midiMapButton,
+    lfoMidiMaps[midiMapParam]
+  );
+}
+function renderMidiMapButton(button, mapping)
+{
+  if (!mapping)
+  {
+    button.classList.remove("assigned");
+    button.innerHTML =
+      '<img src="assets/midi.png" alt="MIDI">';
+    return;
+  }
+
+  button.classList.add("assigned");
+
+  button.textContent =
+    `${mapping.channel + 1}/${mapping.cc}` +
+    (mapping.relative ? "R" : "");
+}
+function hideMidiMapPopup()
+{
+  elem("midi-map-popup").hidden = true;
+  midiMapParam = null;
+  midiMapButton = null;
+}
+  </script>
+
+  <style>
+.midi-map-button
+{
+  width: 28px;
+  height: 28px;
+  padding: 3px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.midi-map-button img
+{
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.midi-map-button.assigned
+{
+  width: auto;
+  min-width: 42px;
+  padding: 2px 5px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  line-height: 20px;
+}
+
+.midi-map-popup
+{
+  position: absolute;
+  z-index: 1000;
+  min-width: 180px;
+  padding: 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.midi-map-title
+{
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.midi-map-popup label
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.midi-map-relative
+{
+  justify-content: flex-start !important;
+}
+
+.midi-map-actions
+{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+  </style>
+  
+</head>
+<body> 
+  <div class="lfo-row">
+    <label>Center</label>
+    <input id="lfo-center" type="range">
+    <output id="lfo-center-value">0</output>
+    <button class="midi-map-button"
+            type="button"
+            data-param="center"
+            aria-label="MIDI assignment for Center">
+      <img src="../icons/midi-din.svg" alt="MIDI DIN5">
+    </button>
+ </div>
+ 
+ <div class="lfo-row">
+    <label>Level</label>
+    <input id="lfo-level" type="range">
+    <output id="lfo-level-value">0</output>
+    <button class="midi-map-button"
+            type="button"
+            data-param="center"
+            aria-label="MIDI assignment for Center">
+      <img src="../icons/midi-din.svg" alt="MIDI DIN5">
+    </button>
+ </div>
+ 
+ <div id="midi-map-popup" class="midi-map-popup" hidden>
+  <div class="midi-map-title">MIDI Assignment</div>
+
+  <label>
+    Channel
+    <select id="midi-map-channel"><script>optionRange(1,16,1,-1)</script></select>
+  </label>
+
+  <label>
+    CC
+    <input id="midi-map-cc" type="number" min="0" max="127">
+  </label>
+
+  <label class="midi-map-relative">
+    <input id="midi-map-relative" type="checkbox">
+    Relative
+  </label>
+
+  <div class="midi-map-actions">
+    <button id="midi-map-remove" type="button">Remove</button>
+    <button id="midi-map-close" type="button">Done</button>
+  </div>
+</div>
+  
+</body>
+</html>
