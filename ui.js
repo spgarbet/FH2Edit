@@ -754,8 +754,11 @@ function showIconPicker(output, anchor)
 function hideIconPicker()
 {
   const picker = elem("icon-picker");
-  picker.hidden = true;
-  delete picker.dataset.output;
+  if(picker)
+  {
+    picker.hidden = true;
+    delete picker.dataset.output;
+  }
 }
 
 document.addEventListener("click", function() { hideIconPicker(); });

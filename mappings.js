@@ -10,7 +10,8 @@ var eucControls          = [ "P", "S", "R", "T", "G", "A", "E" ];
 var srrControls          = [ "D", "L", "R", "T", "A", "S", "K", "G" ];
 var lfoLowControls       = ["DC", "LFO", "PW", "TRI", "CLK", "CLKM", "MLT", "SQR", "SIN"];
 var lfoHighControls      = [null, null, null, "SAW", "RND", "NSE", "SMO", "PHS", "FAD"];
-
+var typeMappings         = [ "lfo",  "arp", "seq", "dseq", "dseql", "mcv2", 
+                             "mcv3", "mcv", "euc", "srr",  "glb"];
 // Functions
 
 // # Returns 0-383, or null if none found
@@ -35,6 +36,7 @@ function inverseLUT(dest, map)
 
 function writeMapping(slot, type, index, dest, channel, cc, rel)
 {
+  console.log("writeMapping", slot, type, index, dest, channel, cc, rel);
   const loc = 612 + slot * 4;
 
   setConfigU8(loc,     48 + (channel & 0xf));
@@ -149,17 +151,36 @@ function compileMapping(raw)
 // Make a mapping interpretable and directly useable
 function compileMappings(rawMappings)
 {
-  const mappings = Object.fromEntries(
-    [ "lfo",  "arp", "seq", "dseq", "dseql", "mcv2", 
-      "mcv3", "mcv", "euc", "srr",  "glb"            
-    ].map(key => [key, []])
-  );
+  const mappings = Object.fromEntries(typeMappings.map(key => [key, []]));
   
   for (let i = 0; i < 384; ++i)
   {
     const compiled = compileMapping(rawMappings[i]);
-    if(compiled)    { mappings[compiled.dest].push(compiled); }
+    if(compiled)    { mappings[compiled.type].push(compiled); }
   }
   
   return mappings;
+}
+
+function allMappings()
+{
+  return compileMappings(parseMappings(new ByteReader(configSysex)));
+}
+
+function locateMapping(type, dest, index)
+{
+  const mappings = allMappings()[type];
+  for(i=0; i<mappings.length; ++i)
+  {
+    if(mappings[i]                 &&
+       mappings[i].dest  === dest  &&
+       mappings[i].index === index) 
+    { return mappings[i]; }
+  }
+  return null;
+}
+
+function readMapping(slot)
+{
+  return compileMapping(parseMapping(new ByteReader(configSysex), slot));
 }

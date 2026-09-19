@@ -11,7 +11,9 @@
   <script src="../mappings.js"></script>
   <script src="../ui.js"      ></script>
   
-  <script>
+<script>
+let midiMapButton = null;
+
 function initMidiMapButtons()
 {
   const buttons = document.querySelectorAll(".midi-map-button");
@@ -25,91 +27,77 @@ function initMidiMapButtons()
     });
   }
 
-  elem("midi-map-close").addEventListener("click", hideMidiMapPopup);
-
-  elem("midi-map-remove").addEventListener("click", function()
-  {
-    lfoMidiMaps[midiMapParam] = null;
-    renderMidiMapButton(midiMapButton, null);
-    hideMidiMapPopup();
-  });
-
-  elem("midi-map-channel").addEventListener("change", updateMidiMap);
-  elem("midi-map-cc").addEventListener("change", updateMidiMap);
-  elem("midi-map-relative").addEventListener("change", updateMidiMap);
+  elem("midi-map-close"   ).addEventListener("click",  hideMidiMapPopup );
+  elem("midi-map-remove"  ).addEventListener("click",  removeMidiMap    );
+  elem("midi-map-channel" ).addEventListener("change", updateMidiMap    );
+  elem("midi-map-cc"      ).addEventListener("change", updateMidiMap    );
+  elem("midi-map-relative").addEventListener("change", updateMidiMap    );
 }
 
-document.addEventListener("DOMContentLoaded", () =>
-{
-  initMidiMapButtons();
-});
+document.addEventListener("DOMContentLoaded", initMidiMapButtons);
+
 function showMidiMapPopup(button)
 {
   midiMapButton = button;
-  midiMapParam = button.dataset.param;
 
-  const mapping = lfoMidiMaps[midiMapParam];
+  const mapping = locateMapping(
+    button.dataset.type,
+    button.dataset.dest,
+    Number(button.dataset.index)
+  );
+  
+  if(mapping) { button.dataset.slot = mapping.slot; }
+  else        { button.dataset.slot = null; }
 
-  elem("midi-map-channel").value =
-    mapping ? mapping.channel : 0;
+  elem("midi-map-channel").value    = mapping ? mapping.channel  : 0;
+  elem("midi-map-cc"     ).value    = mapping ? mapping.cc       : 0;
+  elem("midi-map-relative").checked = mapping ? mapping.relative : false;
 
-  elem("midi-map-cc").value =
-    mapping ? mapping.cc : 0;
-
-  elem("midi-map-relative").checked =
-    mapping ? mapping.relative : false;
-
-  const rect = button.getBoundingClientRect();
+  const rect  = button.getBoundingClientRect();
   const popup = elem("midi-map-popup");
 
   popup.hidden = false;
-  popup.style.left =
-    `${rect.left + window.scrollX}px`;
-  popup.style.top =
-    `${rect.bottom + window.scrollY + 4}px`;
+  popup.style.left = `${rect.left   + window.scrollX}px`;
+  popup.style.top  = `${rect.bottom + window.scrollY + 4}px`;
 }
+
 function updateMidiMap()
 {
-  if (midiMapParam === null) { return; }
-
-/* NO WAY THIS WILL WORK
-  lfoMidiMaps[midiMapParam] =
+  if (!midiMapButton) { return; }
+  
+  if(!midiMapButton.dataset.slot)
   {
-    channel: Number(elem("midi-map-channel").value),
-    cc: Number(elem("midi-map-cc").value),
-    relative: elem("midi-map-relative").checked
-  };
-*/
-  renderMidiMapButton(
-    midiMapButton,
-    lfoMidiMaps[midiMapParam]
-  );
-}
-function renderMidiMapButton(button, mapping)
-{
-  if (!mapping)
-  {
-    button.classList.remove("assigned");
-    button.innerHTML =
-      '<img src="assets/midi.png" alt="MIDI">';
-    return;
+    midiMapButton.dataset.slot = nextMappingSlot();
   }
 
-  button.classList.add("assigned");
-
-  button.textContent =
-    `${mapping.channel + 1}/${mapping.cc}` +
-    (mapping.relative ? "R" : "");
+  writeMapping(
+    Number(midiMapButton.dataset.slot),
+    midiMapButton.dataset.type,
+    Number(midiMapButton.dataset.index),
+    midiMapButton.dataset.dest,
+    Number(elem("midi-map-channel").value),
+    Number(elem("midi-map-cc").value),
+    elem("midi-map-relative").checked
+  );
 }
+
+function removeMidiMap()
+{
+  if (!midiMapButton) { return; }
+
+  clearMapping(midiMapButton.dataset.slot);
+  renderMidiMapButton(midiMapButton, null);
+  hideMidiMapPopup();
+}
+
 function hideMidiMapPopup()
 {
   elem("midi-map-popup").hidden = true;
-  midiMapParam = null;
   midiMapButton = null;
 }
-  </script>
+</script>
 
-  <style>
+<style>
 .midi-map-button
 {
   width: 28px;
@@ -188,7 +176,9 @@ function hideMidiMapPopup()
     <output id="lfo-center-value">0</output>
     <button class="midi-map-button"
             type="button"
-            data-param="center"
+            data-type="lfo"
+            data-index="0"
+            data-dest="DC"
             aria-label="MIDI assignment for Center">
       <img src="../icons/midi-din.svg" alt="MIDI DIN5">
     </button>
@@ -200,7 +190,9 @@ function hideMidiMapPopup()
     <output id="lfo-level-value">0</output>
     <button class="midi-map-button"
             type="button"
-            data-param="center"
+            data-type="lfo"
+            data-index="0"
+            data-dest="LFO"
             aria-label="MIDI assignment for Center">
       <img src="../icons/midi-din.svg" alt="MIDI DIN5">
     </button>
@@ -211,7 +203,7 @@ function hideMidiMapPopup()
 
   <label>
     Channel
-    <select id="midi-map-channel"><script>optionRange(1,16,1,-1)</script></select>
+    <select id="midi-map-channel"><script>optionRange(1,16,1,1)</script></select>
   </label>
 
   <label>
