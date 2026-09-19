@@ -36,7 +36,6 @@ function inverseLUT(dest, map)
 
 function writeMapping(slot, type, index, dest, channel, cc, rel)
 {
-  console.log("writeMapping", slot, type, index, dest, channel, cc, rel);
   const loc = 612 + slot * 4;
 
   setConfigU8(loc,     48 + (channel & 0xf));
@@ -167,15 +166,16 @@ function allMappings()
   return compileMappings(parseMappings(new ByteReader(configSysex)));
 }
 
-function locateMapping(type, dest, index)
+function locateMapping(type, dest, index, mappings=allMappings())
 {
-  const mappings = allMappings()[type];
-  for(i=0; i<mappings.length; ++i)
+  console.log("locateMapping", type, dest, index);
+  const submap = mappings[type];
+  for(i=0; i<submap.length; ++i)
   {
-    if(mappings[i]                 &&
-       mappings[i].dest  === dest  &&
-       mappings[i].index === index) 
-    { return mappings[i]; }
+    if(submap[i]                 &&
+       submap[i].dest  === dest  &&
+       submap[i].index === index) 
+    { return submap[i]; }
   }
   return null;
 }
