@@ -810,17 +810,23 @@ canvas
   margin-bottom: 6px;
 }
 
-.midi-map-relative
+#midi-map-relative
 {
   justify-content: flex-start !important;
 }
 
-.midi-map-relative input
+#midi-map-relative[hidden]
+{
+  display: none;
+}
+
+#midi-map-relative input
 {
   display: block;
   margin-left:auto;
   margin-right:0;
 }
+
 
 .midi-map-assign button
 {

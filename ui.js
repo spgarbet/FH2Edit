@@ -1167,7 +1167,9 @@ function setStartType(value)
   setConfigU8(2936, value);
   const button = document.querySelector('.midi-map-button[data-dest="glb_start"]');
   if(value === "0")
-  { renderMidiMapButton(button, false); }
+  { 
+    renderMidiMapButton(button, false);
+  }
   else
   {
     // This knowledge should be deeper, but this is a 2nd exception

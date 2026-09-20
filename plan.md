@@ -2,11 +2,12 @@
 
 ## Known Bugs
 
-* Changing expanders loses focus on LFO
-* Default configuration has every LFO turned on. 
+- Changing expanders loses focus on LFO
+- Default configuration has every LFO turned on. 
 
 ## In Process
 
+- 2 CV to MIDI X/Y ins
 
 ## Completed
 
@@ -28,8 +29,6 @@
 
 ## TODO
 
-- Global
-  - 2 CV to MIDI X/Y ins
 - Outputs
   - (ICON-Keys) 16 Midi to CV
     - Main

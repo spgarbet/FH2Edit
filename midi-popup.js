@@ -47,6 +47,8 @@ function showMidiMapPopup(button)
 
   const rect  = button.getBoundingClientRect();
   const popup = elem("midi-map-popup");
+  
+  elem("midi-map-relative").hidden = midiMapButton.dataset.typeRelative === 'false';
 
   popup.hidden = false;
   popup.style.left = `${rect.left   + window.scrollX}px`;

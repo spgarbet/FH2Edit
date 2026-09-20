@@ -286,14 +286,12 @@
               <input type="checkbox" id="glb_softtakeover" onchange="setConfigU8(35,this.checked)">
             </div>
          
-<!-- New work on full globals -->
-<!-- Needs to be filled and onchange added -->
-<!-- Need means to leave "relative" off midi popup -->
             <div>
               <label for="glb_taptype" class="tooltip" data-tooltip="If the Type is Note, tap tempo happens when a Note On message is received matching the specified note number (CC on popup). If the Type is CC, tap tempo happens when a CC message is received matching the specified CC number, with a value of 64 or more.">Tap Tempo</label>
               <button class="midi-map-button" type="button"
                       data-type="glb" data-index="0" data-dest="glb_tap"
                       aria-label="MIDI assignment for Tap Tempo"
+                      data-type-relative="false"
                       data-type-control="glb_taptype">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -308,6 +306,7 @@
               <button class="midi-map-button" type="button"
                             data-type="glb" data-index="0" data-dest="glb_start"
                             aria-label="MIDI assignment for start/stop"
+                            data-type-relative="false"
                             data-type-control="glb_starttype">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -366,6 +365,7 @@
               <label for="glb_nudgefaster" class="tooltip" data-tooltip="Temporarily increase the FH-2’s tempo while the CC is 64 or more. (Typically mapped to a button which sends the value 127 when held and 0 when released.) The percentage change in tempo is set via the ‘Nudge amount’ global setting.">Nudge Faster</label>
               <button class="midi-map-button" type="button"
                             data-type="glb" data-index="0" data-dest="nudgefaster"
+                            data-type-relative="false"
                             aria-label="MIDI assignment for nudge faster">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -374,6 +374,7 @@
               <label for="glb_nudgeslower" class="tooltip" data-tooltip="Temporarily decrease the FH-2’s tempo while the CC is 64 or more. (Typically mapped to a button which sends the value 127 when held and 0 when released.) The percentage change in tempo is set via the ‘Nudge amount’ global setting.">Nudge Slower</label>
               <button class="midi-map-button" type="button"
                             data-type="glb" data-index="0" data-dest="nudgeslower"
+                            data-type-relative="false"
                             aria-label="MIDI assignment for display item">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -382,6 +383,7 @@
               <label for="glb_inctempo" class="tooltip" data-tooltip="Increase the tempo by 0.1bpm when a CC value of 64 or more is received.">Increment Tempo</label>
               <button class="midi-map-button" type="button"
                             data-type="glb" data-index="0" data-dest="inctempo"
+                            data-type-relative="false"
                             aria-label="MIDI assignment for incrementing tempo">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -390,6 +392,7 @@
               <label for="glb_dectempo" class="tooltip" data-tooltip="Decrease the tempo by 0.1bpm when a CC value of 64 or more is received.">Decrement Tempo</label>
               <button class="midi-map-button" type="button"
                             data-type="glb" data-index="0" data-dest="dectempo"
+                            data-type-relative="false"
                             aria-label="MIDI assignment for decrementing tempo">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
@@ -764,11 +767,11 @@ General Setting Page 3 has a setting 'Always load direct'. If set, the Direct Le
         <select id="midi-map-cc"><script>optionRange(0,127,0)</script></select>
       </label>
     
-      <label class="midi-map-relative">
+      <label id="midi-map-relative">
         Relative
         <input id="midi-map-relative" type="checkbox">
       </label>
-    
+      <hr>
       <div class="midi-map-assign">
         <button id="midi-map-assign" type="button">Assign</button>
       </div>
