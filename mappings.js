@@ -1,3 +1,4 @@
+
 var globalControls       = [ "tempo", null, "dispmode", "dispitem", null, "swingtype", "swingamt", "nudgefaster", "nudgeslower", "inctempo", "dectempo"];
 var arpControls          = [ "M", "R", "G", "L", "T", "P", "S", "E" ];
 var seqControls          = [ "T", "S", "G", "P" ];
@@ -12,7 +13,9 @@ var lfoLowControls       = ["DC", "LFO", "PW", "TRI", "CLK", "CLKM", "MLT", "SQR
 var lfoHighControls      = [null, null, null, "SAW", "RND", "NSE", "SMO", "PHS", "FAD"];
 var typeMappings         = [ "lfo",  "arp", "seq", "dseq", "dseql", "mcv2", 
                              "mcv3", "mcv", "euc", "srr",  "glb"];
-// Functions
+
+const SLOT_GLOBAL_TAP   = -1;
+const SLOT_GLOBAL_START = -2;
 
 // # Returns 0-383, or null if none found
 function nextMappingSlot()
@@ -21,7 +24,7 @@ function nextMappingSlot()
   reader.seek(612);
   for(let i=0; i<384; ++i)
   {
-    x = reader.u8();
+    const x = reader.u8();
     if ((x >> 4 ) !== 3) { return i; }
     reader.skip(3);
   }
@@ -31,15 +34,36 @@ function nextMappingSlot()
 function inverseLUT(dest, map)
 {
   for(let i=0; i<map.length; ++i) { if(dest === map[i]) { return i; } }
+  
   return null;
+}
+
+function inverseLUTWithCheck(dest, map)
+{
+  const index = inverseLUT(dest, map);
+  if(index === null) { throw new Error("Invalid mapping destination "+dest); }
+  return index;
 }
 
 function writeMapping(slot, type, index, dest, channel, cc, rel)
 {
-  const loc = 612 + slot * 4;
+  if(slot === SLOT_GLOBAL_TAP)
+  {
+    if(configSysex[2932] === 0) { setConfigU8(2932, 1); }
+    setConfigU8(2933, channel);
+    setConfigU8(2934, cc);
+    return;
+  }
+  
+  if(slot === SLOT_GLOBAL_START)
+  {
+    if(configSysex[2936] === 0) { setConfigU8(2936, 1); }
+    setConfigU8(2937, channel);
+    setConfigU8(2938, cc);
+    return;
+  }
 
-  setConfigU8(loc,     48 + (channel & 0xf));
-  setConfigU8(loc + 1, cc);
+  const loc = 612 + slot * 4;
 
   let t0 = 0;
   let t1 = 0;
@@ -51,20 +75,20 @@ function writeMapping(slot, type, index, dest, channel, cc, rel)
       t1 = index;
       if (t0 === null)
       {
-        t0 = inverseLUT(dest, lfoHighControls);
+        t0 = inverseLUTWithCheck(dest, lfoHighControls);
         t1 += 64;
       }
       break;
-    case "arp":   t0 =  9; t1 = (index << 3)    | inverseLUT(dest, arpControls);   break;
-    case "euc":   t0 = 10; t1 = (index << 3)    | inverseLUT(dest, eucControls);   break;
-    case "mcv":   t0 = 11; t1 = (index << 3)    | inverseLUT(dest, mcvControls);   break;
-    case "mcv2":  t0 = 12; t1 = (index << 3)    | inverseLUT(dest, mcv2Controls);  break;
-    case "seq":   t0 = 13; t1 = (index << 4)    | inverseLUT(dest, seqControls);   break;
-    case "dseq":  t0 = 13; t1 = ((index+4) << 4)| inverseLUT(dest, dseqControls);  break;
-    case "dseql": t0 = 14; t1 = (index << 4)    | inverseLUT(dest, dseqlControls); break;
-    case "srr":   t0 = 15; t1 = (index << 3)    | inverseLUT(dest, srrControls);   break;
-    case "mcv3":  t0 = 16; t1 = (index << 3)    | inverseLUT(dest, mcv3Controls);  break;
-    case "glb":   t0 = inverseLUT(dest, globalControls) + 69;                      break;
+    case "arp":   t0 =  9; t1 = (index << 3)    | inverseLUTWithCheck(dest, arpControls);   break;
+    case "euc":   t0 = 10; t1 = (index << 3)    | inverseLUTWithCheck(dest, eucControls);   break;
+    case "mcv":   t0 = 11; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcvControls);   break;
+    case "mcv2":  t0 = 12; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcv2Controls);  break;
+    case "seq":   t0 = 13; t1 = (index << 4)    | inverseLUTWithCheck(dest, seqControls);   break;
+    case "dseq":  t0 = 13; t1 = ((index+4) << 4)| inverseLUTWithCheck(dest, dseqControls);  break;
+    case "dseql": t0 = 14; t1 = (index << 4)    | inverseLUTWithCheck(dest, dseqlControls); break;
+    case "srr":   t0 = 15; t1 = (index << 3)    | inverseLUTWithCheck(dest, srrControls);   break;
+    case "mcv3":  t0 = 16; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcv3Controls);  break;
+    case "glb":   t0 = inverseLUTWithCheck(dest, globalControls) + 69;                      break;
     default:
       console.error("Invalid writeMapping request", slot, type, index, dest);
       return;
@@ -72,12 +96,29 @@ function writeMapping(slot, type, index, dest, channel, cc, rel)
 
   if (rel === true || rel > 0) { t0 |= 0x20; }
 
+  setConfigU8(loc,     48 + (channel & 0xf));
+  setConfigU8(loc + 1, cc);
   setConfigU8(loc + 2, t0);
   setConfigU8(loc + 3, t1);
 }
 
 function clearMapping(slot)
 {
+  if(slot === SLOT_GLOBAL_TAP)
+  {
+    setConfigU8(2932, 0);
+    setConfigU8(2933, 0);
+    setConfigU8(2934, 0);
+    return;
+  }
+  
+  if(slot === SLOT_GLOBAL_START)
+  {
+    setConfigU8(2936, 0);
+    setConfigU8(2937, 0);
+    setConfigU8(2938, 0);
+    return;
+  }
   const loc = 612+slot*4
   setConfigU8(loc,   0);
   setConfigU8(loc+1, 0);
@@ -157,19 +198,39 @@ function compileMappings(rawMappings)
     const compiled = compileMapping(rawMappings[i]);
     if(compiled)    { mappings[compiled.type].push(compiled); }
   }
-  
+
   return mappings;
 }
 
 function allMappings()
 {
-  return compileMappings(parseMappings(new ByteReader(configSysex)));
+  const mappings = compileMappings(parseMappings(new ByteReader(configSysex)));
+  
+  // Exceptions for 2 globals, UGH
+  if(configSysex[2932] > 0)
+  {
+    mappings["glb"].push(
+      mapping({slot: SLOT_GLOBAL_TAP,
+               channel: configSysex[2933],
+               cc: configSysex[2934]}, 
+              "glb", 0, "glb_tap"));
+  }
+  if(configSysex[2936] > 0)
+  {
+    mappings["glb"].push(
+      mapping({slot: SLOT_GLOBAL_START,
+               channel: configSysex[2937],
+               cc: configSysex[2938]}, 
+              "glb", 0, "glb_start"));
+  }
+  
+  return mappings;
 }
 
 function locateMapping(type, dest, index, mappings=allMappings())
 {
   const submap = mappings[type];
-  for(i=0; i<submap.length; ++i)
+  for(let i=0; i<submap.length; ++i)
   {
     if(submap[i]                 &&
        submap[i].dest  === dest  &&
@@ -181,5 +242,19 @@ function locateMapping(type, dest, index, mappings=allMappings())
 
 function readMapping(slot)
 {
+  if(slot === SLOT_GLOBAL_TAP)
+  {
+    return mapping({slot: SLOT_GLOBAL_TAP,
+               channel: configSysex[2933],
+               cc: configSysex[2934]}, 
+              "glb", 0, "glb_tap");
+  }
+  if(slot === SLOT_GLOBAL_START)
+  {
+    return mapping({slot: SLOT_GLOBAL_START,
+               channel: configSysex[2937],
+               cc: configSysex[2938]}, 
+              "glb", 0, "glb_start");
+  }
   return compileMapping(parseMapping(new ByteReader(configSysex), slot));
 }
