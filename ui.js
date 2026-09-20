@@ -763,6 +763,27 @@ function hideIconPicker()
 
 document.addEventListener("click", function() { hideIconPicker(); });
 
+
+function updateMidiMapButtons(query, index)
+{
+  const buttons  = document.querySelectorAll(query);
+  const mappings = allMappings();
+  
+  for (const button of buttons)
+  {
+    button.dataset.index = index;
+    
+    const mapping = locateMapping(
+      button.dataset.type,
+      button.dataset.dest,
+      index,
+      mappings
+    );
+
+    renderMidiMapButton(button, mapping);
+  }
+}
+  
 function renderMidiEditor()
 {
   const output = selectedIcon.output;
@@ -824,25 +845,7 @@ function renderLfoEditor()
     put("lfo-"+param+"-value", lfo[param]);
   }
   
-  const buttons = document.querySelectorAll(
-    "#lfo-editor .midi-map-button"
-  );
-
-  const mappings = allMappings();
-  for (const button of buttons)
-  {
-    button.dataset.index = output;
-    
-    const mapping = locateMapping(
-      button.dataset.type,
-      button.dataset.dest,
-      output,
-      mappings
-    );
-
-    renderMidiMapButton(button, mapping);
-  }
-  
+  updateMidiMapButtons("#lfo-editor .midi-map-button", output);
   drawWaveform();
 }
 
