@@ -337,21 +337,21 @@
                 <span class="unit">Hz</span>
                 <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="CLK"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Speed">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                 </button> &nbsp; or &nbsp;
                 <label for="lfo-base" class="tooltip" data-tooltip="The rate of the current tempo in 24ppqn.">Base</label>
                 <select id="lfo-base" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
                 <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="CLKM"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Clock Base">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                 </button>&nbsp;&nbsp;
                 <label for="lfo-mult" class="tooltip" data-tooltip="Multiplies the base to give the actual LFO rate. So for example if base is 12 (1/8th notes) and 'multiplier' is 3, the LFO will run at a rate of 3/8th notes.">Multiplier</label>
                 <select id="lfo-mult" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
                 <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="MLT"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Clock Multiplier">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                 </button>
             </div> 
@@ -359,7 +359,9 @@
             <div id="lfo-controls">
               <div class="lfo-column">
                 <div class="control">
-                  <label for="lfo-center" class="tooltip" data-tooltip="LFO waveforms are centred around the 'direct level' of the output.">Center</label>
+                  <label for="lfo-center" class="tooltip" data-tooltip="LFO waveforms are centred around the 'direct level' of the output.
+
+General Setting Page 3 has a setting 'Always load direct'. If set, the Direct Levels (center) from a preset are always applied to the outputs. If not set, Direct Levels are only applied to outputs not controlled by other functions, for example, MIDI/CV converters.">Center (DC)</label>
                   <input id="lfo-center" type="range" min="0" max="16383" value="8192"
                          onchange="setLFOShort('center', this.value, 32, 2)">
                   <output id="lfo-center-value">8192</output>
@@ -378,7 +380,7 @@
                   <output id="lfo-sine-value">127</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="SIN"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Sine">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -390,7 +392,7 @@
                   <output id="lfo-pw-value">64</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="PW"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Pulse Width">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -402,7 +404,7 @@
                   <output id="lfo-saw-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="SAW"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Saw">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -414,7 +416,7 @@
                   <output id="lfo-noise-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="NSE"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Noise">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -426,7 +428,7 @@
                   <output id="lfo-fade-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="FAD"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Fade">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -448,7 +450,7 @@
                   <output id="lfo-level-value">14000</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="LFO"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Level">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -460,7 +462,7 @@
                   <output id="lfo-square-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="SQR"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Square">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -472,7 +474,7 @@
                   <output id="lfo-triangle-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="TRI"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Triangle">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -484,7 +486,7 @@
                   <output id="lfo-random-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="RND"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Random">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -496,7 +498,7 @@
                   <output id="lfo-phase-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="PHS"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Phase">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
@@ -510,7 +512,7 @@
                   <output id="lfo-smoothing-value">0</output>
                   <button class="midi-map-button" type="button"
                           data-type="lfo" data-index="0" data-dest="SMO"
-                          aria-label="MIDI assignment for LFO Center">
+                          aria-label="MIDI assignment for LFO Smoothing">
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                   </button>
                 </div>
