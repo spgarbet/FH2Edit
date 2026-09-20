@@ -7,7 +7,6 @@
 
 ## In Process
 
-* The concept of ON for an LFO needs to include midi Level mapping existing.
 
 ## Completed
 

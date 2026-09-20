@@ -799,8 +799,13 @@ function renderLfoEditor()
   var   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
   const loc    = 16*output;
   
+  // Does Enabling LFO MIDI Mapping exist
+  const mappings    = allMappings();
+  const enablingMap = locateMapping("lfo", "DC",  output, mappings) !== null ||
+                      locateMapping("lfo", "LFO", output, mappings) !== null  ;
+   
   // Activate the lfo properly based on icon position
-  if(lfo.level <= 0)
+  if(lfo.level <= 0 && !enablingMap) 
   {
     initLFO(output);
     setPresetShort(160+loc, 16383);

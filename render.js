@@ -34,10 +34,12 @@ function renderPreset(data)
   put('swing_pos2',   preset.swing[1]);
   put('swing_pos3',   preset.swing[2]);
   
+  
+  // Update LFO state based on reading PRESET
   const lfoState = iconState["lfo"];
   for(let i=0; i<64; ++i)
   {
-    if(preset.lfos[i].level > 0)
+    if(preset.lfos[i].level > 0) // If level is greater than zero, than enabled
     {
       iconState["lfo"][i].enabled=true;
       iconState["lfo"][i].output=i;
@@ -176,6 +178,24 @@ function renderConfig(data)
       renderOutputIconsFor(config.clocks[i].output);
     }
   }
+  
+  // Update LFO state based on reading MIDI Mappings
+  const mappings = allMappings();
+  const lfoMaps  = mappings["lfo"];
+  for(let i in lfoMaps)
+  {
+    // Is there a MIDI map that enables LFO output?
+    if(lfoMaps[i].type === "LFO" || 
+       lfoMaps[i].type === "DC") 
+    {
+      var output = lfoMaps[i].index;
+      iconState["lfo"][output].enable=true;
+      iconState["lfo"][output].output=output;
+      renderOutputIconsFor(output);
+    }
+  }
+  
+  /* INCLUDE OTHER MAPPING RELATED RENDERINGS HERE */
   
 /*
   for (let j = 0; j < ac.length; ++j)
