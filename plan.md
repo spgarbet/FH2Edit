@@ -21,6 +21,7 @@
 - Globals
   - Preset
   - Config
+  - 8 Global channel/cc mappings (start/stop, etc)
 - Outputs
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
@@ -29,7 +30,6 @@
 
 - Global
   - 2 CV to MIDI X/Y ins
-  - 8 Global channel/cc mappings (start/stop, etc)
 - Outputs
   - (ICON-Keys) 16 Midi to CV
     - Main

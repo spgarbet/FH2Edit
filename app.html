@@ -285,7 +285,118 @@
                 Soft Takeover</label>
               <input type="checkbox" id="glb_softtakeover" onchange="setConfigU8(35,this.checked)">
             </div>
+         
+<!-- New work on full globals -->
+<!-- Needs to be filled and onchange added -->
+<!-- Need means to leave "relative" off midi popup -->
+            <div>
+              <label for="glb_taptype" class="tooltip" data-tooltip="If the Type is Note, tap tempo happens when a Note On message is received matching the specified note number (CC on popup). If the Type is CC, tap tempo happens when a CC message is received matching the specified CC number, with a value of 64 or more.">Tap Tempo</label>
+              <button class="midi-map-button" type="button"
+                      data-type="glb" data-index="0" data-dest="glb_tap"
+                      aria-label="MIDI assignment for Tap Tempo"
+                      data-type-control="glb_taptype">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+              <select id="glb_taptype" onchange="setTapType(this.value)"><option value=0>Off</option><option value=1>Note</option><option value=2>CC</option></select>
+            </div>
+            <div>
+              <label for="glb_starttype" class="tooltip" data-tooltip="The internal clock can be started or stopped via an incoming MIDI note or CC, and also by a trigger or gate on the Y input.
+
+'Note Toggle' starts or stops the clock when a Note On message is received. Similarly 'CC Toggle' starts or stops the clock when a CC with a value of 64 or more is received. 'Y Toggle' starts or stops the clock when a trigger pulse is received.
+
+'Note Gate' causes the clock to start on a Note On and stop on a Note Off. Similarly 'CC Gate' starts the clock on a CC of 64 or more and stops it on a CC of less than 64. 'Y Gate' starts the clock when the Y goes high and stops it when Y goes low.">Start/Stop</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="glb_start"
+                            aria-label="MIDI assignment for start/stop"
+                            data-type-control="glb_starttype">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+              <select id="glb_starttype" onchange="setStartType(this.value)"><option value=0>Off</option><option value=1>Note Toggle</option><option value=2>CC Toggle</option><option value=3>Note Gate</option><option value=4>CC Gate</option>
+<option value=5>Y Toggle</option><option value=6>Y Gate</option></select>
+            </div>
+            <div>
+              <label for="glb_tempo" class="tooltip" data-tooltip="The tempo of the internal clock can be controlled via an incoming MIDI CC. The minimum and maximum tempos will correspond to CC values 0-127.">Internal Tempo</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="tempo"
+                            aria-label="MIDI assignment for internal tempo">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+              Min:&nbsp;<select id="glb_tempo_min"><script>optionRange(1,128,60,1)</script></select>
+              &nbsp;Max:&nbsp;<select id="glb_tempo_max"><script>optionRange(128,255,187,128)</script></select>
+            </div> 
+            <div>
+              <label for="glb_swing_type" class="tooltip" data-tooltip="MIDI CCs controlling the swing type and amount for clocks and other timing signals.">Swing Type</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="swingtype"
+                            aria-label="MIDI assignment for swing type">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div> 
+            <div>
+              <label for="glb_swing_amount" class="tooltip" data-tooltip="Control the type and amount of swing applied to clocks and other timing signals.">Swing Amount</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="swingamt"
+                            aria-label="MIDI assignment for swing amount">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="glb_dispmode" class="tooltip" data-tooltip="The module's display controlled via MIDI.
+              
+ '0': Default
+ '9': Euclidean patterns
+'10': Arpeggiator
+'11': LFO
+'12': Envelope.">Display Mode</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="dispmode"
+                            aria-label="MIDI assignment for display mode">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="glb_dispitem">Display Item</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="dispitem"
+                            aria-label="MIDI assignment for display item">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div> 
+            <div>
+              <label for="glb_nudgefaster" class="tooltip" data-tooltip="Temporarily increase the FH-2’s tempo while the CC is 64 or more. (Typically mapped to a button which sends the value 127 when held and 0 when released.) The percentage change in tempo is set via the ‘Nudge amount’ global setting.">Nudge Faster</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="nudgefaster"
+                            aria-label="MIDI assignment for nudge faster">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="glb_nudgeslower" class="tooltip" data-tooltip="Temporarily decrease the FH-2’s tempo while the CC is 64 or more. (Typically mapped to a button which sends the value 127 when held and 0 when released.) The percentage change in tempo is set via the ‘Nudge amount’ global setting.">Nudge Slower</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="nudgeslower"
+                            aria-label="MIDI assignment for display item">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="glb_inctempo" class="tooltip" data-tooltip="Increase the tempo by 0.1bpm when a CC value of 64 or more is received.">Increment Tempo</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="inctempo"
+                            aria-label="MIDI assignment for incrementing tempo">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="glb_dectempo" class="tooltip" data-tooltip="Decrease the tempo by 0.1bpm when a CC value of 64 or more is received.">Decrement Tempo</label>
+              <button class="midi-map-button" type="button"
+                            data-type="glb" data-index="0" data-dest="dectempo"
+                            aria-label="MIDI assignment for decrementing tempo">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div> 
+<!-- End new work on globals -->
           </div>
+          
         </fieldset>
       </div>
     </section>

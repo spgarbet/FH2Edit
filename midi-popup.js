@@ -33,18 +33,17 @@ function initMidiMapButtons()
 function showMidiMapPopup(button)
 {
   midiMapButton = button;
-
-  const mapping = locateMapping(
+  const map = locateMapping(
     button.dataset.type,
     button.dataset.dest,
     Number(button.dataset.index)
   );
   
-  button.dataset.slot = mapping ? mapping.slot : "";
+  button.dataset.slot = map ? map.slot : "";
   
-  elem("midi-map-channel").value    = mapping ? mapping.channel  : 0;
-  elem("midi-map-cc"     ).value    = mapping ? mapping.cc       : 0;
-  elem("midi-map-relative").checked = mapping ? mapping.relative : false;
+  elem("midi-map-channel").value    = map ? map.channel  : 0;
+  elem("midi-map-cc"     ).value    = map ? map.cc       : 0;
+  elem("midi-map-relative").checked = map ? map.relative : false;
 
   const rect  = button.getBoundingClientRect();
   const popup = elem("midi-map-popup");
@@ -99,11 +98,15 @@ function removeMidiMap()
 {
   if (!midiMapButton) { return; }
   
-  if(midiMapButton.dataset.slot != "")
+  if(midiMapButton.dataset.slot !== "")
   {
     clearMapping(Number(midiMapButton.dataset.slot));
     midiMapButton.dataset.slot="";
   }
+  
+  const typeControl = elem(midiMapButton.dataset.typeControl);
+  if(typeControl) { typeControl.value = 0; }
+  
   renderMidiMapButton(midiMapButton, false);
   hideMidiMapPopup();
 }
@@ -124,7 +127,10 @@ function assignMidiMap()
     Number(midiMapButton.dataset.index)
   );
 
-  const slot = mapping ? mapping.slot : nextMappingSlot();
+  const slot = mapping                                    ? mapping.slot      : 
+               midiMapButton.dataset.dest === 'glb_tap'   ? SLOT_GLOBAL_TAP   :
+               midiMapButton.dataset.dest === 'glb_start' ? SLOT_GLOBAL_START :
+                                                            nextMappingSlot();
 
   if (slot === null)
   {
@@ -141,6 +147,13 @@ function assignMidiMap()
     Number(elem("midi-map-cc").value),
     elem("midi-map-relative").checked
   );
+  
+  const typeControl = elem(midiMapButton.dataset.typeControl);
+  if(typeControl && Number(typeControl.value) === 0)
+  {
+    typeControl.value = 1;
+    typeControl.dispatchEvent(new Event("change"));
+  }
 
   renderMidiMapButton(
     midiMapButton,

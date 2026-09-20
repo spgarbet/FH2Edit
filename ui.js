@@ -1143,3 +1143,38 @@ function setLfoSpeed(v)
     setPresetU8(174+loc, 0);       // use
   }
 }
+
+/* Dealing with two global midi mapping exceptions */
+function setTapType(value)
+{
+  setConfigU8(2932, value);
+  const button = document.querySelector('.midi-map-button[data-dest="glb_tap"]');
+  if(value === "0")
+  { renderMidiMapButton(button, false); }
+  else
+  {
+    // This knowledge should be deeper, but this is an exception
+    renderMidiMapButton(button,
+      mapping({slot: SLOT_GLOBAL_TAP,
+               channel: configSysex[2933],
+               cc: configSysex[2934]}, 
+              "glb", 0, "glb_tap")); 
+  }
+}
+
+function setStartType(value)
+{
+  setConfigU8(2936, value);
+  const button = document.querySelector('.midi-map-button[data-dest="glb_start"]');
+  if(value === "0")
+  { renderMidiMapButton(button, false); }
+  else
+  {
+    // This knowledge should be deeper, but this is a 2nd exception
+    renderMidiMapButton(button,
+      mapping({slot: SLOT_GLOBAL_START,
+               channel: configSysex[2937],
+               cc: configSysex[2938]}, 
+              "glb", 0, "glb_start")); 
+  }
+}

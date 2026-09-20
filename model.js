@@ -139,3 +139,8 @@ function setConfigName(name)
   
   elem("config-name-status").textContent = "Config: "+name.trimEnd();
 }
+
+function getConfigU8(loc)
+{
+  return configSysex[loc];
+}

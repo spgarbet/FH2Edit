@@ -270,6 +270,11 @@ body
   background-color: #fffade;
 }
 
+.singleline > div:nth-child(even) .assigned
+{
+  background-color: #fff;
+}
+
 
 #lfo-midi > div:nth-child(even)
 {
@@ -786,7 +791,7 @@ canvas
   padding: 10px;
   border: 1px solid #999;
   border-radius: 4px;
-  background: white;
+  background-color: white;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
