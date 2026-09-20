@@ -7,7 +7,6 @@
 
 ## In Process
 
-* Need to index MIDI mapping buttons in LFO editor
 * Need to add speed / clock MIDI mapping buttons
 
 ## Completed
@@ -24,7 +23,7 @@
   - Config
 - Outputs
   - (ICON-Clock) Clock assign to output
-  - (ICON-Sine) LFO assign to output
+  - (ICON-Sine) LFO assign to output with MIDI
 - [Internals] Data structure for MIDI channel/cc mappings (364 limit)
 
 ## TODO
@@ -33,7 +32,6 @@
   - 2 CV to MIDI X/Y ins
   - 8 Global channel/cc mappings (start/stop, etc)
 - Outputs
-  - (ICON-Sine) ADD: channel/cc mappings
   - (ICON-Keys) 16 Midi to CV
     - Main
     - Envelope (13 channel/cc)

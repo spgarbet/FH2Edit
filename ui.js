@@ -823,6 +823,16 @@ function renderLfoEditor()
     put("lfo-"+param,          lfo[param]);
     put("lfo-"+param+"-value", lfo[param]);
   }
+  
+  const buttons = document.querySelectorAll(
+    "#lfo-editor .midi-map-button"
+  );
+
+  for (const button of buttons)
+  {
+    button.dataset.index = output;
+  }
+  
   drawWaveform();
 }
 

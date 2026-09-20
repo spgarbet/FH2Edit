@@ -658,11 +658,6 @@ input[type="range"]::-webkit-slider-thumb
   margin-bottom: 0.75em;
 }
 
-#lfo-speeds > span
-{
-  margin-right: 2em;
-}
-
 .control
 {
   display: grid;

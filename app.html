@@ -334,11 +334,26 @@
                 <input id="lfo-speed" type="number" min="0" max="10.0"
                        step="0.1" value="1" size="6"
                        onchange="setLfoSpeed(this.value)">
-                <span class="unit">Hz</span> or &nbsp;
+                <span class="unit">Hz</span>
+                <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="CLK"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                </button> &nbsp; or &nbsp;
                 <label for="lfo-base" class="tooltip" data-tooltip="The rate of the current tempo in 24ppqn.">Base</label>
                 <select id="lfo-base" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+                <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="CLKM"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                </button>&nbsp;&nbsp;
                 <label for="lfo-mult" class="tooltip" data-tooltip="Multiplies the base to give the actual LFO rate. So for example if base is 12 (1/8th notes) and 'multiplier' is 3, the LFO will run at a rate of 3/8th notes.">Multiplier</label>
                 <select id="lfo-mult" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+                <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="MLT"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                </button>
             </div> 
             
             <div id="lfo-controls">
