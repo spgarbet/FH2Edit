@@ -760,8 +760,8 @@ function parseConfig(reader)
   config.cvMidi = [];                      // 3596
   for (let i = 0; i < 2; ++i)
   {
-    const flags = reader.u8();
-    const typeChannel = reader.u8();
+    const flags       = reader.u8();       // 3596 or 3604
+    const typeChannel = reader.u8();       // 3597 or 3605
 
     config.cvMidi.push(
       {
@@ -775,14 +775,14 @@ function parseConfig(reader)
         type:    typeChannel >> 4,
         channel: typeChannel & 0x0f,
 
-        cc:      reader.u8()
+        cc:      reader.u8()               // 3598 or 3606
       }
     );
 
     reader.skip(1);
 
-    config.cvMidi[i].zeroV = reader.sShort();
-    config.cvMidi[i].fiveV = reader.sShort();
+    config.cvMidi[i].zeroV = reader.sShort();  // 3600 or 3608
+    config.cvMidi[i].fiveV = reader.sShort();  // 3602 or 3610
   }
 
   // Tempo limits                          // 3612

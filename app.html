@@ -173,6 +173,7 @@
     <section class="screen" id="globals-screen">
       <div class="screen-header"><h2>Parameters Global to FH-2</h2></div>
       <div class="screen-content" id="globals-content">
+        <div class="globals-column">
         <fieldset class="parameter-group">
           <legend>Preset</legend>
           <div>
@@ -225,7 +226,112 @@
             </div>
           </div>
         </fieldset>
+
         <fieldset class="parameter-group">
+          <legend>CV to MIDI X/Y (Configuration)</legend>
+          <div class="singleline"> 
+            <div>
+              <label for="cvmx_type" class="tooltip" data-tooltip="The X & Y inputs can be used to generate MIDI from incoming CVs. Each input can be configured independently. Note that when an input is enabled for CV/MIDI conversion it is no longer available for other duties; specifically, use as clock inputs is disabled.
+              
+The resulting MIDI can be sent out via any or all of the available MIDI ports (USB A, USB C, and DIN), and also used internally by the FH-2 as if the MIDI had arrived from elsewhere. It is therefore possible to use the CV inputs to control aspects of the FH-2's behaviour usually controlled via MIDI.
+
+The types of CV/MIDI conversion available are as follows:
+
+CC: The incoming CV is converted to a MIDI CC
+message. The 0V and 5V levels set the CC value that
+will be output for inputs of 0V and 5V respectively.
+
+Trigger: The incoming CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
+
+Note: The incoming CV is converted to a MIDI note stream. The other input is used as a gate to control the note on/off timing. (So if CV/MIDI X is set to 'Note', input Y is also used, as the gate.) The 0V and 5V levels specify the input codes that correspond to 0V and 5V in the real world. Good starting values are 0 & 4096, tweaking may be needed to calibrate the inputs. The specified note number is the base note, corresponding to a 0V input.
+
+Program Change: The incoming CV is converted to a MIDI Program Change message. The 0V and 5V levels set the program value that will be output for inputs of 0V and 5V respectively.
+
+Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">
+                X CV/MIDI</label>
+              <select id="cvmx_type">
+                <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
+              </select>
+            </div>
+            <div>
+              <label for="cvmx_channel">&emsp;&emsp;MIDI</label>
+              Channel&nbsp;<select id="cvmx_channel">
+                <script>optionRange(1,16,1,1)</script>
+              </select>
+              &nbsp;CC/Note&nbsp;
+              <select id="cvmx_cc">
+                <script>optionRange(0,127,0)</script>
+              </select>
+            </div>
+            <div>
+              <label for="cvmx_0v">&emsp;&emsp;0V</label>
+               <input id="cvmx_0v" type="number" min="0" max="16383" value="0">
+            </div>
+            <div>
+              <label for="cvmx_5v">&emsp;&emsp;5V</label>
+               <input id="cvmx_5v" type="number" min="0" max="16383" value="127">
+            </div>
+            <div>
+              <label for="cvmx_out">&emsp;&emsp;Output</label>
+              Int&nbsp;<input id="cvmx_out_int" type="checkbox">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmx_out_usba" type="checkbox">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmx_out_usbc" type="checkbox">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmx_out_din" type="checkbox">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmx_out_sel" type="checkbox">
+            </div>
+            <hr>
+            <div>
+              <label for="cvmy_type" class="tooltip" data-tooltip="The X & Y inputs can be used to generate MIDI from incoming CVs. Each input can be configured independently. Note that when an input is enabled for CV/MIDI conversion it is no longer available for other duties; specifically, use as clock inputs is disabled.
+              
+The resulting MIDI can be sent out via any or all of the available MIDI ports (USB A, USB C, and DIN), and also used internally by the FH-2 as if the MIDI had arrived from elsewhere. It is therefore possible to use the CV inputs to control aspects of the FH-2's behaviour usually controlled via MIDI.
+
+The types of CV/MIDI conversion available are as follows:
+
+CC: The incoming CV is converted to a MIDI CC
+message. The 0V and 5V levels set the CC value that
+will be output for inputs of 0V and 5V respectively.
+
+Trigger: The incoming CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
+
+Note: The incoming CV is converted to a MIDI note stream. The other input is used as a gate to control the note on/off timing. (So if CV/MIDI X is set to 'Note', input Y is also used, as the gate.) The 0V and 5V levels specify the input codes that correspond to 0V and 5V in the real world. Good starting values are 0 & 4096, tweaking may be needed to calibrate the inputs. The specified note number is the base note, corresponding to a 0V input.
+
+Program Change: The incoming CV is converted to a MIDI Program Change message. The 0V and 5V levels set the program value that will be output for inputs of 0V and 5V respectively.
+
+Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">Y CV/MIDI</label>
+              <select id="cvmy_type">
+                <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
+              </select>
+            </div>
+            <div>
+              <label for="cvmy_channel">&emsp;&emsp;MIDI</label>
+              Channel&nbsp;<select id="cvmy_channel">
+                <script>optionRange(1,16,1,1)</script>
+              </select>
+              &nbsp;CC/Note&nbsp;
+              <select id="cvmy_cc">
+                <script>optionRange(0,127,0)</script>
+              </select>
+            </div>
+            <div>
+              <label for="cvmy_0v">&emsp;&emsp;0V</label>
+               <input id="cvmy_0v" type="number" min="0" max="16383" value="0">
+            </div>
+            <div>
+              <label for="cvmy_5v">&emsp;&emsp;5V</label>
+               <input id="cvmy_5v" type="number" min="0" max="16383" value="127">
+            </div>
+            <div>
+              <label for="cvmy_out">&emsp;&emsp;Output</label>
+              Int&nbsp;<input id="cvmx_out_int" type="checkbox">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmy_out_usba" type="checkbox">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmy_out_usbc" type="checkbox">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmy_out_din" type="checkbox">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmy_out_sel" type="checkbox">
+            </div>
+          </div>
+        </fieldset>
+        </div> <!-- globals-column -->
+        <div class="globals-column"><fieldset class="parameter-group">
           <legend>Configuration</legend>
           <div>
             <label for="config-name" class="name-label">Configuration: </label>
@@ -397,10 +503,8 @@
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
             </div> 
-<!-- End new work on globals -->
           </div>
-          
-        </fieldset>
+        </fieldset></div>
       </div>
     </section>
 
