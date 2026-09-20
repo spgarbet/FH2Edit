@@ -28,15 +28,16 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="default.js" ></script>
-  <script src="ui.js"      ></script>
-  <script src="midi.js"    ></script>
-  <script src="app.js"     ></script>
-  <script src="mappings.js"></script>
-  <script src="parser.js"  ></script>
-  <script src="render.js"  ></script>
-  <script src="model.js"   ></script>
-  <script src="lfo.js"     ></script>
+  <script src="default.js"   ></script>
+  <script src="ui.js"        ></script>
+  <script src="midi.js"      ></script>
+  <script src="app.js"       ></script>
+  <script src="mappings.js"  ></script>
+  <script src="parser.js"    ></script>
+  <script src="render.js"    ></script>
+  <script src="model.js"     ></script>
+  <script src="lfo.js"       ></script>
+  <script src="midi-popup.js"></script>
 </head>
 
 <body>
@@ -339,102 +340,169 @@
                 <label for="lfo-mult" class="tooltip" data-tooltip="Multiplies the base to give the actual LFO rate. So for example if base is 12 (1/8th notes) and 'multiplier' is 3, the LFO will run at a rate of 3/8th notes.">Multiplier</label>
                 <select id="lfo-mult" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
             </div> 
+            
             <div id="lfo-controls">
-        
-              <div class="control">
-                <label for="lfo-center" class="tooltip" data-tooltip="LFO waveforms are centred around the 'direct level' of the output.">Center</label>
-                <input id="lfo-center" type="range" min="0" max="16383" value="8192"
-                       onchange="setLFOShort('center', this.value, 32, 2)">
-                <output id="lfo-center-value">8192</output>
+              <div class="lfo-column">
+                <div class="control">
+                  <label for="lfo-center" class="tooltip" data-tooltip="LFO waveforms are centred around the 'direct level' of the output.">Center</label>
+                  <input id="lfo-center" type="range" min="0" max="16383" value="8192"
+                         onchange="setLFOShort('center', this.value, 32, 2)">
+                  <output id="lfo-center-value">8192</output>
+  <!-- FIXME, Index needs to be OUTPUT -->
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="DC"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-sine" class="tooltip" data-tooltip="The level of a sine wave's contribution to the LFO shape.">Sine</label>
+                  <input id="lfo-sine" type="range" min="0" max="127" value="127"
+                         onchange="setLFOU8('sine', this.value, 166, 16)">
+                  <output id="lfo-sine-value">127</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="SIN"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-pw" class="tooltip" data-tooltip="Pulse width control for the square waveform.">PW</label>
+                  <input id="lfo-pw" type="range" min="0" max="127" value="64"
+                         onchange="setLFOU8('pw', this.value, 169, 16)">
+                  <output id="lfo-pw-value">64</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="PW"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-saw" class="tooltip" data-tooltip="The level of a saw wave's contribution to the LFO shape. The saw wave is set to zero at value 64. Values greater than 64 give a rising sawtooth shape; values less than 64 give a falling shape.">Saw</label>
+                  <input id="lfo-saw" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('saw', this.value, 170, 16)">
+                  <output id="lfo-saw-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="SAW"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-noise" class="tooltip" data-tooltip="The level of a noise signal's contribution to the LFO shape.">Noise</label>
+                  <input id="lfo-noise" type="range" min="0" max="127" value="20"
+                         onchange="setLFOU8('noise', this.value, 172, 16)">
+                  <output id="lfo-noise-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="NSE"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-fade" class="tooltip" data-tooltip="The time over which the LFO will fade up from zero when retriggered. Note: Does not alter the example waveform.">Fade</label>
+                  <input id="lfo-fade" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('fade', this.value, 173, 16)">
+                  <output id="lfo-fade-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="FAD"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="fps" class="tooltip" data-tooltip="Frame per second for the example animation of waveform.">FPS</label>
+                  <input id="fps" type="range" min="1" max="60" value="20">
+                  <output id="fps-value">20</output>
+                </div>
+                
               </div>
-          
-              <div class="control">
-                <label for="lfo-level" class="tooltip" data-tooltip="Scaling applied to the overal summed waveform.">Level</label>
-                <input id="lfo-level" type="range" min="0" max="16383" value="14000"
-                       onchange="setLFOShort('level', this.value, 160, 16)">
-                <output id="lfo-level-value">14000</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-sine" class="tooltip" data-tooltip="The level of a sine wave's contribution to the LFO shape.">Sine</label>
-                <input id="lfo-sine" type="range" min="0" max="127" value="127"
-                       onchange="setLFOU8('sine', this.value, 166, 16)">
-                <output id="lfo-sine-value">127</output> 
-              </div>
-          
-              <div class="control">
-                <label for="lfo-square" class="tooltip" data-tooltip="The level of a square wave's contribution to the LFO shape.">Square</label>
-                <input id="lfo-square" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('square', this.value, 167, 16)">
-                <output id="lfo-square-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-pw" class="tooltip" data-tooltip="Pulse width control for the square waveform.">PW</label>
-                <input id="lfo-pw" type="range" min="0" max="127" value="64"
-                       onchange="setLFOU8('pw', this.value, 169, 16)">
-                <output id="lfo-pw-value">64</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-triangle" class="tooltip" data-tooltip="The level of a triangle wave's contribution to the LFO shape.">Triangle</label>
-                <input id="lfo-triangle" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('triangle', this.value, 168, 16)"> 
-                <output id="lfo-triangle-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-saw" class="tooltip" data-tooltip="The level of a saw wave's contribution to the LFO shape. The saw wave is set to zero at value 64. Values greater than 64 give a rising sawtooth shape; values less than 64 give a falling shape.">Saw</label>
-                <input id="lfo-saw" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('saw', this.value, 170, 16)">
-                <output id="lfo-saw-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-random" class="tooltip" data-tooltip="The level of a random walk signal's contribution to the LFO shape.">Random</label>
-                <input id="lfo-random" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('random', this.value, 171, 16)">
-                <output id="lfo-random-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-noise" class="tooltip" data-tooltip="The level of a noise signal's contribution to the LFO shape.">Noise</label>
-                <input id="lfo-noise" type="range" min="0" max="127" value="20"
-                       onchange="setLFOU8('noise', this.value, 172, 16)">
-                <output id="lfo-noise-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-phase" class="tooltip" data-tooltip="The phase of the LFO waveform.">Phase</label>
-                <input id="lfo-phase" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('phase', this.value, 175, 16)">
-                <output id="lfo-phase-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-fade" class="tooltip" data-tooltip="The time over which the LFO will fade up from zero when retriggered. Note: Does not alter the example waveform.">Fade</label>
-                <input id="lfo-fade" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('fade', this.value, 173, 16)">
-                <output id="lfo-fade-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="lfo-smoothing" class="tooltip" data-tooltip="Each output has a 'smoothing' amount. When enabled, a low pass filter is applied to the output to smooth sudden changes into an exponential response. Zero means off; other values apply progressively more smoothing, up to a time constant set by the ‘Max smoothing’ setting.
 
-Smoothing applies to every function of the FH-2: direct control, LFOs, sequencers, etc. You may find it particularly useful to smooth out e.g. aftertouch response in a MIDI/CV converter, but it can also be applied creatively, for example to make new LFO shapes, or to introduce glide on a pitch CV.">Smoothing</label>
-                <input id="lfo-smoothing" type="range" min="0" max="127" value="0"
-                       onchange="setLFOU8('smoothing', this.value, 1184, 1)">
-                <output id="lfo-smoothing-value">0</output>
-              </div>
-          
-              <div class="control">
-                <label for="fps" class="tooltip" data-tooltip="Frame per second for the example animation of waveform.">FPS</label>
-                <input id="fps" type="range" min="1" max="60" value="20">
-                <output id="fps-value">20</output>
-              </div>
-              
-              <div class="control">
-                <button id="animate" type="button">Start Animation</button>
+              <div class="lfo-column">
+            
+                <div class="control">
+                  <label for="lfo-level" class="tooltip" data-tooltip="Scaling applied to the overal summed waveform.">Level</label>
+                  <input id="lfo-level" type="range" min="0" max="16383" value="14000"
+                         onchange="setLFOShort('level', this.value, 160, 16)">
+                  <output id="lfo-level-value">14000</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="LFO"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-square" class="tooltip" data-tooltip="The level of a square wave's contribution to the LFO shape.">Square</label>
+                  <input id="lfo-square" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('square', this.value, 167, 16)">
+                  <output id="lfo-square-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="SQR"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-triangle" class="tooltip" data-tooltip="The level of a triangle wave's contribution to the LFO shape.">Triangle</label>
+                  <input id="lfo-triangle" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('triangle', this.value, 168, 16)"> 
+                  <output id="lfo-triangle-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="TRI"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-random" class="tooltip" data-tooltip="The level of a random walk signal's contribution to the LFO shape.">Random</label>
+                  <input id="lfo-random" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('random', this.value, 171, 16)">
+                  <output id="lfo-random-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="RND"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-phase" class="tooltip" data-tooltip="The phase of the LFO waveform.">Phase</label>
+                  <input id="lfo-phase" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('phase', this.value, 175, 16)">
+                  <output id="lfo-phase-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="PHS"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+            
+                <div class="control">
+                  <label for="lfo-smoothing" class="tooltip" data-tooltip="Each output has a 'smoothing' amount. When enabled, a low pass filter is applied to the output to smooth sudden changes into an exponential response. Zero means off; other values apply progressively more smoothing, up to a time constant set by the ‘Max smoothing’ setting.
+  
+  Smoothing applies to every function of the FH-2: direct control, LFOs, sequencers, etc. You may find it particularly useful to smooth out e.g. aftertouch response in a MIDI/CV converter, but it can also be applied creatively, for example to make new LFO shapes, or to introduce glide on a pitch CV.">Smoothing</label>
+                  <input id="lfo-smoothing" type="range" min="0" max="127" value="0"
+                         onchange="setLFOU8('smoothing', this.value, 1184, 1)">
+                  <output id="lfo-smoothing-value">0</output>
+                  <button class="midi-map-button" type="button"
+                          data-type="lfo" data-index="0" data-dest="SMO"
+                          aria-label="MIDI assignment for LFO Center">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+                
+                <div class="control">
+                  <button id="animate" type="button">Start Animation</button>
+                </div>
               </div>
             </div>
             
@@ -448,29 +516,6 @@ Smoothing applies to every function of the FH-2: direct control, LFOs, sequencer
             </div>
             <div>Approximate representation.</div>
             
-            <!--
-            <div id="lfo-midi">
-              <h3>MIDI Control of LFO (Configuration)</h3>
-              <div>
-                <span>Direct Control</span>
-                <label for="lfo-midi-dc-chan">Channel</label>
-                <select id="lfo-midi-dc-chan"><option value="0">--</option></option><script>optionRange(1,16)</script></select>
-                <label for="lfo-midi-dc-cc">CC</label>
-                <select id="lfo-midi-dc-dd"><option value="-1">--</option><script>optionRange(0,127)</script></select>
-                <label for="lfo-midi-dc-rel">Rel</label>
-                <input id="lfo-midi-dc-rel" type="checkbox">
-              </div>
-              <div>
-                <span>LFO Speed</span>
-                <label for="lfo-midi-speed-chan">Channel</label>
-                <select id="lfo-midi-speed-chan"><option value="0">--</option></option><script>optionRange(1,16)</script></select>
-                <label for="lfo-midi-speed-cc">CC</label>
-                <select id="lfo-midi-speed-dd"><option value="-1">--</option><script>optionRange(0,127)</script></select>
-                <label for="lfo-midi-speed-rel">Rel</label>
-                <input id="lfo-midi-speed-rel" type="checkbox">
-              </div>
-            </div>
-            -->
           </div>
         
         
@@ -576,6 +621,30 @@ Smoothing applies to every function of the FH-2: direct control, LFOs, sequencer
       </div>
 
     </section>
+    
+    <!-- MIDI Mapping Popup -->
+    <div id="midi-map-popup" class="midi-map-popup" hidden>
+      <div class="midi-map-title">MIDI Assignment<button id="midi-map-remove" type="button"><img src="icons/trash.png" alt="Remove Mapping"></button>
+    </div>
+      <label>
+        Channel
+        <select id="midi-map-channel"><script>optionRange(1,16,1,1)</script></select>
+      </label>
+    
+      <label>
+        CC
+        <select id="midi-map-cc"><script>optionRange(0,127,0)</script></select>
+      </label>
+    
+      <label class="midi-map-relative">
+        Relative
+        <input id="midi-map-relative" type="checkbox">
+      </label>
+    
+      <div class="midi-map-assign">
+        <button id="midi-map-assign" type="button">Assign</button>
+      </div>
+    </div>
 
   </main>
   

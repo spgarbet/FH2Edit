@@ -100,4 +100,5 @@ document.addEventListener("DOMContentLoaded", () =>
   initLFO();
   initLfoUI()
   updateFPS();
+  initMidiMapButtons();
 });

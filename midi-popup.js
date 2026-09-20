@@ -23,7 +23,7 @@ function initMidiMapButtons()
     });
   }
 
-  elem("midi-map-assign"  ).addEventListener("click",  hideMidiMapPopup );
+  elem("midi-map-assign"  ).addEventListener("click",  assignMidiMap    );
   elem("midi-map-remove"  ).addEventListener("click",  removeMidiMap    );
   elem("midi-map-channel" ).addEventListener("change", updateMidiMap    );
   elem("midi-map-cc"      ).addEventListener("change", updateMidiMap    );
@@ -41,7 +41,7 @@ function showMidiMapPopup(button)
   );
   
   button.dataset.slot = mapping ? mapping.slot : "";
-
+  
   elem("midi-map-channel").value    = mapping ? mapping.channel  : 0;
   elem("midi-map-cc"     ).value    = mapping ? mapping.cc       : 0;
   elem("midi-map-relative").checked = mapping ? mapping.relative : false;
@@ -58,10 +58,13 @@ function updateMidiMap()
 {
   if (!midiMapButton) { return; }
   
-  if(midiMapButton.dataset.slot === "")
-  {
-    midiMapButton.dataset.slot = nextMappingSlot();
-  }
+  const mapping = locateMapping(
+    midiMapButton.dataset.type,
+    midiMapButton.dataset.dest,
+    Number(midiMapButton.dataset.index)
+  );
+
+  if (!mapping) { return; }
 
   writeMapping(
     Number(midiMapButton.dataset.slot),
@@ -79,9 +82,9 @@ function renderMidiMapButton(button, mapping)
   if (!mapping)
   {
     button.classList.remove("assigned");
-    delete button.dataset.slot;
+    button.dataset.slot="";
     button.innerHTML =
-      '<img src="../icons/midi-din.svg" alt="MIDI DIN5">';
+      '<img src="icons/midi-din.svg" alt="MIDI DIN5">';
     return;
   }
 
@@ -95,30 +98,59 @@ function renderMidiMapButton(button, mapping)
 function removeMidiMap()
 {
   if (!midiMapButton) { return; }
-
+  
   if(midiMapButton.dataset.slot != "")
   {
-    clearMapping(midiMapButton.dataset.slot);
+    clearMapping(Number(midiMapButton.dataset.slot));
     midiMapButton.dataset.slot="";
   }
+  renderMidiMapButton(midiMapButton, false);
   hideMidiMapPopup();
 }
 
 function hideMidiMapPopup()
 {
-  if(midiMapButton.dataset.slot === "")
-  {
-    renderMidiMapButton(midiMapButton, null);
-  }
-  else
-  {
-    renderMidiMapButton(midiMapButton, {
-      channel:  Number(elem("midi-map-channel").value),
-      cc:       Number(elem("midi-map-cc").value),
-      relative:  elem("midi-map-relative").checked
-    });
-  }
-
   elem("midi-map-popup").hidden = true;
   midiMapButton = null;
+}
+
+function assignMidiMap()
+{
+  if (!midiMapButton) { return; }
+
+  const mapping = locateMapping(
+    midiMapButton.dataset.type,
+    midiMapButton.dataset.dest,
+    Number(midiMapButton.dataset.index)
+  );
+
+  const slot = mapping ? mapping.slot : nextMappingSlot();
+
+  if (slot === null)
+  {
+    alert("No available MIDI Mapping slots. All 384 occupied.");
+    return;
+  }
+
+  writeMapping(
+    slot,
+    midiMapButton.dataset.type,
+    Number(midiMapButton.dataset.index),
+    midiMapButton.dataset.dest,
+    Number(elem("midi-map-channel").value),
+    Number(elem("midi-map-cc").value),
+    elem("midi-map-relative").checked
+  );
+
+  renderMidiMapButton(
+    midiMapButton,
+    {
+      slot,
+      channel: Number(elem("midi-map-channel").value),
+      cc: Number(elem("midi-map-cc").value),
+      relative: elem("midi-map-relative").checked
+    }
+  );
+
+  hideMidiMapPopup();
 }

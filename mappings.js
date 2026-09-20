@@ -168,7 +168,6 @@ function allMappings()
 
 function locateMapping(type, dest, index, mappings=allMappings())
 {
-  console.log("locateMapping", type, dest, index);
   const submap = mappings[type];
   for(i=0; i<submap.length; ++i)
   {

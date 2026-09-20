@@ -5,6 +5,11 @@
 * Changing expanders loses focus on LFO
 * Default configuration has every LFO turned on. 
 
+## In Process
+
+* Need to index MIDI mapping buttons in LFO editor
+* Need to add speed / clock MIDI mapping buttons
+
 ## Completed
 
 - I/O

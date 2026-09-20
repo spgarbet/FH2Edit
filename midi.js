@@ -88,7 +88,7 @@ function flashConfig(slot)
     alert("flashConfig() invalid slot");
     return;
   }
-  console.log("Slot: "+slot);
+
   request([0x18, slot], "Flash configuration");
 }
 
