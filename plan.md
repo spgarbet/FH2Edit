@@ -7,7 +7,7 @@
 
 ## In Process
 
-* Need to add speed / clock MIDI mapping buttons
+* The concept of ON for an LFO needs to include midi Level mapping existing.
 
 ## Completed
 
@@ -18,13 +18,13 @@
   - Read Screen
   - Flash
   - [Internal] MIDI Retry strategy with confirmation
+- [Internal] Data structure for MIDI channel/cc mappings (384 limit)
 - Globals
   - Preset
   - Config
 - Outputs
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
-- [Internals] Data structure for MIDI channel/cc mappings (364 limit)
 
 ## TODO
 

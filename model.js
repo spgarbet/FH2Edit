@@ -111,6 +111,17 @@ function initLfo(i)
   setPresetU8(loc+14,   1);
   setPresetU8(loc+15,   0);
   setPresetShort(32+2*i, 8192); // Center
+  
+  // Clear mappings on initialization
+  const mappings = allMappings()["lfo"];
+  for(let j in mappings)
+  { 
+    const map = mappings[j];
+    if(map.index === i)
+    {
+      clearMapping(i);
+    }
+  }
 }
 
   ////////////////////////////////////////////////////////
