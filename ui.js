@@ -828,9 +828,19 @@ function renderLfoEditor()
     "#lfo-editor .midi-map-button"
   );
 
+  const mappings = allMappings();
   for (const button of buttons)
   {
     button.dataset.index = output;
+    
+    const mapping = locateMapping(
+      button.dataset.type,
+      button.dataset.dest,
+      output,
+      mappings
+    );
+
+    renderMidiMapButton(button, mapping);
   }
   
   drawWaveform();
