@@ -249,35 +249,42 @@ Program Change: The incoming CV is converted to a MIDI Program Change message. T
 
 Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">
                 X CV/MIDI</label>
-              <select id="cvmx_type">
+              <select id="cvmx_type" onchange="setCVMidiType(this.value, 'X')">
                 <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
               </select>
             </div>
             <div>
               <label for="cvmx_channel">&emsp;&emsp;MIDI</label>
-              Channel&nbsp;<select id="cvmx_channel">
+              Channel&nbsp;<select id="cvmx_channel" onchange="setCVMidiChannel(this.value, 'X')">
                 <script>optionRange(1,16,1,1)</script>
               </select>
               &nbsp;CC/Note&nbsp;
-              <select id="cvmx_cc">
+              <select id="cvmx_cc" onchange="setConfigU8(3598, this.value)">
                 <script>optionRange(0,127,0)</script>
               </select>
             </div>
             <div>
               <label for="cvmx_0v">&emsp;&emsp;0V</label>
-               <input id="cvmx_0v" type="number" min="0" max="16383" value="0">
+               <input id="cvmx_0v" type="number" min="0" max="16383" value="0"
+                      onchange="setConfigShort(3600, this.value)">
             </div>
             <div>
               <label for="cvmx_5v">&emsp;&emsp;5V</label>
-               <input id="cvmx_5v" type="number" min="0" max="16383" value="127">
+               <input id="cvmx_5v" type="number" min="0" max="16383" value="127"
+                      onchange="setConfigShort(3602, this.value)">
             </div>
             <div>
               <label for="cvmx_out">&emsp;&emsp;Output</label>
-              Int&nbsp;<input id="cvmx_out_int" type="checkbox">
-              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmx_out_usba" type="checkbox">
-              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmx_out_usbc" type="checkbox">
-              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmx_out_din" type="checkbox">
-              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmx_out_sel" type="checkbox">
+              Int&nbsp;<input id="cvmx_out_int" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'X', 'outI')">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmx_out_usba" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'X', 'outA')">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmx_out_usbc" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'X', 'outC')">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmx_out_din" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'X', 'outD')">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmx_out_sel" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'X', 'outS')">
             </div>
             <hr>
             <div>
@@ -298,35 +305,42 @@ Note: The incoming CV is converted to a MIDI note stream. The other input is use
 Program Change: The incoming CV is converted to a MIDI Program Change message. The 0V and 5V levels set the program value that will be output for inputs of 0V and 5V respectively.
 
 Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">Y CV/MIDI</label>
-              <select id="cvmy_type">
+              <select id="cvmy_type"onchange="setCVMidiType(this.value, 'X')">
                 <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
               </select>
             </div>
             <div>
               <label for="cvmy_channel">&emsp;&emsp;MIDI</label>
-              Channel&nbsp;<select id="cvmy_channel">
+              Channel&nbsp;<select id="cvmy_channel" onchange="setCVMidiChannel(this.value, 'Y')">
                 <script>optionRange(1,16,1,1)</script>
               </select>
               &nbsp;CC/Note&nbsp;
-              <select id="cvmy_cc">
+              <select id="cvmy_cc" onchange="setConfigU8(3606, this.value)">
                 <script>optionRange(0,127,0)</script>
               </select>
             </div>
             <div>
               <label for="cvmy_0v">&emsp;&emsp;0V</label>
-               <input id="cvmy_0v" type="number" min="0" max="16383" value="0">
+               <input id="cvmy_0v" type="number" min="0" max="16383" value="0"
+                      onchange="setConfigShort(3608, this.value)">
             </div>
             <div>
               <label for="cvmy_5v">&emsp;&emsp;5V</label>
-               <input id="cvmy_5v" type="number" min="0" max="16383" value="127">
+               <input id="cvmy_5v" type="number" min="0" max="16383" value="127"
+                      onchange="setConfigShort(3610, this.value)">
             </div>
             <div>
               <label for="cvmy_out">&emsp;&emsp;Output</label>
-              Int&nbsp;<input id="cvmx_out_int" type="checkbox">
-              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmy_out_usba" type="checkbox">
-              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmy_out_usbc" type="checkbox">
-              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmy_out_din" type="checkbox">
-              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmy_out_sel" type="checkbox">
+              Int&nbsp;<input id="cvmx_out_int" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'Y', 'outI')">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="cvmy_out_usba" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'Y', 'outA')">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="cvmy_out_usbc" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'Y', 'outC')">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="cvmy_out_din" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'Y', 'outD')">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="cvmy_out_sel" type="checkbox"
+                onchange="setCVMidiOut(this.checked, 'Y', 'outS')">
             </div>
           </div>
         </fieldset>

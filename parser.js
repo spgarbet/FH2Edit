@@ -775,7 +775,7 @@ function parseConfig(reader)
         type:    typeChannel >> 4,
         channel: typeChannel & 0x0f,
 
-        cc:      reader.u8()               // 3598 or 3606
+        cc:      reader.u8()                // 3598 or 3606
       }
     );
 

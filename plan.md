@@ -8,6 +8,9 @@
 ## In Process
 
 - 2 CV to MIDI X/Y ins
+  [X] HTML in app.html
+  [X] onchange setters needed (bitwise stuff going on...)
+  [ ] render current value
 
 ## Completed
 

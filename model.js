@@ -144,3 +144,69 @@ function getConfigU8(loc)
 {
   return configSysex[loc];
 }
+
+function setXCVMidiType(value)
+{
+  if(!value) { return; }
+  
+  const flags = configSysex[3596];
+
+  if(Number(value) < 0)
+  {
+    setConfigU8(3596, flags & 0x7e);
+    return;
+  }
+
+  setConfigU8(3596, flags | 0x01);
+  setConfigU8(3597, Number(value));
+}
+
+function setCVMidiType(value, letter)
+{
+  value       = Number(value);
+  const base  = letter === 'X' ? 3596 : 3604;
+  const flags = configSysex[base];
+
+  if(value < 0)
+  {
+    setConfigU8(base, flags & 0x7e);
+    return;
+  }
+  
+  const typeChannel   = configSysex[base + 1];
+  const channel       = typeChannel & 0x0f;
+  
+  setConfigU8(base,     flags | 0x01);
+  setConfigU8(base + 1, (value << 4) | channel);
+}
+
+function setCVMidiChannel(value, letter)
+{
+  value = Number(value);
+
+  const base = letter === "X" ? 3596 : 3604;
+  const typeChannel = configSysex[base + 1];
+
+  setConfigU8(base + 1, (typeChannel & 0xf0) | (value & 0x0f));
+}
+
+function setCVMidiOut(value, letter, flag)
+{
+  const base = letter === "X" ? 3596 : 3604;
+  const bits =
+  {
+    outI: 1 << 1,
+    outA: 1 << 2,
+    outC: 1 << 3,
+    outD: 1 << 4,
+    outS: 1 << 5
+  };
+
+  const bit = bits[flag];
+
+  if (bit === undefined) { return; }
+
+  const flags = configSysex[base];
+
+  setConfigU8(base, value ? flags | bit : flags & ~bit);
+}
