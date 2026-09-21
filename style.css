@@ -286,12 +286,12 @@ body
   width: 14em;
 }
 
-.singleline > div:nth-child(even)
+.singleline > div:nth-child(even of :not([hidden]))
 {
   background-color: #fffade;
 }
 
-.singleline > div:nth-child(even) .assigned
+.singleline > div:nth-child(even of :not([hidden])) .assigned
 {
   background-color: #fff;
 }
@@ -878,3 +878,18 @@ canvas
   height: 16px;
   display: block;
 }
+
+/* Nice separators for sections */
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+.separator span { margin-left: .25em; margin-right: .25em; }

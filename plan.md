@@ -27,11 +27,11 @@
 ## In Process
 
 - (ICON-Keys) MAIN 16 Midi to CV
-  [ ] MIDI to CV Icons 
-  [ ] Main interface html
-  [ ] Write from interface
+  [X] Main interface html
+  [ ] Add tooltips to main
+  [ ] Write from interface (Model)
   [ ] Render to interface
-  [ ] Compute utilized ports
+  [ ] Compute utilized ports and display
   [ ] Ghost icons
 
 ## TODO

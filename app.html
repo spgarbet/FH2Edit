@@ -540,8 +540,183 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
           <div id="placeholder-editor">Select an output source to configure it.</div>
         
           <div id="midi-editor" hidden>
-            MIDI Editor
-            <!-- MIDI editor controls -->
+            <div class="editor-header">
+              <button id="midi-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Midi/CV"></button>
+              <h3 id="midi-editor-name">MIDI/CV</h3>
+            </div>
+            <fieldset class="parameter-group">
+              <legend>Converter (Configuration)</legend>
+              <div class="singleline">
+                <div>
+                  <label for="midi-cvrt-channel">MIDI Channel</label>
+                  <select id="midi-cvrt-channel"><script>optionRange(1,16,1,1)</script></select> 
+                </div>
+                <div>
+                  <label for="midi-cvrt-type">Type</label>
+                  <select id="midi-cvrt-type">
+                    <option value="00" selected>Mono</option>
+                    <option value="10">Poly Round Robin</option>
+                    <option value="11">Poly Lowest Voice</option>
+                    <option value="12">Poly Unison</option>
+                    <option value="13">Poly Unison 2</option>
+                    <option value="14">Poly Note Range</option>
+                    <option value="15">Poly Alternating</option>
+                    <option value="16">Poly Random</option>
+                    <option value="10">MPE Round Robin</option>
+                    <option value="21">MPE Lowest Voice</option>
+                    <option value="22">MPE Unison</option>
+                    <option value="23">MPE Unison 2</option>
+                    <option value="24">MPE Note Range</option>
+                    <option value="25">MPE Alternating</option>
+                    <option value="26">MPE Random</option>    
+                  </select>
+                </div>
+                <div class="mpe-param poly-param" hidden>
+                  <label for="midi-cvrt-voices">Voices</label>
+                  <select id="midi-cvrt-voices">
+                    <script>optionRange(1,16,1,1)</script>
+                  </select>
+                </div>
+                <div class="mpe-param poly-param" hidden>
+                  <label for="midi-cvrt-voicealloc">Voice Allocation</label>
+                  <select id="midi-cvrt-voicealloc">
+                    <option value="0">Round Robin</option>
+                    <option value="1">Lowest Voice</option>
+                    <option value="2">Unison</option>
+                    <option value="3">Unison 2</option>
+                    <option value="4">Note Range</option>
+                    <option value="5">Alternating</option>
+                    <option value="6">Random</option>
+                  </select>
+                </div>                
+                <div class="separator"><span>Per Voice Output</span></div>
+                <div>
+                  <label for="midi-cvrt-cv">CV</label>
+                  <input id="midi-cvrt-cv" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-gate">Gate</label>
+                  <input id="midi-cvrt-gate" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-velgate">Velocity Gate</label>
+                  <input id="midi-cvrt-velgate" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-vel">Velocity</label>
+                  <select id="midi-cvrt-vel">
+                    <option value="0" selected>--</option>
+                    <option value="1">On</option>
+                    <option value="2">Inv</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-relvel">Release Velocity</label>
+                  <select id="midi-cvrt-relvel">
+                    <option value="0" selected>--</option>
+                    <option value="1">On</option>
+                    <option value="2">Inv</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-trig">Trigger</label>
+                  <input id="midi-cvrt-trig" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-env">Envelope</label>
+                  <input id="midi-cvrt-env" type="checkbox">
+                </div>
+                 <div>
+                  <label for="midi-cvrt-aft">Aftertouch</label>
+                  <input id="midi-cvrt-aft" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-rnd">Random</label>
+                  <input id="midi-cvrt-rnd" type="checkbox">
+                </div>
+                <div class="mpe-param" hidden>
+                  <label for="midi-cvrt-y">Y</label>
+                  <select><option value="0">--</option><script>optionRange(1,127)</script></select>
+                </div>
+                
+                <div class="separator"><span>Paraphonic Output</span></div>
+                <div>
+                  <label for="midi-cvrt-paragate">Gate</label>
+                  <input id="midi-cvrt-paragate" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-paraafter">Aftertouch</label>
+                  <input id="midi-cvrt-paraafter" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-bend">Bend</label>
+                  <select id="midi-cvrt-bend">
+                    <option value="0">--</option>
+                    <option value="1">Single</option>
+                    <option value="2">Double</option>
+                  </select>
+                </div>
+                
+                <div class="separator"><span>Handling</span></div>
+                <div>
+                  <label for="midi-cvrt-note-rng1">Note Range</label>
+                  <select id="midi-cvrt-note-rng1"><script>optionRange(0,127,0)</script></select>&emsp;
+                  <select id="midi-cvrt-note-rng2"><script>optionRange(0,127,127)</script></select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-sustain">Sustain</label>
+                  <select id="midi-cvrt-sustain">
+                    <option value="0">Off</option>
+                    <option value="1">Sustain</option>
+                    <option value="2">Sustenuto</option>
+                    <option value="3">Both</option>
+                  </select>
+                </div>
+                <div class="mpe-param poly-param" hidden>
+                  <label for="midi-cvrt-no-steal">Prevent Stealing</label>
+                  <input id="midi-cvrt-no-steal" type="checkbox">
+                </div>
+                <div class="mpe-param poly-param" hidden>
+                  <label for="midi-cvrt-stride">Stride</label>
+                  <select id="midi-cvrt-stride">
+                      <script>optionRange(1,32,1,1)</script>
+                  </select>
+                </div>
+                <div class="mpe-param" hidden>
+                  <label for="midi-cvrt-lastchan">Last Channel</label>
+                  <select id="midi-cvrt-lastchan">
+                      <script>optionRange(2,16,16,1)</script>
+                  </select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-bendup">Bend Up</label>
+                  <select id="midi-cvrt-bendup">
+                    <script>optionRange(0,64,0)</script>
+                  </select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-benddown">Bend Down</label>
+                  <select id="midi-cvrt-benddown">
+                    <option value='0'>Same</option>
+                    <script>optionRange(0,64,null,-1)</script>
+                  </select>
+                </div>              
+                <div>
+                  <label for="midi-cvrt-retrig">Mono Retrigger</label>
+                  <input id="midi-cvrt-retrig" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-intgate">Interrupt Gate</label>
+                  <input id="midi-cvrt-intgate" type="checkbox">
+                </div>
+                <div>
+                  <label for="midi-cvrt-envzero">Envelope Zero</label>
+                  <input id="midi-cvrt-envzero" type="checkbox">
+                </div>
+              </div>
+            </fieldset>
+        
+            <!-- MIDI/CV editor controls end -->
           </div>
         
           <div id="lfo-editor" hidden>
@@ -930,6 +1105,7 @@ General Setting Page 3 has a setting 'Always load direct'. If set, the Direct Le
         Plus</a> icon created by <a href="https://www.flaticon.com/authors/cap-cool" target="_blank" rel="noopener">Cap Cool</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         <li><a href="https://www.flaticon.com/free-icon/trash_3096673?term=trash+can&page=1&position=2&origin=search&related_id=3096673" target="_blank" rel="noopener">Trashcan</a> icon created by <a href="https://www.flaticon.com/authors/bqlqn" target="_blank" rel="noopener">bqlqn</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a>
         </li>
+        <li>MIDI DIN5 icon created by Shawn Garbett, an author of this package.</li>
         </ul>
       </div>
   
