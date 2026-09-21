@@ -4,7 +4,6 @@
 
 - Changing expanders loses focus on LFO
 - Default configuration has every LFO turned on.
-- MIDI/CV needs to exclude clocks.
 
 ## Completed
 
@@ -20,26 +19,28 @@
   - Preset
   - Config
   - 8 Global channel/cc mappings (start/stop, etc)
+  - CV/MIDI X Y
 - Outputs
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
 
 ## In Process
 
-- 2 CV to MIDI X/Y ins
-  [X] HTML in app.html
-  [X] onchange setters needed (bitwise stuff going on...)
-  [ ] render current value
+- (ICON-Keys) MAIN 16 Midi to CV
+  [ ] MIDI to CV Icons 
+  [ ] Main interface html
+  [ ] Write from interface
+  [ ] Render to interface
+  [ ] Compute utilized ports
+  [ ] Ghost icons
 
 ## TODO
 
 - Outputs
   - (ICON-Keys) 16 Midi to CV
-    - Main
     - Envelope (13 channel/cc)
     - Arpeggiator (13 channel/cc)
     - Tuning
-    - Ghost icons to show consumed outputs.
   - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
   - (ICON-Lightning) 64 Triggers, (? channel/cc)

@@ -195,6 +195,31 @@ function renderConfig(data)
     }
   }
   
+  // CV/MIDI XY
+  var cvMidi = config.cvMidi[0];
+  put(  "cvmx_type",     cvMidi.enable ? cvMidi.type : -1);
+  put(  "cvmx_channel",  cvMidi.channel);
+  put(  "cvmx_cc",       cvMidi.cc);
+  put(  "cvmx_0v",       cvMidi.zeroV);
+  put(  "cvmx_5v",       cvMidi.fiveV);
+  check("cvmx_out_int",  cvMidi.outI);
+  check("cvmx_out_usba", cvMidi.outA);
+  check("cvmx_out_usbc", cvMidi.outC);
+  check("cvmx_out_din",  cvMidi.outD);
+  check("cvmx_out_sel",  cvMidi.outS);
+  
+  cvMidi = config.cvMidi[1];
+  put(  "cvmy_type",     cvMidi.enable ? cvMidi.type : -1);
+  put(  "cvmy_channel",  cvMidi.channel);
+  put(  "cvmy_cc",       cvMidi.cc);
+  put(  "cvmy_0v",       cvMidi.zeroV);
+  put(  "cvmy_5v",       cvMidi.fiveV);
+  check("cvmy_out_int",  cvMidi.outI);
+  check("cvmy_out_usba", cvMidi.outA);
+  check("cvmy_out_usbc", cvMidi.outC);
+  check("cvmy_out_din",  cvMidi.outD);
+  check("cvmy_out_sel",  cvMidi.outS);
+  
   /* INCLUDE OTHER MAPPING RELATED RENDERINGS HERE */
   
 /*
