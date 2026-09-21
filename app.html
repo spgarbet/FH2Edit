@@ -231,23 +231,17 @@
           <legend>CV to MIDI X/Y (Configuration)</legend>
           <div class="singleline"> 
             <div>
-              <label for="cvmx_type" class="tooltip" data-tooltip="The X & Y inputs can be used to generate MIDI from incoming CVs. Each input can be configured independently. Note that when an input is enabled for CV/MIDI conversion it is no longer available for other duties; specifically, use as clock inputs is disabled.
-              
-The resulting MIDI can be sent out via any or all of the available MIDI ports (USB A, USB C, and DIN), and also used internally by the FH-2 as if the MIDI had arrived from elsewhere. It is therefore possible to use the CV inputs to control aspects of the FH-2's behaviour usually controlled via MIDI.
+              <label for="cvmx_type" class="tooltip" data-tooltip="The X input can be used to generate MIDI from incoming CV.
 
-The types of CV/MIDI conversion available are as follows:
+CC: CV is converted to a CC message. 0V/5V set CC. 
 
-CC: The incoming CV is converted to a MIDI CC
-message. The 0V and 5V levels set the CC value that
-will be output for inputs of 0V and 5V respectively.
+Trigger: CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
 
-Trigger: The incoming CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
+Note: CV is converted to a note stream. The other input is the gate. Good starting values for 0V/5V are 0 & 4096, calibration may be needed. The specified note number corresponds to 0V input.
 
-Note: The incoming CV is converted to a MIDI note stream. The other input is used as a gate to control the note on/off timing. (So if CV/MIDI X is set to 'Note', input Y is also used, as the gate.) The 0V and 5V levels specify the input codes that correspond to 0V and 5V in the real world. Good starting values are 0 & 4096, tweaking may be needed to calibrate the inputs. The specified note number is the base note, corresponding to a 0V input.
+Program Change: CV is converted to a Program Change message, scaled across 0V/5V.
 
-Program Change: The incoming CV is converted to a MIDI Program Change message. The 0V and 5V levels set the program value that will be output for inputs of 0V and 5V respectively.
-
-Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">
+Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scaled by 0V/5V">
                 X CV/MIDI</label>
               <select id="cvmx_type" onchange="setCVMidiType(this.value, 'X')">
                 <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
@@ -288,23 +282,17 @@ Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Press
             </div>
             <hr>
             <div>
-              <label for="cvmy_type" class="tooltip" data-tooltip="The X & Y inputs can be used to generate MIDI from incoming CVs. Each input can be configured independently. Note that when an input is enabled for CV/MIDI conversion it is no longer available for other duties; specifically, use as clock inputs is disabled.
-              
-The resulting MIDI can be sent out via any or all of the available MIDI ports (USB A, USB C, and DIN), and also used internally by the FH-2 as if the MIDI had arrived from elsewhere. It is therefore possible to use the CV inputs to control aspects of the FH-2's behaviour usually controlled via MIDI.
+              <label for="cvmy_type" class="tooltip" data-tooltip="The Y input can be used to generate MIDI from incoming CV.
 
-The types of CV/MIDI conversion available are as follows:
+CC: CV is converted to a CC message. 0V/5V set CC. 
 
-CC: The incoming CV is converted to a MIDI CC
-message. The 0V and 5V levels set the CC value that
-will be output for inputs of 0V and 5V respectively.
+Trigger: CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
 
-Trigger: The incoming CV will generate note on/off messages, when the CV rises above 1V and falls below 0.5V respectively.
+Note: CV is converted to a note stream. The other input is the gate. Good starting values for 0V/5V are 0 & 4096, calibration may be needed. The specified note number corresponds to 0V input.
 
-Note: The incoming CV is converted to a MIDI note stream. The other input is used as a gate to control the note on/off timing. (So if CV/MIDI X is set to 'Note', input Y is also used, as the gate.) The 0V and 5V levels specify the input codes that correspond to 0V and 5V in the real world. Good starting values are 0 & 4096, tweaking may be needed to calibrate the inputs. The specified note number is the base note, corresponding to a 0V input.
+Program Change: CV is converted to a Program Change message, scaled across 0V/5V.
 
-Program Change: The incoming CV is converted to a MIDI Program Change message. The 0V and 5V levels set the program value that will be output for inputs of 0V and 5V respectively.
-
-Aftertouch: The incoming CV is converted to a MIDI Aftertouch (aka Channel Pressure) message. The 0V and 5V levels set the aftertouch value that will be output for inputs of 0V and 5V respectively.">Y CV/MIDI</label>
+Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scaled by 0V/5V">Y CV/MIDI</label>
               <select id="cvmy_type"onchange="setCVMidiType(this.value, 'X')">
                 <option value="-1" selected>Disabled</option><option value=0>CC</option><option value=1>Trigger</option><option value=2>Note</option><option value=3>Program change</option><option value=4>Aftertouch</option>
               </select>

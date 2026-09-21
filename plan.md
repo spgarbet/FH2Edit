@@ -3,14 +3,8 @@
 ## Known Bugs
 
 - Changing expanders loses focus on LFO
-- Default configuration has every LFO turned on. 
-
-## In Process
-
-- 2 CV to MIDI X/Y ins
-  [X] HTML in app.html
-  [X] onchange setters needed (bitwise stuff going on...)
-  [ ] render current value
+- Default configuration has every LFO turned on.
+- MIDI/CV needs to exclude clocks.
 
 ## Completed
 
@@ -29,6 +23,13 @@
 - Outputs
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
+
+## In Process
+
+- 2 CV to MIDI X/Y ins
+  [X] HTML in app.html
+  [X] onchange setters needed (bitwise stuff going on...)
+  [ ] render current value
 
 ## TODO
 
