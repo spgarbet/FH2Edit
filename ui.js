@@ -534,6 +534,17 @@ function setExpanders(v)
       removeIcon("lfo", i);
     }
   }
+  
+  // Clear any MIDI/CV Converters hidden by removing expanders
+  state=iconState['midi'];
+  for (let i=8*(expanders+1); i<64; ++i)
+  {
+    if(state[i].enabled)
+    {
+      setConfigU8(100+32*state[i].index, 0); // Disable
+      removeIcon("midi", i);
+    }
+  }
 }
 
 // Icon Code
@@ -662,8 +673,7 @@ function renderOutputIcons(output, container)
 
       if (selectedIcon                &&
           selectedIcon.type  === type &&
-          selectedIcon.index === i
-      )
+          selectedIcon.index === i     )
       {
         button.classList.add("selected");
         selectedIcon.elem = button;
@@ -723,6 +733,11 @@ function buildIconPicker()
   {
     setPresetShort(2148+selectedIcon.output, 0); // Turn off LFO
     removeIcon("lfo", selectedIcon.index);
+  });
+  elem("midi-editor-trash").addEventListener("click", function()
+  {
+    setConfigU8(100+32*selectedIcon.index, 0); // Turn off LFO
+    removeIcon("midi", selectedIcon.index);
   });
 }
 
@@ -790,7 +805,18 @@ function renderMidiEditor()
   const index  = selectedIcon.index;
   const midi   = iconState.midi[index];
 
-  <!-- Pull from parsed structure here -->
+  setMidiCVValue( 0, 1);         // Enable it
+  setMidiCVValue(11, output);    // Map to right output
+  
+  const reader = new ByteReader(configSysex);
+  
+  console.log("Locating MIDI/CV", output);
+  reader.seek(100 + 32*output);
+
+  const mcv = parseMcv(reader);
+  console.log(mcv)
+  renderMcv(mcv);
+  computeMidiOutputs();
 }
 
 function renderLfoEditor()
@@ -1180,3 +1206,211 @@ function setStartType(value)
               "glb", 0, "glb_start")); 
   }
 }
+
+  ///////////////////////////////////////////////////////////
+ //
+// MIDI CV Converter UI
+//
+function setMidiCVValue(offset, value)
+{
+  setConfigU8(100+offset+32*selectedIcon.index, value);
+}
+
+function makeSeries(base, block, replicates)
+{
+  return Array.from({ length: replicates }, (_, i) => base + i * block);
+}
+
+// Complex output determination
+function computeMidiOutputs()
+{
+  const reader = new ByteReader(configSysex);
+  reader.seek(100+32*selectedIcon.index);
+  
+  const mcv    = parseMcv(reader);
+  const voices = mcv.type === 0 ? 1 : mcv.voices;
+
+  var perVoice = 0;
+  if(mcv.cvOutput   > 0) { perVoice += 1; }
+  if(mcv.gateOutput > 0) { perVoice += 1; }
+  if(mcv.velGate    > 0) { perVoice += 1; }
+  if(mcv.velOutput  > 0) { perVoice += 1; }
+  if(mcv.relVel     > 0) { perVoice += 1; }
+  if(mcv.trigger    > 0) { perVoice += 1; }
+  if(mcv.envelope   > 0) { perVoice += 1; }
+  if(mcv.voicePress > 0) { perVoice += 1; }
+  if(mcv.random     > 0) { perVoice += 1; }
+  if(mcv.type > 1   && 
+     mcv.mpeY > 0      ) { perVoice += 1; }
+
+  var offset  = mcv.base+1;
+  var stride  = (mcv.type > 0 && mcv.stride > 0) ? mcv.stride : perVoice;
+  
+  elem("midi-cvrt-cv-outs").textContent =
+    mcv.cvOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.cvOutput > 0) { offset += 1; }
+
+  elem("midi-cvrt-gate-outs").textContent =
+    mcv.gateOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.gateOutput > 0) { offset += 1; }
+  
+  elem("midi-cvrt-velgate-outs").textContent = 
+    mcv.velGate > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.velGate > 0) { offset += 1; }
+  
+  elem("midi-cvrt-vel-outs").textContent = 
+    mcv.velOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.velOutput > 0) { offset += 1; }
+  
+  elem("midi-cvrt-relvel-outs").textContent = 
+    mcv.relVel > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.relVel > 0) { offset += 1; }
+  
+  elem("midi-cvrt-trig-outs").textContent = 
+    mcv.trigger > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.trigger > 0) { offset += 1; }
+  
+  elem("midi-cvrt-env-outs").textContent = 
+    mcv.envelope > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.envelope > 0) { offset += 1; }
+  
+  elem("midi-cvrt-after-outs").textContent = 
+    mcv.voicePress > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.voicePress > 0) { offset += 1; }
+  
+  elem("midi-cvrt-rnd-outs").textContent = 
+    mcv.random > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.random > 0) { offset += 1; }
+  
+  elem("midi-cvrt-mpey-outs").textContent = 
+    mcv.mpeY > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
+  if(mcv.mpeY > 0) { offset += 1; }
+  
+  offset = mcv.base+1+voices*stride;
+  
+  elem("midi-cvrt-paragate-outs").textContent = mcv.paraGate > 0 ? offset : "";
+  if(mcv.paraGate > 0) { offset += 1; }
+  
+  elem("midi-cvrt-paraafter-outs").textContent = mcv.pressure > 0 ? offset : "";
+  if(mcv.pressure > 0) { offset += 1; }
+  
+  elem("midi-cvrt-bend-outs").textContent = 
+     mcv.bendOut === 0 ? "" : offset + (mcv.bendOut === 1 ? "" : ", "+(offset+1));
+}
+
+function setMidiCVType(value)
+{
+  const index  = selectedIcon.index;
+  const type   = Number(value[0]);
+  const scheme = Number(value[1]);
+
+  // Set the sysex
+  setMidiCVValue(4, type  );
+  setMidiCVValue(7, scheme);
+  if(type === 0)
+  {
+    setMidiCVValue(5, 1); // Voices=1 for Mono
+    elem("midi-cvrt-voices").value = 1;
+  }
+  
+  const fields = document.querySelectorAll(type === 1 ? '.poly-param' : '.mpe-param');
+  for (const field of fields)
+  {
+    field.hidden = type === 0;
+  }
+  computeMidiOutputs();
+}
+
+function setMidiVoices(value)
+{
+  setMidiCVValue(5, Number(value));
+  computeMidiOutputs();
+}
+
+function setMidiStride(value)
+{
+  setMidiCVValue(12, Number(value));
+  computeMidiOutputs();
+}
+
+function setMidiParaAfter(value)
+{
+  setMidiCVValue(14, value);
+  computeMidiOutputs();  
+}
+
+function setMidiParaGate(value)
+{
+  setMidiCVValue(15, value);
+  computeMidiOutputs();  
+}
+
+function setMidiCV(value)
+{
+  setMidiCVValue(16, value);
+  computeMidiOutputs();
+}
+
+function setMidiGate(value)
+{
+  setMidiCVValue(17, value);
+  computeMidiOutputs();
+}
+
+function setMidiVelGate(value)
+{
+  setMidiCVValue(18, value);
+  computeMidiOutputs();
+}
+
+function setMidiVelocity(value)
+{
+  setMidiCVValue(19, value);
+  computeMidiOutputs();
+}
+
+function setMidiRelVel(value)
+{
+  setMidiCVValue(20, value);
+  computeMidiOutputs();
+}
+
+function setMidiTrig(value)
+{
+  setMidiCVValue(21, value);
+  computeMidiOutputs();
+}
+
+function setMidiAfter(value)
+{
+  setMidiCVValue(22, value);
+  computeMidiOutputs();  
+}
+
+function setMidiMpeY(value)
+{
+  setMidiCVValue(23, value);
+  computeMidiOutputs();  
+}
+
+function setMidiEnv(value)
+{
+  setMidiCVValue(24, value);
+  computeMidiOutputs();  
+}
+
+function setMidiBendOut(value)
+{
+  setMidiCVValue(30, value);
+  computeMidiOutputs();  
+}
+
+function setMidiRandom(value)
+{
+  setMidiCVValue(31, value);
+  computeMidiOutputs();
+}
+
+
+
+

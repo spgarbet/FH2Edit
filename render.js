@@ -34,7 +34,6 @@ function renderPreset(data)
   put('swing_pos2',   preset.swing[1]);
   put('swing_pos3',   preset.swing[2]);
   
-  
   // Update LFO state based on reading PRESET
   const lfoState = iconState["lfo"];
   for(let i=0; i<64; ++i)
@@ -50,75 +49,45 @@ function renderPreset(data)
   return true;
 }
 
-function renderMcv(mcv, m)
+function renderMcv(mcv)
 {
-  let enable    = !!mcv.enable;
-  let channel   = (mcv.channel >= 0 && mcv.channel <= 15) ? mcv.channel + 1 : 0;
-  let min       = (mcv.min >= 0 && mcv.min <= 127)        ? mcv.min : 0;
-  let max       = (mcv.max >= 0 && mcv.max <= 127)        ? mcv.max : 0;
-  let type      = mcv.type;
-  let voices    = (mcv.voices >= 1 && mcv.voices <= 16)   ? mcv.voices : 0;
-  let bend      = mcv.bend;
-  let scheme    = mcv.scheme;
-  let stealing  = !!mcv.stealing;
-  let GA        = !!mcv.gatedPress;
-  let SUS       = mcv.sustain;
-  let base      = (mcv.base >= 0 && mcv.base <= 63)       ? mcv.base : 0;
-  let stride    = (mcv.stride >= 1 && mcv.stride <= 32)   ? mcv.stride : 0;
-  let lastMPE   = (mcv.lastMPE >= 0 && mcv.lastMPE <= 15) ? mcv.lastMPE + 1 : 0;
-  let A         = !!mcv.pressure;
-  let G         = !!mcv.paraGate;
-  let VC        = !!mcv.cvOutput;
-  let VG        = !!mcv.gateOutput;
-  let VVG       = !!mcv.velGate;
-  let VV        = mcv.velOutput;
-  let VR        = mcv.relVel;
-  let VT        = !!mcv.trigger;
-  let VP        = !!mcv.voicePress;
-  let VY        = mcv.mpeY;
-  let VE        = !!mcv.envelope;
-  let basegate  = (mcv.baseGate >= 64 && mcv.baseGate <= 127) ? mcv.baseGate : 0;
-  let MT        = !!mcv.retrigger;
-  let IG        = !!mcv.intGate;
-  let ZS        = !!mcv.zeroStart;
-  let benddown  = mcv.bendDown;
-  let PB        = mcv.pitchBend;
-  let VRND      = !!mcv.random;
+  // Some sanity checks on render
+  let channel   = (mcv.channel >= 0 && mcv.channel <= 15) ? mcv.channel : 0;
+  let min       = (mcv.min >= 0 && mcv.min <= 127)        ? mcv.min     : 0;
+  let max       = (mcv.max >= 0 && mcv.max <= 127)        ? mcv.max     : 0;
+  let type      = String(mcv.type) + String(mcv.scheme);
+  let voices    = (mcv.voices >= 1 && mcv.voices <= 16)   ? mcv.voices  : 0;
+  let base      = (mcv.base >= 0 && mcv.base <= 63)       ? mcv.base    : 0;
+  let stride    = (mcv.stride >= 1 && mcv.stride <= 32)   ? mcv.stride  : 0;
 
-  check("mcv_enable_"   + m, enable   );
-  put(  "mcv_ch_"       + m, channel  );
-  put(  "mcv_min_"      + m, min      );
-  put(  "mcv_max_"      + m, max      );
-  put(  "mcv_type_"     + m, type     );
-  put(  "mcv_voices_"   + m, voices   );
-  put(  "mcv_bend_"     + m, bend     );
-  put(  "mcv_scheme_"   + m, scheme   );
-  check("mcv_stealing_" + m, stealing );
-  check("mcv_GA_"       + m, GA       );
-  put(  "mcv_SUS_"      + m, SUS      );
-  put(  "mcv_base_"     + m, base     );
-  put(  "mcv_stride_"   + m, stride   );
-  put(  "mcv_lastMPE_"  + m, lastMPE  );
-  check("mcv_A_"        + m, A        );
-  check("mcv_G_"        + m, G        );
-  check("mcv_VC_"       + m, VC       );
-  check("mcv_VG_"       + m, VG       );
-  check("mcv_VVG_"      + m, VVG      );
-  put(  "mcv_VV_"       + m, VV       );
-  put(  "mcv_VR_"       + m, VR       );
-  check("mcv_VT_"       + m, VT       );
-  check("mcv_VP_"       + m, VP       );
-  put(  "mcv_VY_"       + m, VY       );
-  check("mcv_VE_"       + m, VE       );
-  put(  "mcv_basegate_" + m, basegate );
-  check("mcv_MT_"       + m, MT       );
-  check("mcv_IG_"       + m, IG       );
-  check("mcv_ZS_"       + m, ZS       );
-  put(  "mcv_benddown_" + m, benddown );
-  put(  "mcv_PB_"       + m, PB       );
-  check("mcv_VRND_"     + m, VRND     );
-
-  changeType(m);
+  put(  "midi-cvrt-channel",  channel         );
+  put(  "midi-cvrt-note-min", min             );
+  put(  "midi-cvrt-note-max", max             );
+  put(  "midi-cvrt-type",     type            );
+  put(  "midi-cvrt-voices",   voices          );
+  put(  "midi-cvrt-bendup",   mcv.bendUp      );
+  check("midi-cvrt-no-steal", !!mcv.stealing  );
+  check("midi-cvrt-gatepress",!!mcv.gatedPress);
+  put(  "midi-cvrt-sustain",  mcv.sustain     );
+  put(  "midi-cvrt-stride",   stride          );
+  put(  "midi-cvrt-lastchan", mcv.lastMPE & 0xf );
+  check("midi-cvrt-paraafter",!!mcv.pressure  );
+  check("midi-cvrt-paragate", !!mcv.paraGate  );
+  check("midi-cvrt-cv",       !!mcv.cvOutput  );
+  check("midi-cvrt-gate",     !!mcv.gateOutput);
+  check("midi-cvrt-velgate",  !!mcv.velGate   );
+  put(  "midi-cvrt-vel",      mcv.velOutput   );
+  put(  "midi-cvrt-relvel",   mcv.relVel      );
+  check("midi-cvrt-trig",     !!mcv.trigger   );
+  check("midi-cvrt-after",    !!mcv.voicePress);
+  put(  "midi-cvrt-mpey",     mcv.mpeY        );
+  check("midi-cvrt-env",      !!mcv.envelope  );
+  check("midi-cvrt-retrig",   !!mcv.retrigger );
+  check("midi-cvrt-intgate",  !!mcv.intGate   );
+  check("midi-cvrt-envzero",  !!mcv.zeroStart );
+  put(  "midi-cvrt-bendup",   mcv.bendDown    );
+  put(  "midi-cvrt-bend",     mcv.bendOut     );
+  check("midi-cvrt-rnd",      !!mcv.random    );
 }
 
 function scaleVoltage(range, level, scale=16383)
@@ -168,7 +137,6 @@ function renderConfig(data)
       scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
   }
   
-  const clockState = iconState["clock"];
   for(let i=0; i<32; ++i)
   {
     if(config.clocks[i].type > 0)
@@ -189,9 +157,19 @@ function renderConfig(data)
        lfoMaps[i].type === "DC") 
     {
       var output = lfoMaps[i].index;
-      iconState["lfo"][output].enable=true;
+      iconState["lfo"][output].enabled=true;
       iconState["lfo"][output].output=output;
       renderOutputIconsFor(output);
+    }
+  }
+  
+  for(let i=0; i<16; ++i)
+  {
+    if(config.mcvs[i].enabled > 0)
+    {
+      iconState["midi"][i].enabled=true;
+      iconState["midi"][i].output=config.mcvs[i].base;
+      renderOutputIconsFor(iconState["midi"][i].output);
     }
   }
   

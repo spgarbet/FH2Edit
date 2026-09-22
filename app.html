@@ -549,11 +549,14 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
               <div class="singleline">
                 <div>
                   <label for="midi-cvrt-channel">MIDI Channel</label>
-                  <select id="midi-cvrt-channel"><script>optionRange(1,16,1,1)</script></select> 
+                  <select id="midi-cvrt-channel"
+                    onchange="setMidiCVValue(1, this.value)">
+                    <script>optionRange(1,16,1,1)</script></select> 
                 </div>
                 <div>
                   <label for="midi-cvrt-type">Type</label>
-                  <select id="midi-cvrt-type">
+                  <select id="midi-cvrt-type"
+                          onchange="setMidiCVType(this.value)">
                     <option value="00" selected>Mono</option>
                     <option value="10">Poly Round Robin</option>
                     <option value="11">Poly Lowest Voice</option>
@@ -573,99 +576,107 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                 </div>
                 <div class="mpe-param poly-param" hidden>
                   <label for="midi-cvrt-voices">Voices</label>
-                  <select id="midi-cvrt-voices">
-                    <script>optionRange(1,16,1,1)</script>
+                  <select id="midi-cvrt-voices" onchange="setMidiVoices(this.value)">
+                    <script>optionRange(1,16,1)</script>
                   </select>
                 </div>
-                <div class="mpe-param poly-param" hidden>
-                  <label for="midi-cvrt-voicealloc">Voice Allocation</label>
-                  <select id="midi-cvrt-voicealloc">
-                    <option value="0">Round Robin</option>
-                    <option value="1">Lowest Voice</option>
-                    <option value="2">Unison</option>
-                    <option value="3">Unison 2</option>
-                    <option value="4">Note Range</option>
-                    <option value="5">Alternating</option>
-                    <option value="6">Random</option>
-                  </select>
-                </div>                
                 <div class="separator"><span>Per Voice Output</span></div>
                 <div>
                   <label for="midi-cvrt-cv">CV</label>
-                  <input id="midi-cvrt-cv" type="checkbox">
+                  <input id="midi-cvrt-cv" type="checkbox" onchange="setMidiCV(this.checked)">
+                  <span id="midi-cvrt-cv-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-gate">Gate</label>
-                  <input id="midi-cvrt-gate" type="checkbox">
+                  <input id="midi-cvrt-gate" type="checkbox" onchange="setMidiGate(this.checked)">
+                  <span id="midi-cvrt-gate-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-velgate" class="tooltip" data-tooltip="A gate scaled by the note on velocity.">Velocity Gate</label>
-                  <input id="midi-cvrt-velgate" type="checkbox">
+                  <input id="midi-cvrt-velgate" type="checkbox" onchange="setMidiVelGate(this.checked)">
+                  <span id="midi-cvrt-velgate-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-vel">Velocity</label>
-                  <select id="midi-cvrt-vel">
+                  <select id="midi-cvrt-vel" onchange="setMidiVelocity(this.value)">
                     <option value="0" selected>--</option>
                     <option value="1">On</option>
                     <option value="2">Inv</option>
                   </select>
+                  <span id="midi-cvrt-vel-outs" class="midi-cvrt-outs">6,8</span>
                 </div>
                 <div>
                   <label for="midi-cvrt-relvel">Release Velocity</label>
-                  <select id="midi-cvrt-relvel">
+                  <select id="midi-cvrt-relvel" onchange="setMidiRelVel(this.value)">
                     <option value="0" selected>--</option>
                     <option value="1">On</option>
                     <option value="2">Inv</option>
                   </select>
+                  <span id="midi-cvrt-relvel-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-trig">Trigger</label>
-                  <input id="midi-cvrt-trig" type="checkbox">
+                  <input id="midi-cvrt-trig" type="checkbox"  onchange="setMidiTrig(this.checked)">
+                  <span id="midi-cvrt-trig-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-env" class="tooltip" data-tooltip="Envelope output on trigger">Envelope</label>
-                  <input id="midi-cvrt-env" type="checkbox">
+                  <input id="midi-cvrt-env" type="checkbox" onchange="setMidiEnv(this.checked)">
+                  <span id="midi-cvrt-env-outs" class="midi-cvrt-outs"></span>
                 </div>
                  <div>
-                  <label for="midi-cvrt-aft" class="tooltip" data-tooltip="A per-voice aftertouch output.">Aftertouch</label>
-                  <input id="midi-cvrt-aft" type="checkbox">
+                  <label for="midi-cvrt-after" class="tooltip" data-tooltip="A per-voice aftertouch output.">Aftertouch</label>
+                  <input id="midi-cvrt-after" type="checkbox" onchange="setMidiAfter(this.checked)">
+                  <span id="midi-cvrt-after-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-rnd" class="tooltip" data-tooltip="Random sample and hold voltage at the start of each note.">Random</label>
-                  <input id="midi-cvrt-rnd" type="checkbox">
+                  <input id="midi-cvrt-rnd" type="checkbox"  onchange="setMidiRandom(this.checked)">
+                  <span id="midi-cvrt-rnd-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div class="mpe-param" hidden>
-                  <label for="midi-cvrt-y" class="tooltip" data-tooltip="MIDI CC number for MPE 'y control'.">Y CC</label>
-                  <select><option value="0">--</option><script>optionRange(1,127)</script></select>
+                  <label for="midi-cvrt-mpey" class="tooltip" data-tooltip="MIDI CC number for MPE 'y control'.">Y CC</label>
+                  <select id="midi-cvrt-mpey" onchange="setMidiMpeY(this.value)"><option value="0">--</option><script>optionRange(1,127)</script></select>
+                  <span id="midi-cvrt-mpey-outs" class="midi-cvrt-outs"></span>
                 </div>
                 
                 <div class="separator"><span>Paraphonic Output</span></div>
                 <div>
                   <label for="midi-cvrt-paragate" class="tooltip" data-tooltip="Paraphonic gate output which is high when one or more notes are held down.">Gate</label>
-                  <input id="midi-cvrt-paragate" type="checkbox">
+                  <input id="midi-cvrt-paragate" type="checkbox" onchange="setMidiParaGate(this.checked)">
+                  <span id="midi-cvrt-paragate-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-paraafter" class="tooltip" data-tooltip="Paraphonic aftertouch (aka channel pressure).">Aftertouch</label>
-                  <input id="midi-cvrt-paraafter" type="checkbox">
+                  <input id="midi-cvrt-paraafter" type="checkbox"  onchange="setMidiParaAfter(this.checked)">
+                  <span id="midi-cvrt-paraafter-outs" class="midi-cvrt-outs"></span>
                 </div>
                 <div>
                   <label for="midi-cvrt-bend" class="tooltip" data-tooltip="If enabled include output or two for pitch bend. If 'double' then up and down are separate outputs. Set the bend range to zero for no bend effect on main CV. ">Bend Out</label>
-                  <select id="midi-cvrt-bend">
+                  <select id="midi-cvrt-bend" onchange="setMidiBendOut(this.value)">
                     <option value="0">--</option>
                     <option value="1">Single</option>
                     <option value="2">Double</option>
                   </select>
+                  <span id="midi-cvrt-bend-outs" class="midi-cvrt-outs"></span>
                 </div>
                 
                 <div class="separator"><span>Handling</span></div>
                 <div>
                   <label for="midi-cvrt-note-rng1" class="tooltip" data-tooltip="MIDI note (inclusive) to respond to.">Note Range</label>
-                  <select id="midi-cvrt-note-rng1"><script>optionRange(0,127,0)</script></select>&emsp;
-                  <select id="midi-cvrt-note-rng2"><script>optionRange(0,127,127)</script></select>
+                  <select id="midi-cvrt-note-min" onchange="setMidiCVValue(2, this.value)">
+                    <script>optionRange(0,127,0)</script></select>&emsp;
+                  <select id="midi-cvrt-note-max" onchange="setMidiCVValue(3, this.value)">
+                    <script>optionRange(0,127,127)</script></select>
+                </div>
+                <div>
+                  <label for="midi-cvrt-gatepress" class="tooltop" data-tooltip="Set aftertouch output to zero when all keys are released.">Gated Aftertouch</label>
+                  <input id="midi-cvrt-gatepress" type="checkbox" 
+                         onchange="setMidiCVValue(9,this.checked)">
                 </div>
                 <div>
                   <label for="midi-cvrt-sustain" class="tooltip" data-tooltip="Controls whether MIDI CCs 64 & 66 are used in their normal role as sustain & sostenuto pedals.">Sustain</label>
-                  <select id="midi-cvrt-sustain">
+                  <select id="midi-cvrt-sustain" onchange="setMidiCVValue(10,this.value)">
                     <option value="0">Off</option>
                     <option value="1">Sustain</option>
                     <option value="2">Sostenuto</option>
@@ -674,44 +685,48 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                 </div>
                 <div class="mpe-param poly-param" hidden>
                   <label for="midi-cvrt-no-steal" class="tooltip" data-tooltip="Any keys pressed beyond the voices of the converter are ignored. Without this option, new notes replace any old ones being held.">Prevent Stealing</label>
-                  <input id="midi-cvrt-no-steal" type="checkbox">
+                  <input id="midi-cvrt-no-steal" type="checkbox"
+                         onchange="setMidiCVValue(8,this.checked)">
                 </div>
                 <div class="mpe-param poly-param" hidden>
                   <label for="midi-cvrt-stride" class="tooltip" data-tooltip="Sets the spacing between the per-voice sets of CVs. For example, if a 3 voice polyphonic converter has just CV and gate per voice on output 1, then the voice outputs will be 1/2, 3/4, 5/6. If the stride were set to 3, then the outputs are 1/2, 4/5, 7/8.">Stride</label>
-                  <select id="midi-cvrt-stride">
-                      <script>optionRange(1,32,1,1)</script>
+                  <select id="midi-cvrt-stride" onchange="setMidiStride(this.value)">
+                      <script>optionRange(0,32,0)</script>
                   </select>
                 </div>
                 <div class="mpe-param" hidden>
                   <label for="midi-cvrt-lastchan" class="tooltip" data-tooltip="Last MPE channel to respond too.">Last Channel</label>
-                  <select id="midi-cvrt-lastchan">
+                  <select id="midi-cvrt-lastchan" onchange="setMidiCVValue(13,this.value)">
                       <script>optionRange(2,16,16,1)</script>
                   </select>
                 </div>
                 <div>
                   <label for="midi-cvrt-bendup" class="tooltip" data-tooltip="Pitch bend depth, in semitones.">Bend Up</label>
-                  <select id="midi-cvrt-bendup">
+                  <select id="midi-cvrt-bendup" onchange="setMidiCVValue(6,this.value)">
                     <script>optionRange(0,64,0)</script>
                   </select>
                 </div>
                 <div>
                   <label for="midi-cvrt-benddown" class="tooltip" data-tooltip="Pitch bend depth, in semitones.">Bend Down</label>
-                  <select id="midi-cvrt-benddown">
+                  <select id="midi-cvrt-benddown" onchange="setMidiCVValue(29,this.value)">
                     <option value='0'>Same</option>
                     <script>optionRange(0,64,null,-1)</script>
                   </select>
                 </div>              
                 <div>
                   <label for="midi-cvrt-retrig" class="tooltip" data-tooltip="Enables suppression of triggers and envelopes for monophonic converters when releasing one key triggers a note while another is held. When enabled (1), the note triggers neither.">Mono Retrigger</label>
-                  <input id="midi-cvrt-retrig" type="checkbox">
+                  <input id="midi-cvrt-retrig" type="checkbox"
+                         onchange="setMidiCVValue(26,this.checked)">
                 </div>
                 <div>
                   <label for="midi-cvrt-intgate" class="tooltip" data-tooltip="Enables a brief gate-low transition when playing a new note legato, allowing an external envelope to retrigger. For best results, use separate gate and trigger outputs with an envelope generator that supports both inputs.">Interrupt Gate</label>
-                  <input id="midi-cvrt-intgate" type="checkbox">
+                  <input id="midi-cvrt-intgate" type="checkbox"
+                         onchange="setMidiCVValue(27,this.checked)">
                 </div>
                 <div>
                   <label for="midi-cvrt-envzero" class="tooltip" data-tooltip="Enables envelopes to restart from zero with every note-on. When disabled, the attack phase rises from the current envelope value.">Envelope Zero</label>
-                  <input id="midi-cvrt-envzero" type="checkbox">
+                  <input id="midi-cvrt-envzero" type="checkbox"
+                         onchange="setMidiCVValue(28,this.checked)">
                 </div>
               </div>
             </fieldset>

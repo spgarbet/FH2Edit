@@ -23,15 +23,16 @@
 - Outputs
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
+  - (ICON-Keys) MAIN 16 Midi to CV
 
 ## In Process
 
 - (ICON-Keys) MAIN 16 Midi to CV
   [X] Main interface html
-  [ ] Add tooltips to main
-  [ ] Write from interface (Model)
-  [ ] Render to interface
-  [ ] Compute utilized ports and display
+  [X] Add tooltips to main
+  [X] Write from interface (Model)
+  [X] Render to interface
+  [X] Compute utilized ports and display
   [ ] Ghost icons
 
 ## TODO

@@ -210,3 +210,5 @@ function setCVMidiOut(value, letter, flag)
 
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
+
+ 

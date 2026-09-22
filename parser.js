@@ -519,13 +519,13 @@ function parseMcv(reader)  // 32 bytes total
 {
   return (
   {                           // Relative Offset (not Absolute)
-    enable:     reader.u8(),  //  0
+    enabled:    reader.u8(),  //  0
     channel:    reader.u8(),  //  1
     min:        reader.u8(),  //  2
     max:        reader.u8(),  //  3
     type:       reader.u8(),  //  4
     voices:     reader.u8(),  //  5
-    bend:       reader.u8(),  //  6
+    bendUp:     reader.u8(),  //  6
     scheme:     reader.u8(),  //  7
     stealing:   reader.u8(),  //  8
     gatedPress: reader.u8(),  //  9
@@ -533,7 +533,7 @@ function parseMcv(reader)  // 32 bytes total
     base:       reader.u8(),  // 11
     stride:     reader.u8(),  // 12
     lastMPE:    reader.u8(),  // 13
-    pressure:   reader.u8(),  // 14
+    pressure:   reader.u8(),  // 14   Single paraphonic out
     paraGate:   reader.u8(),  // 15
     cvOutput:   reader.u8(),  // 16
     gateOutput: reader.u8(),  // 17
@@ -541,7 +541,7 @@ function parseMcv(reader)  // 32 bytes total
     velOutput:  reader.u8(),  // 19
     relVel:     reader.u8(),  // 20
     trigger:    reader.u8(),  // 21
-    voicePress: reader.u8(),  // 22
+    voicePress: reader.u8(),  // 22    Per voice pressure
     mpeY:       reader.u8(),  // 23
     envelope:   reader.u8(),  // 24
     baseGate:   reader.u8(),  // 25
@@ -549,7 +549,7 @@ function parseMcv(reader)  // 32 bytes total
     intGate:    reader.u8(),  // 27
     zeroStart:  reader.u8(),  // 28
     bendDown:   reader.u8(),  // 29
-    pitchBend:  reader.u8(),  // 30
+    bendOut:    reader.u8(),  // 30
     random:     reader.u8()   // 31
   });
 }

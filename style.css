@@ -363,6 +363,11 @@ body
   min-width: 0;
 }
 
+#footer img
+{
+  height: 20px;
+}
+
 .icon-credits
 {
   position: relative;
@@ -893,3 +898,10 @@ canvas
   border-bottom: 1px solid #ccc;
 }
 .separator span { margin-left: .25em; margin-right: .25em; }
+
+/* MIDI Output */
+.midi-cvrt-outs
+{
+  padding-left: 1em;
+  float:right;
+}
