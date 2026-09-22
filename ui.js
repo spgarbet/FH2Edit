@@ -809,12 +809,9 @@ function renderMidiEditor()
   setMidiCVValue(11, output);    // Map to right output
   
   const reader = new ByteReader(configSysex);
-  
-  console.log("Locating MIDI/CV", output);
   reader.seek(100 + 32*output);
 
   const mcv = parseMcv(reader);
-  console.log(mcv)
   renderMcv(mcv);
   computeMidiOutputs();
 }
