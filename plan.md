@@ -3,7 +3,6 @@
 ## Known Bugs
 
 - Changing expanders loses focus on LFO
-- Default configuration has every LFO turned on.
 
 ## Completed
 
@@ -27,37 +26,29 @@
 
 ## In Process
 
-- (ICON-Keys) MAIN 16 Midi to CV
-  [ ] Ghost icons for MIDI
+- Clean default for LFOs and others
+- (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
 
 ## TODO
 
 - Outputs
-  - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
   - (ICON-Lightning) 64 Triggers Independent like clocks, (? channel/cc)
   - (ICON-Envelope) A separate editor for the Envelope (13 channels/cc)
   - (ICON-Arpeggiator) A separate editor for the Arp (13 channels/cc)
 - Tunings 32 slots for Scala/Keyboard
-- Gates tab (edit things on Gates like Expanders)
+- MIDI Routing - A visual display of all MIDI routes.
 - Outputs (cont)
   - (ICON-Game Controller) 32 HID Gamepad, assign to output
   - (ICON-Keyboard) 32 HID Keyboard, assign to output
   - (ICON ? ) ? Novation Pad This is so far down the list I will probably never do it
-- MIDI Routing - A visual display of all MIDI routes.
+- Gates tab (edit things on Gates like Expanders)
   
 ## Notes
 
-Fun: SRR
-
 An Envelope if enabled is associated with a MIDI/CV
-An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc)
 
-SRR can produce output on
-- Output Port CV (anywhere or none)
-- Output Port Change (anywhere or none)
-- Output Port Trigger (anywhere or none)
-- MIDI output (I, A, C, D, S)
+An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc)
 
 Euclidean can produce output on
 - Output Port VelGate/Trig (anywhere or none)
@@ -70,4 +61,3 @@ Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/dr
 ## Questions
 
 - What is the scale of portamento? 0-127 means what?
-- Why is the Arp transpose in the preset unsigned. Shouldn't transpose be a signed 7-bit?

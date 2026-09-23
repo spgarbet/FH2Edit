@@ -839,7 +839,7 @@ function renderChainIcons(output, container)
     const button     = document.createElement("button");
     button.className = "outputs-icon-item outputs-icon-chain";
     button.type      = "button";
-    button.title     = "MIDI-to-CV output";
+    button.title     = "MIDI/CV from "+(chain.parent.output+1);
 
     const img        = document.createElement("img");
     img.src          = "icons/link.png";
