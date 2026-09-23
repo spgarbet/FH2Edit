@@ -28,22 +28,14 @@
 ## In Process
 
 - (ICON-Keys) MAIN 16 Midi to CV
-  [X] Main interface html
-  [X] Add tooltips to main
-  [X] Write from interface (Model)
-  [X] Render to interface
-  [X] Compute utilized ports and display
   [ ] Ghost icons for MIDI
 
 ## TODO
 
 - Outputs
-  - (ICON-Keys) 16 Midi to CV
-    - Preset: Portamento, Transpose, Tuning
   - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
   - (ICON-Lightning) 64 Triggers Independent like clocks, (? channel/cc)
-  - (ICON-Sine) LFO resets missing
   - (ICON-Envelope) A separate editor for the Envelope (13 channels/cc)
   - (ICON-Arpeggiator) A separate editor for the Arp (13 channels/cc)
 - Tunings 32 slots for Scala/Keyboard

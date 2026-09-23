@@ -88,6 +88,8 @@ function renderMcv(mcv)
   put(  "midi-cvrt-bendup",   mcv.bendDown    );
   put(  "midi-cvrt-bend",     mcv.bendOut     );
   check("midi-cvrt-rnd",      !!mcv.random    );
+  
+  elem("midi-editor-name").textContent = "MIDI/CV ("+(selectedIcon.index+1)+")";
 }
 
 function scaleVoltage(range, level, scale=16383)
