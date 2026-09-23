@@ -190,6 +190,46 @@ function parsePresetLFOs(reader)
   return lfos;
 }
 
+function parseScala(reader)
+{
+  reader.seek(1636);
+  const scala = [];
+  for (let i=0; i<16; ++i)
+  {
+    scala.push(
+      {
+        enable: reader.u8(),
+        scl:    reader.u8(),
+        kbm:    reader.u8()
+      });
+    reader.skip(1);
+  }
+  
+  return scala;
+}
+
+function parseArpeg(reader)
+{
+  reader.seek(1248);
+  const arpeg = [];
+  for (let i=0; i<16; ++i)
+  {
+    arpeg.push(
+      {
+        mode:       reader.u8(), // M 0
+        range:      reader.u8(), // R 1
+        gate:       reader.u8(), // G 2
+        latch:      reader.u8(), // L 3
+        rate:       reader.u8(), // T 4
+        portamento: reader.u8(), // P 5
+        reset:      reader.u8(), // S 6
+        transpose:  reader.u8()  // E 7
+      }
+    );
+  }
+  return arpeg;
+}
+
 function parsePreset(reader)
 {
   reader.skip(8);
@@ -208,27 +248,11 @@ function parsePreset(reader)
   reader.skip(1);
 	const directLevel = parsePresetDirectLevel(reader);     //   32
 	const lfos        = parsePresetLFOs(reader);            //  160
+  const arpeg       = parseArpeg(reader);                 // 1248
 
-  const arpeg = [];                                       // 1248
-  for (let i=0; i<16; ++i)
-  {
-    arpeg.push(
-      {
-        m: reader.u8(),
-        r: reader.u8(),
-        g: reader.u8(),
-        l: reader.u8(),
-        t: reader.u8(),
-        p: reader.u8(),
-        s: reader.u8(),
-        e: reader.u8()
-      }
-    );
-  }
+  const tempo = reader.uLong() * 0.1;                     // 1376
 
-  const tempo = reader.uLong() * 0.1;                    // 1376
-
-  const euclidean = [];                                  // 1380
+  const euclidean = [];                                   // 1380
   for (let i=0; i<16; ++i)
   {
     euclidean.push(
@@ -262,20 +286,8 @@ function parsePreset(reader)
       }
     );
   }
-
-  const scala = [];                          // 1636
-  for (let i=0; i<16; ++i)
-  {
-    scala.push(
-      {
-        enable: reader.u8(),
-        scl:    reader.u8(),
-        kbm:    reader.u8()
-      }
-    );
-
-    reader.skip(1);
-  }
+  
+  const scala = parseScala(reader);         // 1636
 
   const sequencerActive = reader.u8();      // 1700
   const sequencerMute   = reader.u8();      // 1701

@@ -808,12 +808,26 @@ function renderMidiEditor()
   setMidiCVValue( 0, 1);         // Enable it
   setMidiCVValue(11, output);    // Map to right output
   
-  const reader = new ByteReader(configSysex);
-  reader.seek(100 + 32*output);
+  var reader = new ByteReader(configSysex);
+  reader.seek(100 + 32*index);
 
   const mcv = parseMcv(reader);
   renderMcv(mcv);
   computeMidiOutputs();
+  
+  // Read the Arp values needed
+  reader = new ByteReader(presetSysex);
+  reader.seek(1253+8*index);
+  put("midi-cvrt-porta", reader.u8());  // Arp P
+  reader.skip(1);
+  put("midi-cvrt-trans", reader.u8());  // Arp E
+  
+  const scala=parseScala(reader)[index];
+  
+  put("midi-cvrt-scl", scala.enable > 0 ? scala.scl : -1);
+  put("midi-cvrt-kbm", scala.enable > 0 ? scala.kbm : -1);
+  
+  updateMidiMapButtons("#lfo-editor .midi-map-button", index);
 }
 
 function renderLfoEditor()
@@ -1208,9 +1222,21 @@ function setStartType(value)
  //
 // MIDI CV Converter UI
 //
+
+// Midi to CV Converter values by indexed offset
 function setMidiCVValue(offset, value)
 {
   setConfigU8(100+offset+32*selectedIcon.index, value);
+}
+
+function setArpValue(offset, value)
+{
+  setPresetU8(1636+offset+8*selectedIcon.index, value);
+}
+
+function setScalaValue(offset, value)
+{
+  setPresetU8(1248+offset+4*selectedIcon.index, value);
 }
 
 function makeSeries(base, block, replicates)
@@ -1408,6 +1434,21 @@ function setMidiRandom(value)
   computeMidiOutputs();
 }
 
+// Tricky state handling to hide "enable" from user
+function setScala(scl, kbm)
+{
+  const enable = scl >= 0 || kbm >= 0;
+  setScalaValue(0, enable            ?   1 : 0);
+  setScalaValue(1, enable && scl > 0 ? scl : 0);
+  setScalaValue(2, enable && kbm > 0 ? kbm : 0);
+}
 
+function setScl(value)
+{
+  setScala(Number(value), Number(get('midi-cvrt-kbm')));
+}
 
-
+function setKbm(value)
+{
+  setScala(Number(get('midi-cvrt-scl')), Number(value));
+}

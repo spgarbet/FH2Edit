@@ -728,8 +728,40 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                   <input id="midi-cvrt-envzero" type="checkbox"
                          onchange="setMidiCVValue(28,this.checked)">
                 </div>
+                
+                <!-- Portamento, Transpose, Scale -->
+                <div class="separator"><span>Presets</span></div>
+                
+                <div>
+                  <label for="midi-cvrt-porta" class="tooltip" data-tooltip="Monophonic and Unison MIDI/CV converters use the portamento setting. This sets a glide time between notes played legato ('fingered portamento').">Portamento</label>
+                  <select id="midi-cvrt-porta" onchange="setArpValue(5, this.value)">
+                    <script>optionRange(0,127,0)</script>
+                  </select>&emsp;
+                  <button class="midi-map-button" type="button"
+                          data-type="arp" data-index="0" data-dest="P"
+                          aria-label="MIDI assignment for controlling portamento">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+                <div>
+                  <label for="midi-cvrt-trans" class="tooltip" data-tooltip="Each MIDI/CV converter has a transpose setting, which transposes its notes up or down in semitones.">Transpose</label>
+                  <select id="midi-cvrt-trans" onchange="setArpValue(7,this.value)">
+                    <script>optionRange(-48,48,0,-64)</script>
+                  </select>&emsp;
+                  <button class="midi-map-button" type="button"
+                          data-type="arp" data-index="0" data-dest="E"
+                          aria-label="MIDI assignment for controlling transpose">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+                </div>
+                <div>
+                  <label for="midi-cvrt-scl" class="tooltip" data-tooltip="The FH-2's MIDI/CV converters can use microtonal scales defined by the Scala file formats, or by the MIDI Tuning Standard (MTS). The are 32 slots for each kind of file. MTS is a global scale on the device.">Scala/Key Map</label>          
+                  <select id="midi-cvrt-scl" onchange="setScl(this.value)"><option value="-1" selected>--</option><option value="0">MTS</option><script>optionRange(1,32)</script></select>
+                  <select id="midi-cvrt-kbm" onchange="setKbm(this.value)"><option value="-1" selected>--</option><option value="0">MTS</option><script>optionRange(1,32)</script></select>
+                </div
               </div>
             </fieldset>
+            
         
             <!-- MIDI/CV editor controls end -->
           </div>

@@ -14,7 +14,7 @@
   - Read Screen
   - Flash
   - [Internal] MIDI Retry strategy with confirmation
-- [Internal] Data structure for MIDI channel/cc mappings (384 limit)
+- Internals Data structure for MIDI channel/cc mappings (384 limit)
 - Globals
   - Preset
   - Config
@@ -33,27 +33,50 @@
   [X] Write from interface (Model)
   [X] Render to interface
   [X] Compute utilized ports and display
-  [ ] Ghost icons
+  [ ] Ghost icons for MIDI
 
 ## TODO
 
 - Outputs
   - (ICON-Keys) 16 Midi to CV
-    - Envelope (13 channel/cc)
-    - Arpeggiator (13 channel/cc)
-    - Tuning
+    - Preset: Portamento, Transpose, Tuning
   - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
   - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
-  - (ICON-Lightning) 64 Triggers, (? channel/cc)
+  - (ICON-Lightning) 64 Triggers Independent like clocks, (? channel/cc)
+  - (ICON-Sine) LFO resets missing
+  - (ICON-Envelope) A separate editor for the Envelope (13 channels/cc)
+  - (ICON-Arpeggiator) A separate editor for the Arp (13 channels/cc)
 - Tunings 32 slots for Scala/Keyboard
 - Gates tab (edit things on Gates like Expanders)
 - Outputs (cont)
   - (ICON-Game Controller) 32 HID Gamepad, assign to output
   - (ICON-Keyboard) 32 HID Keyboard, assign to output
   - (ICON ? ) ? Novation Pad This is so far down the list I will probably never do it
+- MIDI Routing - A visual display of all MIDI routes.
   
-## Not Understood
+## Notes
+
+Easy: LFO Resets
+Fun: SRR
+
+An Envelope if enabled is associated with a MIDI/CV
+An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc)
+
+SRR can produce output on
+- Output Port CV (anywhere or none)
+- Output Port Change (anywhere or none)
+- Output Port Trigger (anywhere or none)
+- MIDI output (I, A, C, D, S)
+
+Euclidean can produce output on
+- Output Port VelGate/Trig (anywhere or none)
+- Output Port Off VelGate/Trig (anywhere or none)
 
 Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/drum requests?
   - 4x4 4 channel MIDI 32 step sequencer  (spits MIDI out)
   - 1x26 1 drum 32 step sequencer         (spits trigs out)
+
+## Questions
+
+- What is the scale of portamento? 0-127 means what?
+- Why is the Arp transpose in the preset unsigned. Shouldn't transpose be a signed 7-bit?
