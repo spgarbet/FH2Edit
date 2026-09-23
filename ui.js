@@ -33,6 +33,8 @@ const iconState =
 let selectedIcon   = null;
 let selectedOutput = null;
 
+const chainIcons = []; // The reference icons
+
 const ICON_DEFS =
 {
   midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
@@ -548,6 +550,12 @@ function setExpanders(v)
 }
 
 // Icon Code
+function sameIcon(a, b)
+{
+  return a.type   === b.type  &&
+         a.index  === b.index &&
+         a.output === b.output;
+}
 
 function nextAvailableIcon(type)
 {
@@ -694,6 +702,8 @@ function renderOutputIcons(output, container)
       container.appendChild(button);
     }
   }
+  
+  renderChainIcons(output, container);
 }
 
 function buildIconPicker()
@@ -778,6 +788,82 @@ function hideIconPicker()
 
 document.addEventListener("click", function() { hideIconPicker(); });
 
+  ///////////////////////////////////////////////////////////////////////////
+ //
+// Chain Icons
+
+/* Example
+{
+  output: 12,
+  parent:
+  {
+    type: "midi",
+    index: 2,
+    output: 3
+  }
+} */
+
+function rebuildMidiOutputChains(parent, outputs)
+{
+  const oldOutputs = [];
+
+  // Pull out all associated chains of the parent
+  for (let i = chainIcons.length - 1; i >= 0; --i)
+  {
+    if (sameIcon(chainIcons[i].parent, parent))
+    {
+      oldOutputs.push(chainIcons[i].output);
+      chainIcons.splice(i, 1);
+    }
+  }
+
+  // Insert new chains
+  for (const output of outputs)
+  {
+    chainIcons.push({output, parent});
+  }
+
+  // deduped set of affected outputs is rerendered
+  for (const output of new Set([...oldOutputs, ...outputs]))
+  {
+    renderOutputIconsFor(output);
+  }
+}
+
+function renderChainIcons(output, container)
+{
+  for (const chain of chainIcons)
+  {
+    if (chain.output !== output) { continue; }
+
+    const button     = document.createElement("button");
+    button.className = "outputs-icon-item outputs-icon-chain";
+    button.type      = "button";
+    button.title     = "MIDI-to-CV output";
+
+    const img        = document.createElement("img");
+    img.src          = "icons/link.png";
+    img.alt          = "MIDI-to-CV output";
+    
+    button.appendChild(img);
+    button.addEventListener("click", function(event)
+    {
+      event.stopPropagation();
+
+      selectIcon(
+        chain.parent.type,
+        chain.parent.index,
+        chain.parent.output
+      );
+    });
+
+    container.appendChild(button);
+  }
+}
+
+  //////////////////////////////////////////////////////////////////////
+ //
+// Midi Mapping via DIN5 icon
 
 function updateMidiMapButtons(query, index)
 {
@@ -813,7 +899,7 @@ function renderMidiEditor()
 
   const mcv = parseMcv(reader);
   renderMcv(mcv);
-  computeMidiOutputs();
+  updateMidiOutputs();
   
   // Read the Arp values needed
   reader = new ByteReader(presetSysex);
@@ -957,6 +1043,8 @@ function renderOutputs()
       if (icons){ renderOutputIcons(unit * 8 + output, icons); }
     }
   }
+  
+  renderChainIcons();
 }
 
 function renderOutputIconsFor(output)
@@ -1284,16 +1372,23 @@ function makeSeries(base, block, replicates)
   return Array.from({ length: replicates }, (_, i) => base + i * block);
 }
 
+function formatOutputs(outputs)
+{
+  return outputs.map(output => output + 1).join(", ");
+}
+
 // Complex output determination
-function computeMidiOutputs()
+function computeMidiOutputs(index)
 {
   const reader = new ByteReader(configSysex);
-  reader.seek(100+32*selectedIcon.index);
+  reader.seek(100+32*index);
   
-  const mcv    = parseMcv(reader);
-  const voices = mcv.type === 0 ? 1 : mcv.voices;
+  const mcv     = parseMcv(reader);
+  const voices  = mcv.type === 0 ? 1 : mcv.voices;
+  const outputs = [];
 
-  var perVoice = 0;
+  let perVoice = 0;
+  
   if(mcv.cvOutput   > 0) { perVoice += 1; }
   if(mcv.gateOutput > 0) { perVoice += 1; }
   if(mcv.velGate    > 0) { perVoice += 1; }
@@ -1306,59 +1401,68 @@ function computeMidiOutputs()
   if(mcv.type > 1   && 
      mcv.mpeY > 0      ) { perVoice += 1; }
 
-  var offset  = mcv.base+1;
-  var stride  = (mcv.type > 0 && mcv.stride > 0) ? mcv.stride : perVoice;
+  let   offset = mcv.base;
+  const stride = (mcv.type > 0 && mcv.stride > 0) ? mcv.stride : perVoice;
   
-  elem("midi-cvrt-cv-outs").textContent =
-    mcv.cvOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.cvOutput > 0) { offset += 1; }
+  for(const source of [
+    "cvOutput",
+    "gateOutput",
+    "velGate",
+    "velOutput",
+    "relVel",
+    "trigger",
+    "envelope",
+    "voicePress",
+    "random",
+    "mpeY"])
+  {
+    const id = "midi-cvrt-p-"+source;
+    if(mcv[source] > 0)
+    {
+      const ports = makeSeries(offset, stride, voices);
+      outputs.push(...ports);
+      elem(id).textContent = formatOutputs(ports);
+      offset += 1;
+    }
+    else
+    {
+      elem(id).textContent = "";
+    }
+  }
 
-  elem("midi-cvrt-gate-outs").textContent =
-    mcv.gateOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.gateOutput > 0) { offset += 1; }
+  offset = mcv.base+voices*stride;
   
-  elem("midi-cvrt-velgate-outs").textContent = 
-    mcv.velGate > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.velGate > 0) { offset += 1; }
+  elem("midi-cvrt-p-paragate").textContent = mcv.paraGate > 0 ? (offset+1) : "";
+  if(mcv.paraGate > 0) { outputs.push(offset); offset += 1; }
   
-  elem("midi-cvrt-vel-outs").textContent = 
-    mcv.velOutput > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.velOutput > 0) { offset += 1; }
+  elem("midi-cvrt-p-paraafter").textContent = mcv.pressure > 0 ? (offset+1) : "";
+  if(mcv.pressure > 0) { outputs.push(offset); offset += 1; }
   
-  elem("midi-cvrt-relvel-outs").textContent = 
-    mcv.relVel > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.relVel > 0) { offset += 1; }
+  if(mcv.bendOut > 0)
+  {
+    const ports = mcv.bendOut === 1 ? [offset] : [offset, offset+1];
+    outputs.push(...ports);
+    elem("midi-cvrt-p-bend").textContent = formatOutputs(ports);
+  }
+  else
+  {
+    elem("midi-cvrt-p-bend").textContent = "";
+  }
   
-  elem("midi-cvrt-trig-outs").textContent = 
-    mcv.trigger > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.trigger > 0) { offset += 1; }
+  return outputs;
+}
+
+function updateMidiOutputs(index=selectedIcon.index)
+{
+  const outputs = computeMidiOutputs(index);
+  const parent  =
+  {
+    type:   "midi",
+    index,
+    output: iconState.midi[index].output
+  };
   
-  elem("midi-cvrt-env-outs").textContent = 
-    mcv.envelope > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.envelope > 0) { offset += 1; }
-  
-  elem("midi-cvrt-after-outs").textContent = 
-    mcv.voicePress > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.voicePress > 0) { offset += 1; }
-  
-  elem("midi-cvrt-rnd-outs").textContent = 
-    mcv.random > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.random > 0) { offset += 1; }
-  
-  elem("midi-cvrt-mpey-outs").textContent = 
-    mcv.mpeY > 0 ? makeSeries(offset, stride, voices).join(", ") : "";
-  if(mcv.mpeY > 0) { offset += 1; }
-  
-  offset = mcv.base+1+voices*stride;
-  
-  elem("midi-cvrt-paragate-outs").textContent = mcv.paraGate > 0 ? offset : "";
-  if(mcv.paraGate > 0) { offset += 1; }
-  
-  elem("midi-cvrt-paraafter-outs").textContent = mcv.pressure > 0 ? offset : "";
-  if(mcv.pressure > 0) { offset += 1; }
-  
-  elem("midi-cvrt-bend-outs").textContent = 
-     mcv.bendOut === 0 ? "" : offset + (mcv.bendOut === 1 ? "" : ", "+(offset+1));
+  rebuildMidiOutputChains(parent, outputs);
 }
 
 function setMidiCVType(value)
@@ -1381,97 +1485,97 @@ function setMidiCVType(value)
   {
     field.hidden = type === 0;
   }
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiVoices(value)
 {
   setMidiCVValue(5, Number(value));
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiStride(value)
 {
   setMidiCVValue(12, Number(value));
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiParaAfter(value)
 {
   setMidiCVValue(14, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiParaGate(value)
 {
   setMidiCVValue(15, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiCV(value)
 {
   setMidiCVValue(16, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiGate(value)
 {
   setMidiCVValue(17, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiVelGate(value)
 {
   setMidiCVValue(18, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiVelocity(value)
 {
   setMidiCVValue(19, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiRelVel(value)
 {
   setMidiCVValue(20, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiTrig(value)
 {
   setMidiCVValue(21, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 function setMidiAfter(value)
 {
   setMidiCVValue(22, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiMpeY(value)
 {
   setMidiCVValue(23, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiEnv(value)
 {
   setMidiCVValue(24, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiBendOut(value)
 {
   setMidiCVValue(30, value);
-  computeMidiOutputs();  
+  updateMidiOutputs();  
 }
 
 function setMidiRandom(value)
 {
   setMidiCVValue(31, value);
-  computeMidiOutputs();
+  updateMidiOutputs();
 }
 
 // Tricky state handling to hide "enable" from user

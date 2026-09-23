@@ -91,11 +91,11 @@ document.addEventListener("DOMContentLoaded", () =>
   initTooltips();
   buildOutputs();
   buildIconPicker();
-  renderOutputs();
-  renderOutputEditor();
   initMIDI();
   renderPreset(presetSysex);
   renderConfig(configSysex);
+  renderOutputs();
+  renderOutputEditor();
   initFileChooser();
   initLFO();
   initLfoUI()

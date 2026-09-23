@@ -169,9 +169,10 @@ function renderConfig(data)
   {
     if(config.mcvs[i].enabled > 0)
     {
-      iconState["midi"][i].enabled=true;
-      iconState["midi"][i].output=config.mcvs[i].base;
+      iconState["midi"][i].enabled = true;
+      iconState["midi"][i].output  = config.mcvs[i].base;
       renderOutputIconsFor(iconState["midi"][i].output);
+      updateMidiOutputs(i);
     }
   }
   
