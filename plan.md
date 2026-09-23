@@ -56,7 +56,6 @@
   
 ## Notes
 
-Easy: LFO Resets
 Fun: SRR
 
 An Envelope if enabled is associated with a MIDI/CV

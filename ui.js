@@ -888,6 +888,13 @@ function renderLfoEditor()
   }
   
   updateMidiMapButtons("#lfo-editor .midi-map-button", output);
+  
+  var   reset  = parseLfoReset(new ByteReader(configSysex),  output);
+
+  put('lfo-reset',    reset.type   );
+  put('lfo-reset-v1', reset.channel);
+  put('lfo-reset-v2', reset.cc     );
+  
   drawWaveform();
 }
 
@@ -1181,6 +1188,39 @@ function setLfoSpeed(v)
   }
 }
 
+function updateLfoReset()
+{
+  const type = Number(get("lfo-reset"));
+  
+  setLfoReset(selectedIcon.index, type,
+    Number(get("lfo-reset-v1")), Number(get("lfo-reset-v2")));
+  
+  switch(type)
+  {
+    case 0:
+      elem("lfo-reset-v1").hidden = true;
+      elem("lfo-reset-v2").hidden = true;
+      break;
+    case 1:
+    case 2:
+      elem("lfo-reset-v1").hidden = false;
+      elem("lfo-reset-v2").hidden = false;
+      break;
+    case 3:
+    case 4:
+    case 5:
+      elem("lfo-reset-v1").hidden = true;
+      elem("lfo-reset-v2").hidden = false;
+      break;
+    case 6:
+    case 7:
+    case 8:
+      elem("lfo-reset-v1").hidden = true;
+      elem("lfo-reset-v2").hidden = false;
+      break;
+  }
+}
+
 /* Dealing with two global midi mapping exceptions */
 function setTapType(value)
 {
@@ -1435,6 +1475,8 @@ function setMidiRandom(value)
 }
 
 // Tricky state handling to hide "enable" from user
+// If both are set to -1 in UI, then it is disabled.
+// Sysex must at minimum be 0.
 function setScala(scl, kbm)
 {
   const enable = scl >= 0 || kbm >= 0;

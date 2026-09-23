@@ -960,6 +960,23 @@ General Setting Page 3 has a setting 'Always load direct'. If set, the Direct Le
                 </div>
                 
                 <div class="control">
+                  <label for="lfo-reset" class="tooltip" data-tooltip="Reset/retrigger LFOs in response to MIDI. Upon reset the phase of the LFO is zero and fade up if set occurs.
+
+CC: [Channel/CC resets when CC is 64 or more.
+Note: [Channel/Note resets on matching note.
+Any Note: [Channel/CV] resets on any note.
+Paraphonic: [Channel/CV] Note is pressed with none held.
+Poly Voice: [Channel/CV] Polyphonic voice is triggered.
+Clock: [Clock Num]
+Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
+                  <select id="lfo-reset" onchange="updateLfoReset()">
+                    <option value=0>--</option><option value=1>CC</option><option value=2>Note</option><option value=3>Any Note</option><option value=4>Paraphonic</option><option value=5>Poly Voice</option><option value=6>Clock</option><option value=7>Euclidean</option>
+                  </select>
+                  <select id="lfo-reset-v1" onchange="updateLfoReset()" hidden><script>optionRange(1,16,1,1)</script></select>
+                  <select id="lfo-reset-v2" onchange="updateLfoReset()" hidden><script>optionRange(0,127,0)</script></select>
+                </div>
+                
+                <div class="control">
                   <button id="animate" type="button">Start Animation</button>
                 </div>
               </div>

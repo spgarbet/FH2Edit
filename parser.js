@@ -612,6 +612,31 @@ function parseMappings(reader)
   return mappings;
 }
 
+function parseLfoReset(reader, index=null)
+{
+  if(index !== null) { reader.seek(3468+2*index); }
+  
+  const typeChannel = reader.u8();
+
+  return (
+  {
+    type:    typeChannel >> 4,
+    channel: typeChannel & 0x0f,
+    cc:      reader.u8()
+  });
+}
+
+function parseLfoResets(reader)
+{
+  reader.seek(3468);
+  const lfoResets = [];
+  for (let i = 0; i < 64; ++i)
+  {
+    lfoResets.push(parseLfoReset(reader));
+  }
+  return lfoResets;
+}
+
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -754,19 +779,7 @@ function parseConfig(reader)
   }
 
   // LFO resets
-  config.lfoResets = [];                   // 3468
-  for (let i = 0; i < 64; ++i)
-  {
-    const typeChannel = reader.u8();
-
-    config.lfoResets.push(
-      {
-        type:    typeChannel >> 4,
-        channel: typeChannel & 0x0f,
-        cc:      reader.u8()
-      }
-    );
-  }
+  config.lfoResets = parseLfoResets(reader); // 3468
 
   // CV/MIDI
   config.cvMidi = [];                      // 3596

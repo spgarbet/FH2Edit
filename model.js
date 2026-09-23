@@ -124,6 +124,15 @@ function initLfo(i)
   }
 }
 
+function setLfoReset(index, type, v1, v2)
+{
+  const loc = 3468 + 2*index;
+  
+  setConfigU8(loc  , (type << 4) | (v1 & 0x0f));
+  setConfigU8(loc+1, v2);
+}
+
+
   ////////////////////////////////////////////////////////
  // 
 // Config Model
