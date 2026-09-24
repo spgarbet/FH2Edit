@@ -794,6 +794,9 @@ canvas
   background: transparent;
   cursor: pointer;
   box-sizing: border-box;
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 
