@@ -799,6 +799,20 @@ canvas
   margin-right: 0;
 }
 
+#globals-content .midi-map-button
+{
+  display: inline;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.midi-map-button.no-auto-margin
+{
+  display: inline;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 
 .midi-map-button.assigned
 {
