@@ -560,13 +560,7 @@ function setExpanders(v)
   {
     if(state[i].enabled && state[i].output >= 8*(expanders+1))
     {
-      let loc = 2048+8*i;
-      setConfigU8(loc,   0);
-      setConfigU8(loc+1, 1);
-      setConfigU8(loc+2, 1);
-      setConfigU8(loc+3, 0);
-      setConfigU8(loc+4, 0);
-      setConfigU8(loc+5, 0);
+      disableClock(i);
       removeIcon("clock", i);
     }
   }
@@ -575,9 +569,9 @@ function setExpanders(v)
   state=iconState['lfo'];
   for (let i=8*(expanders+1); i<64; ++i)
   {
-    if(state[i].enabled)
+    if(state[i] && state[i].enabled)
     {
-      initLFO(i);
+      initLfo(i);
       removeIcon("lfo", i);
     }
   }
@@ -586,7 +580,7 @@ function setExpanders(v)
   state=iconState['midi'];
   for (let i=8*(expanders+1); i<64; ++i)
   {
-    if(state[i].enabled)
+    if(state[i] && state[i].enabled)
     {
       setConfigU8(100+32*state[i].index, 0); // Disable
       removeIcon("midi", i);
@@ -786,7 +780,7 @@ function buildIconPicker()
   });
   elem("lfo-editor-trash").addEventListener("click", function()
   {
-    setPresetShort(2148+selectedIcon.output, 0); // Turn off LFO
+    initLfo(selectedIcon.output);
     removeIcon("lfo", selectedIcon.index);
   });
   elem("midi-editor-trash").addEventListener("click", function()
@@ -870,6 +864,7 @@ function rebuildMidiOutputChains(parent, outputs)
   // Insert new chains
   for (const output of outputs)
   {
+    if(output === parent.output) { continue; }
     chainIcons.push({output, parent});
   }
 
@@ -980,8 +975,8 @@ function renderLfoEditor()
   // Activate the lfo properly based on icon position
   if(lfo.level <= 0 && !enablingMap) 
   {
-    initLFO(output);
-    setPresetShort(160+loc, 16383);
+    initLfo(output);
+    setPresetShort(160+loc, 16383); // Level is maximum
     lfo = parsePresetLFO(new ByteReader(presetSysex), output);
   }
   

@@ -26,7 +26,6 @@
 
 ## In Process
 
-- Clean default for LFOs and others
 - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
 
 ## TODO

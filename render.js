@@ -152,15 +152,17 @@ function renderConfig(data)
   // Update LFO state based on reading MIDI Mappings
   const mappings = allMappings();
   const lfoMaps  = mappings["lfo"];
-  for(let i in lfoMaps)
+  for(const map of lfoMaps)
   {
     // Is there a MIDI map that enables LFO output?
-    if(lfoMaps[i].type === "LFO" || 
-       lfoMaps[i].type === "DC") 
+    if(map.dest === "LFO" || 
+       map.dest === "DC") 
     {
-      var output = lfoMaps[i].index;
-      iconState["lfo"][output].enabled=true;
-      iconState["lfo"][output].output=output;
+      const output = map.index;
+      
+      iconState.lfo[output].enabled = true;
+      iconState.lfo[output].output = output;
+
       renderOutputIconsFor(output);
     }
   }

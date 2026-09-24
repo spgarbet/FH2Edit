@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () =>
   renderOutputs();
   renderOutputEditor();
   initFileChooser();
-  initLFO();
+  initLfoWaveform();
   initLfoUI()
   updateFPS();
   initMidiMapButtons();

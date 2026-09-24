@@ -93,6 +93,16 @@ function clampSwing(swing)
   return( swing );
 }
 
+function disableLfo(i)
+{
+  setPresetShort(160+16*i, 0); // Turn off LFO
+  const mappings = allMappings();
+  let slot = locateMapping("lfo", "LFO", i, mappings);
+  if(slot !== null) { clearMapping(slot); }
+  slot = locateMapping("lfo", "DC", i, mappings);
+  if(slot !== null) { clearMapping(slot); }
+}
+
 function initLfo(i)
 {
   loc = 160 + 16*i;
@@ -220,6 +230,17 @@ function setCVMidiOut(value, letter, flag)
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
 
+function disableClock(i)
+{
+  let loc = 2048+8*i;
+  setConfigU8(loc,   0);
+  setConfigU8(loc+1, 1);
+  setConfigU8(loc+2, 1);
+  setConfigU8(loc+3, 0);
+  setConfigU8(loc+4, 0);
+  setConfigU8(loc+5, 0);
+}
+
   /////////////////////////////////////////////////////////////////////
  //
 // Shift Register Random
@@ -233,3 +254,4 @@ function initSrr(index)
 {
   console.log("initSrr", index);
 }
+

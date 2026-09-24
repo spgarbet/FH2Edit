@@ -36,7 +36,7 @@
 //   fade      0..127       (not used in waveform generation)
 //   smoothing 0..127
 //
-// `initLFO()` does precomputation of math tables used.
+// `initLfoWaveform()` does precomputation of math tables used.
 // `generateLFO(parameters, noiseStart, randomWalkFrame)` computes a waveform.
 //
 const LFO_SAMPLE_COUNT      =   512;  // Per frame
@@ -63,7 +63,7 @@ const lfoSamples    = new Float32Array(LFO_SAMPLE_COUNT);
 const lfoSmoothed   = new Float32Array(LFO_SAMPLE_COUNT);
 
 // Initialize all waveform tables and stochastic sources.
-function initLFO()
+function initLfoWaveform()
 {
   precomputeWaveforms();
   precomputeRandom();
