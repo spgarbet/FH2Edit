@@ -22,7 +22,7 @@ sysex_to_js <- function(input_file, output_file, name='RAW_OBJECT')
   on.exit(close(con))
   
   writeLines(paste0("// Generated from ", input_file), con)
-  writeLines("const ", raw_object, " = new Uint8Array([", con)
+  writeLines(paste0("const ", name, " = new Uint8Array(["), con)
   
   n <- length(data)
   for (i in seq(1, n, by = 16))
