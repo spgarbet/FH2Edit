@@ -486,3 +486,4 @@ function renderScreenshot(data)
   elem("fh2-screenshot").src = canvas.toDataURL();
   elem("fh2-screenshot").hidden = false;
 }
+

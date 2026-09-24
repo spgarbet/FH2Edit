@@ -219,3 +219,17 @@ function setCVMidiOut(value, letter, flag)
 
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Shift Register Random
+
+function disableSrr()
+{
+  console.log("disableSrr");
+}
+
+function initSrr(index)
+{
+  console.log("initSrr", index);
+}

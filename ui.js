@@ -27,25 +27,28 @@ const iconState =
 {
   midi:  Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   clock: Array.from({ length: 32 }, () => ({ enabled: false, output: null })),
-  lfo:   Array.from({ length: 64 }, () => ({ enabled: false, output: null }))
+  lfo:   Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
+  srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
 };
 
-let selectedIcon   = null;
-let selectedOutput = null;
+let selectedIcon     = null;
+let selectedOutput   = null;
+let selectedSrrIndex = null;
 
 const chainIcons = []; // The reference icons
+
 
 const ICON_DEFS =
 {
   midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
   lfo:       { label: "LFO",        src: "icons/lfo.png",      total: 64 },
-  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 } /*,
+  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 }, /*,
   control:   { label: "Controller", src: "icons/controller.png",total: 32 },
   arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 32 },
   envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 32 },
   euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 32 },
-  sequencer: { label: "Sequencer",  src: "icons/sequencer.png",total: 32 },
-  shift_reg: { label: "Shift Reg",  src: "icons/shift_reg.png",total: 32 } */
+  sequencer: { label: "Sequencer",  src: "icons/sequencer.png",total: 32 }, */
+  srr:       { label: "Shift Reg",  src: "icons/srr.png",      total: 16 }
 };
 
 // Elements
@@ -240,6 +243,18 @@ function initTabs()
       for (const screen of screens)
       {
         screen.classList.toggle("active", screen.id === target);
+      }
+      
+      switch(target)
+      {
+        case "outputs-screen":
+          renderOutputEditor();
+          break;
+          
+        case "srr-screen":
+          mountSrrEditor("srr-screen-editor-host");
+          renderSrrEditor();
+        break;
       }
     });
   }
@@ -667,7 +682,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (let type of ["midi", "lfo", "clock"])
+  for (let type of ["midi", "lfo", "clock", "srr"])
   {
     const state = iconState[type];
 
@@ -710,7 +725,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (let type of ["midi", "lfo", "clock"])
+  for (let type of ["midi", "lfo", "clock", "srr"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -746,8 +761,13 @@ function buildIconPicker()
   });
   elem("midi-editor-trash").addEventListener("click", function()
   {
-    setConfigU8(100+32*selectedIcon.index, 0); // Turn off LFO
+    setConfigU8(100+32*selectedIcon.index, 0); // Turn off MIDI/CV
     removeIcon("midi", selectedIcon.index);
+  });
+  elem("srr-editor-trash").addEventListener("click", function()
+  {
+    disableSrr(selectedIcon.index); // Turn off SRR
+    removeIcon("srr", selectedIcon.index);
   });
 }
 
@@ -1010,7 +1030,7 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr"])
   {
     elem(x+"-editor").hidden = sel !== x;
   }
@@ -1022,6 +1042,7 @@ function renderOutputEditor()
     case "midi":  renderMidiEditor();  break;
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
+    case "srr":   mountSrrEditor("srr-editor-host"); renderSrrEditor();   break;
   }
   updateTooltips();
 }
@@ -1597,4 +1618,99 @@ function setScl(value)
 function setKbm(value)
 {
   setScala(Number(get('midi-cvrt-scl')), Number(value));
+}
+
+  ///////////////////////////////////////////////////////////////////////////
+ //
+// Shift Random Register (SRR)
+
+function selectSrr(index)
+{
+  selectedSrrIndex = Number(index);
+  renderSrrEditor();
+}
+
+function computeSrrOutputs(index)
+{
+  console.log("computeSrrOutputs",index);
+  // Read config.srr[index]
+  // Return the configured physical outputs.
+}
+
+function rebuildSrrOutputChain(index, outputs)
+{
+  console.log("rebuildSrrOutputChain",index,outputs);
+/*
+SRR outputs
+    ↓
+find lowest output
+    ↓
+iconState.srr[index].output = lowest
+    ↓
+put SRR icon on lowest output
+    ↓
+put chain icons on the other outputs
+*/
+
+/*
+If outputs is empty, the result is simply:
+iconState.srr[index].output = null;
+*/
+}
+
+function updateSrrOutputs(index)
+{
+  const outputs = computeSrrOutputs(index);
+
+  rebuildSrrOutputChains(index, outputs);
+}
+
+function mountSrrEditor(host)
+{
+  elem(host).appendChild(elem("srr-editor"));
+}
+
+function updateSrr(index=selectedSrrIndex)
+{
+  // Write controls to config.sysex
+
+  updateSrrOutputs(index);
+  renderSrrEditor();
+}
+
+function writeChannelSelector( id, includeNone=true, includeGate=false, offset=1)
+{
+	document.write("<select id='"+id+"'>");
+	if ( includeNone )
+	{
+	  document.write("<option value='"+(0-offset)+"'>--</option>");
+	}
+
+	for (let j = 1; j <= 8; ++j)
+	{
+		document.write("<option value='"+(j-offset)+"'>"+j+"</option>");
+	}
+	for (let e = 1; e < 8; ++e)
+	{
+		for (let j = 1; j <= 8; ++j)
+		{
+			document.write("<option value='"+(e*8+j-offset)+"'>"+e+"/"+j+"</option>" );
+		}
+	}
+	if (includeGate)
+	{
+  	for (let e = 0; e < 4; ++e)
+  	{
+  		for (let j = 1; j <= 16; ++j)
+  		{
+  			document.write("<option value='"+(64+e*16+j-offset)+"'>GT"+e+"/"+j+"</option>" );
+  		}
+  	}
+	}
+	document.write( "</select>" );
+}
+
+function renderSrrEditor()
+{
+  console.log("renderSrrEditor");
 }

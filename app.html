@@ -59,6 +59,7 @@
     <button type="button" class="tab active" data-target="io-screen"         >I/O</button>
     <button type="button" class="tab"        data-target="globals-screen"    >Globals</button>
     <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
+    <button type="button" class="tab"        data-target="srr-screen"        >SSR</button>
     <button type="button" class="tab"        data-target="controllers-screen">Controllers</button>
     <button type="button" class="tab"        data-target="sequencers-screen" >Sequencers</button>
   </nav>
@@ -993,7 +994,85 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
             <div>Approximate representation.</div>
             
           </div>
-        
+
+<!-- Shift Register Random -->
+          <div id="srr-editor-host">
+            <div id="srr-editor" hidden>
+              <div class="editor-header">
+                <button id="srr-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove SRR"></button>
+                <h3 id="srr-editor-name">Shift Register Random</h3>
+              </div>
+              <fieldset class="parameter-group">
+                <legend>I/O</legend>
+                <div class="singleline">
+                  <div>
+                    <label for="srr-cv-output">CV Output</label>
+                    <script>writeChannelSelector("srr-cv-output")</script>
+                  </div>
+                  <div>
+                    <label for="srr-change-output">Change Output</label>
+                    <script>writeChannelSelector("srr-change-output", true, true)</script>
+                  </div>
+                  <div>
+                    <label for="srr-trigger-output">Trigger Output</label>
+                    <script>writeChannelSelector("srr-trigger-output", true, true)</script>
+                  </div>           
+                  <div>
+                    <label for="srr-notes-input">Notes Input Channel</label>
+                    <select id="srr-notes-input"><option value="-1">--</option>
+                      <script>optionRange(1,16,0,1)</script>
+                    </select>
+                  </div>
+                  <div class="separator"><span>MIDI Output</span></div>
+                  <div>
+                    <label for="srr-midi-i">Internal</label>
+                    <input id="srr-midi-i" type="checkbox">
+                  </div>  
+                  <div>
+                    <label for="srr-midi-c">USB C</label>
+                    <input id="srr-midi-i" type="checkbox">
+                  </div>  
+                  <div>
+                    <label for="srr-midi-a">USB A</label>
+                    <input id="srr-midi-i" type="checkbox">
+                  </div>  
+                  <div>
+                    <label for="srr-midi-d">DIN</label>
+                    <input id="srr-midi-i" type="checkbox">
+                  </div>
+                  <div>
+                    <label for="srr-midi-s">Select</label>
+                    <input id="srr-midi-i" type="checkbox">
+                  </div>  
+                </div>
+              </fieldset>
+              <fieldset class="parameter-group">
+                <legend>Parameters</legend>
+                <div class="singleline">
+                  <div>
+                    <label for="srr-clock">Clock Source</label>
+                    <select id="srr-clock">
+                      <option value="0">External</option>
+                      <script>
+                        for (let j=1; j<=16; ++j)
+                        {
+			                    document.write( "<option value="+j+">Euclidean "+j+"</option>" );
+                        }
+                      </script>
+                    </select>
+                  </div>
+                  <!-- Direction DIN -->
+                  <!-- Length DIN -->
+                  <!-- Randomness DIN -->
+                  <!-- Rate DIN -->
+                  <!-- Attenuator DIN -->
+                  <!-- Scale DIN -->
+                  <!-- Key DIN -->
+                  <!-- Gate Length DIN -->
+                <div>              
+              </fieldset>
+            </div>
+          </div>
         
           <div id="clock-editor" hidden>
             <div class="editor-header">
@@ -1066,6 +1145,17 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
         </section>
       </div>
     
+    </section>
+    
+    <section class="screen" id="srr-screen">
+      <div class="screen-header"><h2>Shift Register Random</h2></div>
+      <div class="screen-content" id="srr-content">
+        <div>
+          <label for="srr-screen-index">SRR Number</label>
+          <select><script>optionRange(1,16,1,1)</script></select>
+        </div>
+        <div id="srr-screen-editor-host"></div>
+      </div>
     </section>
 
 
