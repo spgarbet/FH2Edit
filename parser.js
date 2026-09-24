@@ -230,6 +230,21 @@ function parseArpeg(reader)
   return arpeg;
 }
 
+function parsePresetShiftRegister(reader, index=null)
+{
+  if(index !== null) { reader.seek(2400 + 8*index); }
+  return {
+    direction:   reader.u8(),
+    bits:        reader.u8(),
+    random:      reader.u8(),
+    rate:        reader.u8(),
+    attenuation: reader.u8(),
+    scale:       reader.u8(),
+    key:         reader.u8(),
+    gateLength:  reader.u8()
+  };
+}
+
 function parsePreset(reader)
 {
   reader.skip(8);
@@ -396,22 +411,12 @@ function parsePreset(reader)
     reader.skip(15);
   }
 
+  
   const shiftRegisters = [];   // 2400
 
   for (let i = 0; i < 16; ++i)
   {
-    shiftRegisters.push(
-      {
-        d: reader.u8(),
-        l: reader.u8(),
-        r: reader.u8(),
-        t: reader.u8(),
-        a: reader.u8(),
-        s: reader.u8(),
-        k: reader.u8(),
-        g: reader.u8()
-      }
-    );
+    shiftRegisters.push(parsePresetShiftRegister(reader));
   }
 
   const swing = [reader.u8(), reader.u8(), reader.u8()]; // 2528
@@ -598,6 +603,58 @@ function parseMapping(reader, slot, seek=true)
     t1:      reader.u8(),
     slot
   };
+}
+
+function parseConfigShiftRegister(reader, index=null)
+{
+  // QUESTION: Why is the shift register the only one not 8 byte aligned?
+  if(index !== null)
+  { 
+    reader.seek(3708 + 7*index);
+  }
+  else
+  {
+    index = Math.round((reader.offset - 3708)/7);
+  }
+  
+  const shiftRegister =
+  {
+    output:  reader.u8(),
+    change:  reader.u8(),
+    trigger: reader.u8(),
+    clock:   reader.u8(),
+    notes:   reader.u8(),
+    channel: reader.u8()
+  };
+  
+  const outputs = reader.u8();
+
+  shiftRegister.int    = (outputs >> 0) & 1;
+  shiftRegister.usbc   = (outputs >> 1) & 1;
+  shiftRegister.usba   = (outputs >> 2) & 1;
+  shiftRegister.din    = (outputs >> 3) & 1;
+  shiftRegister.sel    = (outputs >> 4) & 1;
+  
+  const loc = reader.offset;
+  
+  reader.seek(4136+index);
+  shiftRegister.addendum = reader.u8();
+  
+  reader.seek(loc);
+  
+  return shiftRegister;
+}
+
+function parseConfigShiftRegisters(reader)
+{
+  reader.seek(3708);
+  shiftRegisters = [];
+  for (let i = 0; i < 16; ++i)
+  {
+    shiftRegisters.push(parseConfigShiftRegister(reader));
+  }
+  
+  return shiftRegisters;
 }
 
 function parseMappings(reader)
@@ -887,52 +944,23 @@ function parseConfig(reader)
   }
 
   // Shift registers
-  config.shiftRegisters = [];              // 3708
-  for (let i = 0; i < 16; ++i)
-  {
-    const shiftRegister =
-    {
-      output:  reader.u8(),
-      change:  reader.u8(),
-      trigger: reader.u8(),
-      clock:   reader.u8(),
-      nch:     reader.u8(),
-      channel: reader.u8()
-    };
+  config.shiftRegisters = parseConfigShiftRegisters(reader); // 3708
 
-    const outputs = reader.u8();
-
-    shiftRegister.internal = (outputs >> 0) & 1;
-    shiftRegister.cv       = (outputs >> 1) & 1;
-    shiftRegister.accent   = (outputs >> 2) & 1;
-    shiftRegister.drum     = (outputs >> 3) & 1;
-    shiftRegister.slide    = (outputs >> 4) & 1;
-
-    config.shiftRegisters.push(shiftRegister);
-  }
-
-  // The addendum begins at absolute offset 4096.
-  reader.seek(4096);
+  // The addendum begins at absolute offset 4104.
+  reader.seek(4104);
 
   // Euclidean output addendum
-  config.euclideanOutputAddendum = [];     // 4096
+  config.euclideanOutputAddendum = [];     // 4104
   for (let i = 0; i < 16; ++i)
   {
     config.euclideanOutputAddendum.push(reader.u8());
   }
 
   // Euclidean off-output addendum
-  config.euclideanOffOutputAddendum = [];  // 4112
+  config.euclideanOffOutputAddendum = [];  // 4120
   for (let i = 0; i < 16; ++i)
   {
     config.euclideanOffOutputAddendum.push(reader.u8());
-  }
-
-  // Shift-register addendum
-  config.shiftRegisterAddendum = [];       // 4128
-  for (let i = 0; i < 16; ++i)
-  {
-    config.shiftRegisterAddendum.push(reader.u8());
   }
 
   return config;

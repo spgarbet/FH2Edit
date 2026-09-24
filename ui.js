@@ -31,12 +31,10 @@ const iconState =
   srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
 };
 
-let selectedIcon     = null;
-let selectedOutput   = null;
-let selectedSrrIndex = null;
-
-const chainIcons = []; // The reference icons
-
+let   selectedIcon     = null;
+let   selectedOutput   = null;
+let   selectedSrrIndex = null;
+const chainIcons       = []; // The reference icons
 
 const ICON_DEFS =
 {
@@ -94,6 +92,38 @@ function u7PercentRange(selected = 0)
     const isSelected = i === selected ? ' selected' : '';
     document.write(`<option value="${i}"${isSelected}>${(100*i/127).toFixed(1)}&#37;</option>`);
   }
+}
+
+function writeChannelSelector( id, includeNone=true, includeGate=false, offset=1)
+{
+	document.write("<select id='"+id+"'>");
+	if ( includeNone )
+	{
+	  document.write("<option value='"+(0-offset)+"'>--</option>");
+	}
+
+	for (let j = 1; j <= 8; ++j)
+	{
+		document.write("<option value='"+(j-offset)+"'>"+j+"</option>");
+	}
+	for (let e = 1; e < 8; ++e)
+	{
+		for (let j = 1; j <= 8; ++j)
+		{
+			document.write("<option value='"+(e*8+j-offset)+"'>"+e+"/"+j+"</option>" );
+		}
+	}
+	if (includeGate)
+	{
+  	for (let e = 0; e < 4; ++e)
+  	{
+  		for (let j = 1; j <= 16; ++j)
+  		{
+  			document.write("<option value='"+(64+e*16+j-offset)+"'>GT"+e+"/"+j+"</option>" );
+  		}
+  	}
+	}
+	document.write( "</select>" );
 }
 
 function dumpSysex( data, id )
@@ -1042,7 +1072,10 @@ function renderOutputEditor()
     case "midi":  renderMidiEditor();  break;
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
-    case "srr":   mountSrrEditor("srr-editor-host"); renderSrrEditor();   break;
+    case "srr":
+      mountSrrEditor("srr-editor-host");
+      renderSrrEditor(selectedIcon.index);
+      break;
   }
   updateTooltips();
 }
@@ -1624,12 +1657,6 @@ function setKbm(value)
  //
 // Shift Random Register (SRR)
 
-function selectSrr(index)
-{
-  selectedSrrIndex = Number(index);
-  renderSrrEditor();
-}
-
 function computeSrrOutputs(index)
 {
   console.log("computeSrrOutputs",index);
@@ -1675,42 +1702,5 @@ function updateSrr(index=selectedSrrIndex)
   // Write controls to config.sysex
 
   updateSrrOutputs(index);
-  renderSrrEditor();
-}
-
-function writeChannelSelector( id, includeNone=true, includeGate=false, offset=1)
-{
-	document.write("<select id='"+id+"'>");
-	if ( includeNone )
-	{
-	  document.write("<option value='"+(0-offset)+"'>--</option>");
-	}
-
-	for (let j = 1; j <= 8; ++j)
-	{
-		document.write("<option value='"+(j-offset)+"'>"+j+"</option>");
-	}
-	for (let e = 1; e < 8; ++e)
-	{
-		for (let j = 1; j <= 8; ++j)
-		{
-			document.write("<option value='"+(e*8+j-offset)+"'>"+e+"/"+j+"</option>" );
-		}
-	}
-	if (includeGate)
-	{
-  	for (let e = 0; e < 4; ++e)
-  	{
-  		for (let j = 1; j <= 16; ++j)
-  		{
-  			document.write("<option value='"+(64+e*16+j-offset)+"'>GT"+e+"/"+j+"</option>" );
-  		}
-  	}
-	}
-	document.write( "</select>" );
-}
-
-function renderSrrEditor()
-{
-  console.log("renderSrrEditor");
+  renderSrrEditor(index);
 }

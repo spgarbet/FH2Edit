@@ -487,3 +487,34 @@ function renderScreenshot(data)
   elem("fh2-screenshot").hidden = false;
 }
 
+
+function renderSrrEditor(index=null)
+{
+  console.log("renderSrrEditor", index);
+  if(index === null) { index = Number(get("srr-screen-index")); }
+  selectedSrrIndex = index;
+  
+  const srr = { ...(parsePresetShiftRegister(new ByteReader(presetSysex), index)),
+                ...(parseConfigShiftRegister(new ByteReader(configSysex), index)) };
+  
+  put(  'srr-cv-output',      srr.output      );
+  put(  'srr-change-output',  (srr.addendum & 1) ? -1 : srr.change  );
+  put(  'srr-trigger-output', (srr.addendum & 2) ? -1 : srr.trigger );
+  put(  'srr-notes-input',    srr.notes       );
+  check('srr-midi-i',         srr.int         );
+  check('srr-midi-c',         srr.usbc        );
+  check('srr-midi-a',         srr.usba        );
+  check('srr-midi-d',         srr.din         );
+  check('srr-midi-s',         srr.sel         );
+  put(  'srr-clock',          srr.clock       );
+  put(  'srr-direction',      srr.direction   );
+  put(  'srr-length',         srr.bits        );
+  put(  'srr-rate',           srr.rate        );
+  put(  'srr-random',         srr.random      );
+  put(  'srr-attenuator',     srr.attenuation );
+  put(  'srr-scale',          srr.scale       );
+  put(  'srr-key',            srr.key         );
+  put(  'srr-gate-len',       srr.gateLength  );
+  
+  console.log("renderSrrEditor");
+}

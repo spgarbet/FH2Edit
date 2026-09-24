@@ -1007,7 +1007,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                 <div class="singleline">
                   <div>
                     <label for="srr-cv-output">CV Output</label>
-                    <script>writeChannelSelector("srr-cv-output")</script>
+                    <script>writeChannelSelector("srr-cv-output", true, false, 0)</script>
                   </div>
                   <div>
                     <label for="srr-change-output">Change Output</label>
@@ -1030,19 +1030,19 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>  
                   <div>
                     <label for="srr-midi-c">USB C</label>
-                    <input id="srr-midi-i" type="checkbox">
+                    <input id="srr-midi-c" type="checkbox">
                   </div>  
                   <div>
                     <label for="srr-midi-a">USB A</label>
-                    <input id="srr-midi-i" type="checkbox">
+                    <input id="srr-midi-a" type="checkbox">
                   </div>  
                   <div>
                     <label for="srr-midi-d">DIN</label>
-                    <input id="srr-midi-i" type="checkbox">
+                    <input id="srr-midi-d" type="checkbox">
                   </div>
                   <div>
                     <label for="srr-midi-s">Select</label>
-                    <input id="srr-midi-i" type="checkbox">
+                    <input id="srr-midi-s" type="checkbox">
                   </div>  
                 </div>
               </fieldset>
@@ -1252,7 +1252,7 @@ clock rate. If set to zero, the global trigger length as set in the Configuratio
       <div class="screen-content" id="srr-content">
         <div>
           <label for="srr-screen-index">SRR Number</label>
-          <select><script>optionRange(1,16,1,1)</script></select>
+          <select id="srr-screen-index"><script>optionRange(1,16,1,1)</script></select>
         </div>
         <div id="srr-screen-editor-host"></div>
       </div>
