@@ -1061,14 +1061,114 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                       </script>
                     </select>
                   </div>
-                  <!-- Direction DIN -->
-                  <!-- Length DIN -->
-                  <!-- Randomness DIN -->
-                  <!-- Rate DIN -->
-                  <!-- Attenuator DIN -->
-                  <!-- Scale DIN -->
-                  <!-- Key DIN -->
-                  <!-- Gate Length DIN -->
+                  <div>
+                    <label for="srr-direction" class="tooltip" data-tooltip="Controls direction the shift register rotates. When stopped the generator is disabled.">Direction</label>
+                    <select id="srr-direction">
+                      <option value="0">Stop</option>
+                      <option value="1" selected>Forward</option>
+                      <option value="2">Backward</option>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="D"
+                          aria-label="MIDI assignment for SRR Direction">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-length" class="tooltip" data-tooltip="Sets the number of bits in the shift register, and so the length of the repeating CV pattern in terms of clocks.">Length</label>
+                    <select id="srr-length">
+                      <script>optionRange(1,32,8)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="L"
+                          aria-label="MIDI assignment for SRR Length">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-random" class="tooltip" data-tooltip="Chance of a bit flip on rotation. Maximum entropy is at 50%. At 0% it is locked. At 100% it flips everytime creating a double length repeating pattern.">Randomness</label>
+                    <select id="srr-random">
+                      <script>u7PercentRange(64)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="R"
+                          aria-label="MIDI assignment for SRR Randomness">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-rate" class="tooltip" data-tooltip="Sets the clock speed, in  24ppqn clocks.">Rate</label>
+                    <select id="srr-rate">
+                      <script>optionRange(0,127,6)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="T"
+                          aria-label="MIDI assignment for SRR Rate">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-attenuator" class="tooltip" data-tooltip="Sets the maximum amplitude of the random CV. At lower values, the amplitude of the CV is reduced, towards zero. Note that this implies a slightly different behaviour depending on whether the output’s voltage range is bipolar (e.g. ±5V) or unipolar (e.g. 0-10V).">Attenuation</label>
+                    <select id="srr-attenuator">
+                      <script>u7PercentRange(127)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="A"
+                          aria-label="MIDI assignment for SRR Attenuation">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-scale" class="tooltip" data-tooltip="Chooses whether the CV is quantized, and if so, to what scale.">Scale</label>
+                    <select id="srr-scale">
+                      <option value="0">Unquantized</option>
+                      <option value="1">Chromatic</option>
+                      <option value="2">Major</option>
+                      <option value="3">Minor</option>
+                      <option value="4">Major Triad</option>
+                      <option value="5">Minor Triad</option>
+                      <option value="6">Root and Fifth</option>
+                      <option value="7">Major Triad+6</option>
+                      <option value="8">Major Triad+7</option>
+                      <option value="9">Minor Triad+7</option>
+                      <option value="10">1+5+6</option>
+                      <option value="12">1+5+7</option>
+                      <option value="13">Pentatonic</option>
+                      <option value="14">Minor Pentatonic</option>
+                      <option value="15">Natural Minor</option>
+                      <option value="16">Harmonic Minor</option>
+                      <option value="17">MIDI Input Octaves</option>
+                      <option value="18">MIDI Input Exact</option>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="S"
+                          aria-label="MIDI assignment for SRR Scale">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-key" class="tooltip" data-tooltip="The ‘Key’ parameter chooses the key of a quantized scale, except for the two ‘MIDI’ options, in which case it applies a transposition of the notes played.">Key</label>
+                    <select id="srr-key">
+                      <script>optionRange(0,24,12)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="K"
+                          aria-label="MIDI assignment for SRR Key">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="srr-gate-len" class="tooltip" data-tooltip="Sets the length of the gates on the Change or Trigger outputs, as a fraction of the
+clock rate. If set to zero, the global trigger length as set in the Configuration is used.">Gate Length</label>
+                    <select id="srr-gate-len">
+                      <script>optionRange(0,127,0)</script>
+                    </select>
+                    <button class="midi-map-button" type="button"
+                          data-type="srr" data-index="0" data-dest="G"
+                          aria-label="MIDI assignment for SRR Gate Length">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
                 <div>              
               </fieldset>
             </div>
