@@ -1258,7 +1258,7 @@ clock rate. If set to zero, the global trigger length as set in the Configuratio
       <div class="screen-content" id="srr-content">
         <div>
           <label for="srr-screen-index">SRR Number</label>
-          <select id="srr-screen-index"><script>optionRange(1,16,1,1)</script></select>
+          <select id="srr-screen-index" onchange="renderSrrEditor(this.value)"><script>optionRange(1,16,1,1)</script></select>
         </div>
         <div id="srr-screen-editor-host"></div>
       </div>

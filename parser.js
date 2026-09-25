@@ -998,3 +998,9 @@ function parseScreenshot(reader)
 
   return canvas;
 }
+
+function parseSrr(index)
+{
+  return { ...(parsePresetShiftRegister(new ByteReader(presetSysex), index)),
+           ...(parseConfigShiftRegister(new ByteReader(configSysex), index)) };
+}

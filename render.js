@@ -494,13 +494,11 @@ function renderScreenshot(data)
 
 function renderSrrEditor(index=null)
 {
-  console.log("renderSrrEditor", index);
-  if(index === null) { index = Number(get("srr-screen-index")); }
+  index = index === null ? Number(get("srr-screen-index")) : Number(index);
   selectedSrrIndex = index;
   
-  const srr = { ...(parsePresetShiftRegister(new ByteReader(presetSysex), index)),
-                ...(parseConfigShiftRegister(new ByteReader(configSysex), index)) };
-  
+  const srr = parseSrr(index);
+
   put(  'srr-cv-output',      srr.output      );
   put(  'srr-change-output',  (srr.addendum & 1) ? -1 : srr.change  );
   put(  'srr-trigger-output', (srr.addendum & 2) ? -1 : srr.trigger );
@@ -519,6 +517,4 @@ function renderSrrEditor(index=null)
   put(  'srr-scale',          srr.scale       );
   put(  'srr-key',            srr.key         );
   put(  'srr-gate-len',       srr.gateLength  );
-  
-  console.log("renderSrrEditor");
 }

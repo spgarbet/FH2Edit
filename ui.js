@@ -33,7 +33,7 @@ const iconState =
 
 let   selectedIcon     = null;
 let   selectedOutput   = null;
-let   selectedSrrIndex = null;
+let   selectedSrrIndex = 0;  // Defaults to first one
 const chainIcons       = []; // The reference icons
 
 const ICON_DEFS =
@@ -1705,6 +1705,7 @@ function updateSrrOutputs(index)
 function mountSrrEditor(host)
 {
   elem(host).appendChild(elem("srr-editor"));
+  elem("srr-editor").hidden = false;
 }
 
 function updateSrr(index=selectedSrrIndex)
