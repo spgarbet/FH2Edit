@@ -1083,6 +1083,7 @@ function renderOutputEditor()
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
     case "srr":
+      initSrr(selectedIcon.index, selectedIcon.output);
       mountSrrEditor("srr-editor-host");
       renderSrrEditor(selectedIcon.index);
       break;
@@ -1674,7 +1675,7 @@ function computeSrrOutputs(index)
   // Return the configured physical outputs.
 }
 
-function rebuildSrrOutputChain(index, outputs)
+function rebuildSrrOutputChains(index, outputs)
 {
   console.log("rebuildSrrOutputChain",index,outputs);
 /*

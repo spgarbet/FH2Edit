@@ -122,16 +122,7 @@ function initLfo(i)
   setPresetU8(loc+15,   0);
   setPresetShort(32+2*i, 8192); // Center
   
-  // Clear mappings on initialization
-  const mappings = allMappings()["lfo"];
-  for(let j in mappings)
-  { 
-    const map = mappings[j];
-    if(map.index === i)
-    {
-      clearMapping(i);
-    }
-  }
+  clearMappings("lfo", i);
 }
 
 function setLfoReset(index, type, v1, v2)
@@ -250,7 +241,28 @@ function disableSrr()
   console.log("disableSrr");
 }
 
-function initSrr(index)
+function initSrr(index, output)
 {
-  console.log("initSrr", index);
+  var loc = 3708+7*index;
+  setConfigU8(loc    ,    output+1); // cv
+  setConfigU8(loc + 1,    0);  // change
+  setConfigU8(loc + 2,    0);  // trigger
+  setConfigU8(loc + 3,    0);  // clock
+  setConfigU8(loc + 4,    0);  // notes
+  setConfigU8(loc + 5,    0);  // channel
+  setConfigU8(loc + 6,    0);  // MIDI out
+  setConfigU8(4136+index, 3);  // Addendum flags
+  
+  loc = 2400 + 8*index;
+  
+  setPresetU8(loc    ,     1);  // Forward (not stop!)
+  setPresetU8(loc + 1,     8);  // 8 bits is a good start
+  setPresetU8(loc + 2,    64);  // Make it random
+  setPresetU8(loc + 3,     6);  // Every sixth 24ppqn
+  setPresetU8(loc + 4,   127);  // Full blast
+  setPresetU8(loc + 5,     0);  // No scale
+  setPresetU8(loc + 6,    12);  // Is 12 the default?
+  setPresetU8(loc + 7,     0);  // Gate length set from global
+  
+  clearMappings("srr", index);
 }

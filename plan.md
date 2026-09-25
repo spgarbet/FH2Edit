@@ -25,6 +25,9 @@
 ## In Process
 
 - (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
+[ ] When adding from ICON set the output to the current, clear other two
+[ ] When removing from ICON, delete the outputs
+[ ] When an output changes, update the icons with chains.
 
 ## TODO
 

@@ -517,4 +517,7 @@ function renderSrrEditor(index=null)
   put(  'srr-scale',          srr.scale       );
   put(  'srr-key',            srr.key         );
   put(  'srr-gate-len',       srr.gateLength  );
+  
+  updateMidiMapButtons("#srr-editor .midi-map-button", index);
+ 
 }

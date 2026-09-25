@@ -258,3 +258,15 @@ function readMapping(slot)
   }
   return compileMapping(parseMapping(new ByteReader(configSysex), slot));
 }
+
+function clearMappings(type, index)
+{
+  console.log("clearMappings", type, index);
+  const mappings = allMappings()[type];
+
+  for(const map of mappings)
+  {
+    console.log("found", map);
+    if(map.index === index) { clearMapping(map.slot); }
+  }
+}
