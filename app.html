@@ -1007,15 +1007,21 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                 <div class="singleline">
                   <div>
                     <label for="srr-cv-output">CV Output</label>
-                    <script>writeChannelSelector("srr-cv-output", true, false, 0)</script>
+                    <select id="srr-cv-output" onchange="setSrrCVOutput(this.value)">
+                      <script>optionChannelSelector(true, false, 0)</script>
+                    </select>
                   </div>
                   <div>
                     <label for="srr-change-output">Change Output</label>
-                    <script>writeChannelSelector("srr-change-output", true, true)</script>
+                    <select id="srr-change-output" onchange="setSrrChangeOutput(this.value)">
+                      <script>optionChannelSelector(true, true)</script>
+                    </select>
                   </div>
                   <div>
                     <label for="srr-trigger-output">Trigger Output</label>
-                    <script>writeChannelSelector("srr-trigger-output", true, true)</script>
+                    <select id="srr-trigger-output" onchange="setSrrTriggerOutput(this.value)">
+                      <script>optionChannelSelector(true, true)</script>
+                    </select>
                   </div>           
                   <div>
                     <label for="srr-notes-input">Notes Input Channel</label>

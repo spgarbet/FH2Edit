@@ -2,8 +2,6 @@
 
 ## Known Bugs
 
-- Changing expanders loses focus on LFO
-
 ## Completed
 
 - I/O

@@ -139,6 +139,7 @@ function renderConfig(data)
       scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
   }
   
+  // Find Active Clocks
   for(let i=0; i<32; ++i)
   {
     if(config.clocks[i].type > 0)
@@ -149,7 +150,7 @@ function renderConfig(data)
     }
   }
   
-  // Update LFO state based on reading MIDI Mappings
+  // Find active LFOs
   const mappings = allMappings();
   const lfoMaps  = mappings["lfo"];
   for(const map of lfoMaps)
@@ -167,6 +168,7 @@ function renderConfig(data)
     }
   }
   
+  // Find Active MIDI
   for(let i=0; i<16; ++i)
   {
     if(config.mcvs[i].enabled > 0)

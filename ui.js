@@ -94,9 +94,8 @@ function u7PercentRange(selected = 0)
   }
 }
 
-function writeChannelSelector( id, includeNone=true, includeGate=false, offset=1)
+function optionChannelSelector(includeNone=true, includeGate=false, offset=1)
 {
-	document.write("<select id='"+id+"'>");
 	if ( includeNone )
 	{
 	  document.write("<option value='"+(0-offset)+"'>--</option>");
@@ -123,7 +122,6 @@ function writeChannelSelector( id, includeNone=true, includeGate=false, offset=1
   		}
   	}
 	}
-	document.write( "</select>" );
 }
 
 function dumpSysex( data, id )
@@ -592,8 +590,7 @@ function setExpanders(v)
 function sameIcon(a, b)
 {
   return a.type   === b.type  &&
-         a.index  === b.index &&
-         a.output === b.output;
+         a.index  === b.index;
 }
 
 function nextAvailableIcon(type)
@@ -656,10 +653,21 @@ function removeIcon(type, index)
 
   if (!icon.enabled) { return; }
   
-  const output = icon.output;
-
-  icon.enabled = false;
-  icon.output = null;
+  const parent =
+  {
+    type,
+    index,
+    output: icon.output
+  };
+  if(type === "midi")
+  {
+    rebuildMidiOutputChains(parent, []);
+  }
+  
+  const output   = icon.output;
+  
+  icon.enabled   = false;
+  icon.output    = null;
 
   selectedIcon   = null;
   selectedOutput = output;
@@ -667,7 +675,8 @@ function removeIcon(type, index)
   renderOutputIconsFor(output);
   renderOutputEditor();
   
-  if(type == "lfo") { initLfo(index); }
+  if(type == "lfo")  { initLfo(index); }
+  if(type == "midi") { initMidi(index); }
 }
 
 function selectIcon(type, index, output)
@@ -928,6 +937,12 @@ function updateMidiMapButtons(query, index)
 
     renderMidiMapButton(button, mapping);
   }
+}
+
+function initMidi(index)
+{
+  setMidiCVValue( 0, 0, index); // Disable it
+  setMidiCVValue(12, 0, index); // Turn off stride as well
 }
   
 function renderMidiEditor()
@@ -1401,9 +1416,9 @@ function setStartType(value)
 //
 
 // Midi to CV Converter values by indexed offset
-function setMidiCVValue(offset, value)
+function setMidiCVValue(offset, value, index=selectedIcon.index)
 {
-  setConfigU8(100+offset+32*selectedIcon.index, value);
+  setConfigU8(100+offset+32*index, value);
 }
 
 function setArpValue(offset, value)
@@ -1694,8 +1709,41 @@ function mountSrrEditor(host)
 
 function updateSrr(index=selectedSrrIndex)
 {
-  // Write controls to config.sysex
-
   updateSrrOutputs(index);
   renderSrrEditor(index);
+}
+
+function setSrrCVOutput(value)
+{
+  const index = selectedSrrIndex;
+  
+  setConfigU8(3708 + 7*index, value);
+  
+  updateSrr(index);
+}
+
+function setSrrChangeOutput(value)
+{
+  const index = selectedSrrIndex;
+  
+  setConfigU8(3709 + 7*index, value < 0 ? 0 : value);
+  
+  const loc = 4136+index;
+  setConfigU8(loc,     configSysex[loc] )
+  
+  put(  'srr-change-output',  (srr.addendum & 1) ? -1 : srr.change  );
+  put(  'srr-trigger-output', (srr.addendum & 2) ? -1 : srr.trigger );
+
+  
+  updateSrr(index);
+}
+
+function setSrrTriggerOutput(value)
+{
+  const index = selectedSrrIndex;
+  
+  setConfigU8(3710 + 7*index, value);
+ 
+  
+  updateSrr(index);
 }
