@@ -629,7 +629,7 @@ function addIcon(type, output)
     case "midi":
       index = nextAvailableIcon(type);
       if (index < 0) { return false; }
-      initMidi(output);
+      initMidi(index, output);
       break
     case "clock":
       index = nextAvailableIcon(type);
@@ -939,12 +939,6 @@ function updateMidiMapButtons(query, index)
 
     renderMidiMapButton(button, mapping);
   }
-}
-
-function initMidi(index)
-{
-  setMidiCVValue( 0, 0, index); // Disable it
-  setMidiCVValue(12, 0, index); // Turn off stride as well
 }
   
 function renderMidiEditor()

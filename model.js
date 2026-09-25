@@ -271,10 +271,20 @@ function initSrr(index, output)
   setPresetU8(2400+8*index, 1       ); // FORWARD
 }
 
-function initMidi(output)
+function initMidi(index, output)
 {
-  setMidiCVValue( 0, 1);         // Enable it
-  setMidiCVValue(11, output);    // Map to right output
+  disableMidi(index);
+  setMidiCVValue( 0, 1,      index);    // Enable it
+  setMidiCVValue(11, output, index);    // Map to right output
+  setMidiCVValue(12, 0,      index);    // Turn off stride as well
+}
+
+function disableMidi(index)
+{
+  setMidiCVValue( 0, 0, index); // Disable it
+  clearMappings("mcv",  index);
+  clearMappings("mcv2", index);
+  clearMappings("mcv3", index);
 }
 
 function initClock(index, output)
