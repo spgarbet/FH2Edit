@@ -612,15 +612,22 @@ function addIcon(type, output)
   let index;
   const previousOutput = selectedIcon ? selectedIcon.output : null;
 
-  if (type === "lfo")
+  switch(type)
   {
-    if (iconState.lfo[output].enabled) { return false; }
-    index = output;
-  }
-  else
-  {
-    index = nextAvailableIcon(type);
-    if (index < 0) { return false; }
+    case "lfo":
+      if (iconState.lfo[output].enabled) { return false; }
+      index = output;
+      break;
+    case "srr":
+      index = nextAvailableIcon(type);
+      console.log("nextAvailableIcon srr", index);
+      if (index < 0) { return false; }
+      initSrr(index, output);
+      break;
+    default:
+      index = nextAvailableIcon(type);
+      if (index < 0) { return false; }
+      break;
   }
 
   iconState[type][index].enabled = true;
@@ -646,34 +653,35 @@ function addIcon(type, output)
   return true;
 }
 
-function removeIcon(type, index)
+function removeSrr(index)
 {
-  const icon = iconState[type][index];
+  console.log("removeSrr", index);
+  const outputs = computeSrrOutputs(index);
+  const anchor  = iconState.srr[index].output;
 
-  if (!icon.enabled) { return; }
-  
-  const parent =
+  disableSrr(index);
+
+  iconState.srr[index].enabled = false;
+  iconState.srr[index].output  = null;
+
+  rebuildSrrOutputChains(index, []);
+
+  const affected = new Set(outputs);
+
+  if(anchor !== null)
   {
-    type,
-    index,
-    output: icon.output
-  };
-  if(type === "midi") { rebuildMidiOutputChains(parent, []); }
-  if(type === "srr")  { rebuildSrrOutputChains(index, []);  }
-  
-  const output   = icon.output;
-  
-  icon.enabled   = false;
-  icon.output    = null;
+    affected.add(anchor);
+  }
+
+  for(const output of affected)
+  {
+    renderOutputIconsFor(output);
+  }
 
   selectedIcon   = null;
-  selectedOutput = output;
+  selectedOutput = anchor;
 
-  renderOutputIconsFor(output);
   renderOutputEditor();
-  
-  if(type == "lfo")  { initLfo(index); }
-  if(type == "midi") { initMidi(index); }
 }
 
 function selectIcon(type, index, output)
@@ -751,26 +759,6 @@ function renderOutputIcons(output, container)
   renderChainIcons(output, container);
 }
 
-function removeSrr(index)
-{
-  const outputs = computeSrrOutputs(index);
-
-  iconState.srr[index].enabled = false;
-  iconState.srr[index].output = null;
-
-  rebuildSrrOutputChains(index, []);
-
-  for(const output of outputs)
-  {
-    renderOutputIconsFor(output);
-  }
-
-  selectedIcon   = null;
-  selectedOutput = null;
-
-  renderOutputEditor();
-}
-
 function buildIconPicker()
 {
   const picker = elem("icon-picker");
@@ -816,7 +804,7 @@ function buildIconPicker()
   });
   elem("srr-editor-trash").addEventListener("click", function()
   {
-    disableSrr(selectedSrrIndex); // Turn off SRR
+    console.log
     removeSrr(selectedSrrIndex);
   });
 }
@@ -1091,7 +1079,6 @@ function renderOutputEditor()
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
     case "srr":
-      initSrr(selectedIcon.index, selectedIcon.output);
       mountSrrEditor("srr-editor-host");
       renderSrrEditor(selectedIcon.index);
       break;

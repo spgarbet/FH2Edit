@@ -188,7 +188,7 @@ function renderConfig(data)
     {
       iconState.srr[i].enabled = true;
       iconState.srr[i].output  = outputs[0];
-      renderOutputIconsFor(iconState.srr[i].output);
+      renderOutputIconsFor(outputs[0]);
       updateSrrOutputs(i);
     }
   }

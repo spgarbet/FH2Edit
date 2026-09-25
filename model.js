@@ -236,15 +236,12 @@ function disableClock(i)
  //
 // Shift Register Random
 
-function disableSrr()
+function disableSrr(index)
 {
-  console.log("disableSrr");
-}
-
-function initSrr(index, output)
-{
+  console.log("disableSrr", index);
+  
   var loc = 3708+7*index;
-  setConfigU8(loc    ,    output+1); // cv
+  setConfigU8(loc    ,    0);  // cv
   setConfigU8(loc + 1,    0);  // change
   setConfigU8(loc + 2,    0);  // trigger
   setConfigU8(loc + 3,    0);  // clock
@@ -255,7 +252,7 @@ function initSrr(index, output)
   
   loc = 2400 + 8*index;
   
-  setPresetU8(loc    ,     1);  // Forward (not stop!)
+  setPresetU8(loc    ,     0);  // STOP
   setPresetU8(loc + 1,     8);  // 8 bits is a good start
   setPresetU8(loc + 2,    64);  // Make it random
   setPresetU8(loc + 3,     6);  // Every sixth 24ppqn
@@ -265,4 +262,12 @@ function initSrr(index, output)
   setPresetU8(loc + 7,     0);  // Gate length set from global
   
   clearMappings("srr", index);
+}
+
+function initSrr(index, output)
+{
+  console.log("initSrr", index, output);
+  disableSrr(index);
+  setConfigU8(3708+7*index, output+1); // cv output
+  setPresetU8(2400+8*index, 1       ); // FORWARD
 }
