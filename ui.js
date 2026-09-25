@@ -1725,25 +1725,42 @@ function setSrrCVOutput(value)
 function setSrrChangeOutput(value)
 {
   const index = selectedSrrIndex;
+  const loc   = 4136+index;  
+  const flags = configSysex[loc];
   
+  setConfigU8(loc, value < 0 ? flags | 0x01 : flags & 0x7e);
   setConfigU8(3709 + 7*index, value < 0 ? 0 : value);
-  
-  const loc = 4136+index;
-  setConfigU8(loc,     configSysex[loc] )
-  
-  put(  'srr-change-output',  (srr.addendum & 1) ? -1 : srr.change  );
-  put(  'srr-trigger-output', (srr.addendum & 2) ? -1 : srr.trigger );
 
-  
   updateSrr(index);
 }
 
 function setSrrTriggerOutput(value)
 {
   const index = selectedSrrIndex;
+  const loc   = 4136+index;  
+  const flags = configSysex[loc];
   
-  setConfigU8(3710 + 7*index, value);
- 
-  
+  setConfigU8(loc, value < 0 ? flags | 0x02 : flags & 0x7d);
+  setConfigU8(3710 + 7*index, value < 0 ? 0 : value);
+
   updateSrr(index);
+}
+
+function setConfigSrrValue(offset, value)
+{
+  setConfigU8(3710 + 7*selectedSrrIndex + offset, value);
+}
+
+function setPresetSrrValue(offset, value)
+{ 
+  setPresetU8(2400 + 8*selectedSrrIndex + offset, value);
+}
+
+// Called like setSrrMidiOut(3,this.checked) from html checkbox
+function setSrrMidiOut(bit, value)
+{
+  const loc   = 3716 + 7*selectedSrrIndex;
+  const flags = configSysex[loc];
+  
+  setConfigU8(loc, value ? flags | (1 << bit) : flags & ~(1 << bit));
 }

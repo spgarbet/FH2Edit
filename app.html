@@ -1025,30 +1025,30 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>           
                   <div>
                     <label for="srr-notes-input">Notes Input Channel</label>
-                    <select id="srr-notes-input"><option value="-1">--</option>
+                    <select id="srr-notes-input" onchange="setConfigSrrValue(4,this.value)"><option value="-1">--</option>
                       <script>optionRange(1,16,0,1)</script>
                     </select>
                   </div>
                   <div class="separator"><span>MIDI Output</span></div>
                   <div>
                     <label for="srr-midi-i">Internal</label>
-                    <input id="srr-midi-i" type="checkbox">
+                    <input id="srr-midi-i" type="checkbox" onchange="setSrrMidiOut(0,this.checked)">
                   </div>  
                   <div>
                     <label for="srr-midi-c">USB C</label>
-                    <input id="srr-midi-c" type="checkbox">
+                    <input id="srr-midi-c" type="checkbox" onchange="setSrrMidiOut(1,this.checked)">
                   </div>  
                   <div>
                     <label for="srr-midi-a">USB A</label>
-                    <input id="srr-midi-a" type="checkbox">
+                    <input id="srr-midi-a" type="checkbox" onchange="setSrrMidiOut(2,this.checked)">
                   </div>  
                   <div>
                     <label for="srr-midi-d">DIN</label>
-                    <input id="srr-midi-d" type="checkbox">
+                    <input id="srr-midi-d" type="checkbox" onchange="setSrrMidiOut(3,this.checked)">
                   </div>
                   <div>
                     <label for="srr-midi-s">Select</label>
-                    <input id="srr-midi-s" type="checkbox">
+                    <input id="srr-midi-s" type="checkbox" onchange="setSrrMidiOut(4,this.checked)">
                   </div>  
                 </div>
               </fieldset>
@@ -1058,7 +1058,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   <div>
                     <label for="srr-clock">Clock Source</label>
                     <select id="srr-clock">
-                      <option value="0">External</option>
+                      <option value="0" onchange="setConfigSrrValue(3, this.value)">External</option>
                       <script>
                         for (let j=1; j<=16; ++j)
                         {
@@ -1069,7 +1069,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-direction" class="tooltip" data-tooltip="Controls direction the shift register rotates. When stopped the generator is disabled.">Direction</label>
-                    <select id="srr-direction">
+                    <select id="srr-direction" onchange="setPresetSrrValue(0,this.value)">
                       <option value="0">Stop</option>
                       <option value="1" selected>Forward</option>
                       <option value="2">Backward</option>
@@ -1082,7 +1082,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-length" class="tooltip" data-tooltip="Sets the number of bits in the shift register, and so the length of the repeating CV pattern in terms of clocks.">Length</label>
-                    <select id="srr-length">
+                    <select id="srr-length" onchange="setPresetSrrValue(1,this.value)">
                       <script>optionRange(1,32,8)</script>
                     </select>
                     <button class="midi-map-button" type="button"
@@ -1093,7 +1093,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-random" class="tooltip" data-tooltip="Chance of a bit flip on rotation. Maximum entropy is at 50%. At 0% it is locked. At 100% it flips everytime creating a double length repeating pattern.">Randomness</label>
-                    <select id="srr-random">
+                    <select id="srr-random" onchange="setPresetSrrValue(2,this.value)">
                       <script>u7PercentRange(64)</script>
                     </select>
                     <button class="midi-map-button" type="button"
@@ -1104,7 +1104,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-rate" class="tooltip" data-tooltip="Sets the clock speed, in  24ppqn clocks.">Rate</label>
-                    <select id="srr-rate">
+                    <select id="srr-rate" onchange="setPresetSrrValue(3,this.value)">
                       <script>optionRange(0,127,6)</script>
                     </select>
                     <button class="midi-map-button" type="button"
@@ -1115,7 +1115,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-attenuator" class="tooltip" data-tooltip="Sets the maximum amplitude of the random CV. At lower values, the amplitude of the CV is reduced, towards zero. Note that this implies a slightly different behaviour depending on whether the output’s voltage range is bipolar (e.g. ±5V) or unipolar (e.g. 0-10V).">Attenuation</label>
-                    <select id="srr-attenuator">
+                    <select id="srr-attenuator"  onchange="setPresetSrrValue(4,this.value)">
                       <script>u7PercentRange(127)</script>
                     </select>
                     <button class="midi-map-button" type="button"
@@ -1126,7 +1126,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-scale" class="tooltip" data-tooltip="Chooses whether the CV is quantized, and if so, to what scale.">Scale</label>
-                    <select id="srr-scale">
+                    <select id="srr-scale" onchange="setPresetSrrValue(5,this.value)">
                       <option value="0">Unquantized</option>
                       <option value="1">Chromatic</option>
                       <option value="2">Major</option>
@@ -1154,7 +1154,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   </div>
                   <div>
                     <label for="srr-key" class="tooltip" data-tooltip="The ‘Key’ parameter chooses the key of a quantized scale, except for the two ‘MIDI’ options, in which case it applies a transposition of the notes played.">Key</label>
-                    <select id="srr-key">
+                    <select id="srr-key" onchange="setPresetSrrValue(6,this.value)">
                       <script>optionRange(0,24,12)</script>
                     </select>
                     <button class="midi-map-button" type="button"
@@ -1166,7 +1166,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   <div>
                     <label for="srr-gate-len" class="tooltip" data-tooltip="Sets the length of the gates on the Change or Trigger outputs, as a fraction of the
 clock rate. If set to zero, the global trigger length as set in the Configuration is used.">Gate Length</label>
-                    <select id="srr-gate-len">
+                    <select id="srr-gate-len" onchange="setPresetSrrValue(7,this.value)">
                       <script>optionRange(0,127,0)</script>
                     </select>
                     <button class="midi-map-button" type="button"
