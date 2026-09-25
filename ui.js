@@ -893,7 +893,7 @@ function renderChainIcons(output, container)
     const button     = document.createElement("button");
     button.className = "outputs-icon-item outputs-icon-chain";
     button.type      = "button";
-    button.title     = "MIDI/CV from "+(chain.parent.output+1);
+    button.title     = "Output from "+(chain.parent.output+1);
 
     const img        = document.createElement("img");
     img.src          = "icons/link.png";
@@ -1670,30 +1670,71 @@ function setKbm(value)
 
 function computeSrrOutputs(index)
 {
-  console.log("computeSrrOutputs",index);
-  // Read config.srr[index]
-  // Return the configured physical outputs.
+  const outputs = [];
+  const srr     = parseConfigShiftRegister(new ByteReader(configSysex), index);
+  
+  if(srr.output > 0)      { outputs.push(srr.output-1); }
+  if(!(srr.addendum & 1)) { outputs.push(srr.change);   }
+  if(!(srr.addendum & 2)) { outputs.push(srr.trigger);  }
+  
+  return outputs.sort((a,b) => a - b);
 }
 
 function rebuildSrrOutputChains(index, outputs)
 {
-  console.log("rebuildSrrOutputChain",index,outputs);
-/*
-SRR outputs
-    ↓
-find lowest output
-    ↓
-iconState.srr[index].output = lowest
-    ↓
-put SRR icon on lowest output
-    ↓
-put chain icons on the other outputs
-*/
+  console.log("rebuildSrrOutputChains", index, outputs);
 
-/*
-If outputs is empty, the result is simply:
-iconState.srr[index].output = null;
-*/
+  const oldOutputs = [];
+
+  // Remove existing chains for this SRR.
+  for(let i = chainIcons.length - 1; i >= 0; --i)
+  {
+    const chain = chainIcons[i];
+
+    if(chain.parent.type === "srr" && chain.parent.index === index)
+    {
+      oldOutputs.push(chain.output);
+      chainIcons.splice(i, 1);
+    }
+  }
+
+  if(outputs.length === 0)
+  {
+    iconState.srr[index].output = null;
+
+    for(const output of oldOutputs)
+    {
+      renderOutputIconsFor(output);
+    }
+
+    return;
+  }
+
+  const anchor = outputs[0];
+
+  iconState.srr[index].output = anchor;
+
+  const parent =
+  {
+    type:   "srr",
+    index,
+    output: anchor
+  };
+
+  for(const output of outputs)
+  {
+    if(output !== anchor)
+    {
+      chainIcons.push({ output, parent });
+    }
+  }
+
+  const affected = new Set([...oldOutputs, ...outputs]);
+
+  for(const output of affected)
+  {
+    renderOutputIconsFor(output);
+  }
 }
 
 function updateSrrOutputs(index)
