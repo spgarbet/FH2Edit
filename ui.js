@@ -646,7 +646,6 @@ function addIcon(type, output)
   return true;
 }
 
-
 function removeIcon(type, index)
 {
   const icon = iconState[type][index];
@@ -659,10 +658,8 @@ function removeIcon(type, index)
     index,
     output: icon.output
   };
-  if(type === "midi")
-  {
-    rebuildMidiOutputChains(parent, []);
-  }
+  if(type === "midi") { rebuildMidiOutputChains(parent, []); }
+  if(type === "srr")  { rebuildSrrOutputChains(index, []);  }
   
   const output   = icon.output;
   
@@ -754,6 +751,26 @@ function renderOutputIcons(output, container)
   renderChainIcons(output, container);
 }
 
+function removeSrr(index)
+{
+  const outputs = computeSrrOutputs(index);
+
+  iconState.srr[index].enabled = false;
+  iconState.srr[index].output = null;
+
+  rebuildSrrOutputChains(index, []);
+
+  for(const output of outputs)
+  {
+    renderOutputIconsFor(output);
+  }
+
+  selectedIcon   = null;
+  selectedOutput = null;
+
+  renderOutputEditor();
+}
+
 function buildIconPicker()
 {
   const picker = elem("icon-picker");
@@ -799,8 +816,8 @@ function buildIconPicker()
   });
   elem("srr-editor-trash").addEventListener("click", function()
   {
-    disableSrr(selectedIcon.index); // Turn off SRR
-    removeIcon("srr", selectedIcon.index);
+    disableSrr(selectedSrrIndex); // Turn off SRR
+    removeSrr(selectedSrrIndex);
   });
 }
 
@@ -845,19 +862,9 @@ document.addEventListener("click", function() { hideIconPicker(); });
  //
 // Chain Icons
 
-/* Example
-{
-  output: 12,
-  parent:
-  {
-    type: "midi",
-    index: 2,
-    output: 3
-  }
-} */
-
 function rebuildMidiOutputChains(parent, outputs)
 {
+  console.log("rebuildMidiOutputChains", parent, outputs);
   const oldOutputs = [];
 
   // Pull out all associated chains of the parent
@@ -865,6 +872,7 @@ function rebuildMidiOutputChains(parent, outputs)
   {
     if (sameIcon(chainIcons[i].parent, parent))
     {
+      console.log("* found", chainIcons[i]);
       oldOutputs.push(chainIcons[i].output);
       chainIcons.splice(i, 1);
     }
@@ -897,7 +905,7 @@ function renderChainIcons(output, container)
 
     const img        = document.createElement("img");
     img.src          = "icons/link.png";
-    img.alt          = "MIDI-to-CV output";
+    img.alt          = "Output from "+(chain.parent.output+1);
     
     button.appendChild(img);
     button.addEventListener("click", function(event)
@@ -1684,6 +1692,7 @@ function rebuildSrrOutputChains(index, outputs)
 {
   console.log("rebuildSrrOutputChains", index, outputs);
 
+  const oldAnchor = iconState.srr[index].output;
   const oldOutputs = [];
 
   // Remove existing chains for this SRR.
@@ -1698,38 +1707,52 @@ function rebuildSrrOutputChains(index, outputs)
     }
   }
 
+  const affected = new Set(oldOutputs);
+
   if(outputs.length === 0)
   {
     iconState.srr[index].output = null;
 
+    if(oldAnchor !== null)
+    {
+      renderOutputIconsFor(oldAnchor);
+    }
+  
     for(const output of oldOutputs)
     {
       renderOutputIconsFor(output);
     }
-
+  
     return;
   }
-
-  const anchor = outputs[0];
-
-  iconState.srr[index].output = anchor;
-
-  const parent =
+  else
   {
-    type:   "srr",
-    index,
-    output: anchor
-  };
+    const anchor = outputs[0];
 
-  for(const output of outputs)
-  {
-    if(output !== anchor)
+    iconState.srr[index].output = anchor;
+    affected.add(anchor);
+
+    const parent =
     {
-      chainIcons.push({ output, parent });
+      type:   "srr",
+      index,
+      output: anchor
+    };
+
+    for(const output of outputs)
+    {
+      if(output !== anchor)
+      {
+        chainIcons.push({ output, parent });
+        affected.add(output);
+      }
+    }
+
+    if(oldAnchor !== null)
+    {
+      affected.add(oldAnchor);
     }
   }
-
-  const affected = new Set([...oldOutputs, ...outputs]);
 
   for(const output of affected)
   {

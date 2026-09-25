@@ -173,10 +173,23 @@ function renderConfig(data)
   {
     if(config.mcvs[i].enabled > 0)
     {
-      iconState["midi"][i].enabled = true;
-      iconState["midi"][i].output  = config.mcvs[i].base;
-      renderOutputIconsFor(iconState["midi"][i].output);
+      iconState.midi[i].enabled = true;
+      iconState.midi[i].output  = config.mcvs[i].base;
+      renderOutputIconsFor(iconState.midi[i].output);
       updateMidiOutputs(i);
+    }
+  }
+  
+  // Find Active SRR
+  for(let i=0; i<16; ++i)
+  {
+    const outputs = computeSrrOutputs(i);
+    if(outputs.length > 0)
+    {
+      iconState.srr[i].enabled = true;
+      iconState.srr[i].output  = outputs[0];
+      renderOutputIconsFor(iconState.srr[i].output);
+      updateSrrOutputs(i);
     }
   }
   
@@ -519,5 +532,6 @@ function renderSrrEditor(index=null)
   put(  'srr-gate-len',       srr.gateLength  );
   
   updateMidiMapButtons("#srr-editor .midi-map-button", index);
- 
+  elem("srr-editor-name").textContent = "Shift Register Random ("+(index+1)+")";
+
 }

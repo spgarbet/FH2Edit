@@ -2,6 +2,10 @@
 
 ## Known Bugs
 
+- SRR is not populating icons on startup.
+  Are all the CV outputs set really?, oh, it's could be the "enabled definition"
+  Enabled: A CV output is set on *any* and the (Direction is not STOP or a MIDI mapping exists)
+
 ## Completed
 
 - I/O
@@ -21,13 +25,11 @@
   - (ICON-Clock) Clock assign to output
   - (ICON-Sine) LFO assign to output with MIDI
   - (ICON-Keys) MAIN 16 Midi to CV
+  - (ICON-Criss Cross) 16 Shift Registers
 
 ## In Process
 
-- (ICON-Criss Cross) 16 Shift Registers (8 channel/cc)
-[ ] When adding from ICON set the output to the current, clear other two
-[ ] When removing from ICON, delete the outputs
-[ ] When an output changes, update the icons with chains.
+Testing
 
 ## TODO
 
