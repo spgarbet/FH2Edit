@@ -95,16 +95,6 @@ function clampSwing(swing)
 
 function disableLfo(i)
 {
-  setPresetShort(160+16*i, 0); // Turn off LFO
-  const mappings = allMappings();
-  let slot = locateMapping("lfo", "LFO", i, mappings);
-  if(slot !== null) { clearMapping(slot); }
-  slot = locateMapping("lfo", "DC", i, mappings);
-  if(slot !== null) { clearMapping(slot); }
-}
-
-function initLfo(i)
-{
   loc = 160 + 16*i;
   setPresetShort(loc ,  0);  // Level off
   setPresetShort(loc+2, 0); 
@@ -123,6 +113,18 @@ function initLfo(i)
   setPresetShort(32+2*i, 8192); // Center
   
   clearMappings("lfo", i);
+}
+
+function initLfo(i)
+{
+  const loc = 160 + 16*i;
+  disableLfo(i); 
+  setPresetShort(loc,  16383); // Level is maximum
+
+  setPresetShort(loc + 2,  0); // Speed off
+  setPresetU8(   loc + 14, 1); // use base/mult
+  setPresetU8(   loc + 4, 24); // base
+  setPresetU8(   loc + 5,  1); // mult
 }
 
 function setLfoReset(index, type, v1, v2)
@@ -267,4 +269,16 @@ function initSrr(index, output)
   disableSrr(index);
   setConfigU8(3708+7*index, output+1); // cv output
   setPresetU8(2400+8*index, 1       ); // FORWARD
+}
+
+function initMidi(output)
+{
+  setMidiCVValue( 0, 1);         // Enable it
+  setMidiCVValue(11, output);    // Map to right output
+}
+
+function initClock(index, output)
+{
+  setConfigU8(2148+8*index, 1);
+  setConfigU8(2152, output); // Set Output
 }

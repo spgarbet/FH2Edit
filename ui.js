@@ -58,7 +58,7 @@ function check(id, value) { elem(id).checked = value;           }
 
 // Getters
 function get(id)          { return(elem(id).value);             }
-function num(id)          { Number(get(id));                    }
+function num(id)          { return(Number(get(id)));            }
 function checked(id)      { return(elem(id).checked);           }
 
 // Helpers
@@ -523,7 +523,7 @@ function processSysexData(arr, filename)
     return;
   }
   
-  if (arr[5] == 0x10) // Config
+  if (arr[5] === 0x10) // Config
   {
     if (renderConfig(arr)) { configSysex = arr; }
     log("Loaded configuration "+filename);
@@ -569,18 +569,20 @@ function setExpanders(v)
   {
     if(state[i] && state[i].enabled)
     {
-      initLfo(i);
+      disableLfo(i);
       removeIcon("lfo", i);
     }
   }
   
   // Clear any MIDI/CV Converters hidden by removing expanders
-  state=iconState['midi'];
-  for (let i=8*(expanders+1); i<64; ++i)
+  state = iconState.midi;
+  
+  for(let i = 0; i < state.length; ++i)
   {
-    if(state[i] && state[i].enabled)
+    if(state[i].enabled &&
+       state[i].output >= 8*(expanders+1))
     {
-      setConfigU8(100+32*state[i].index, 0); // Disable
+      setConfigU8(100+32*i, 0);
       removeIcon("midi", i);
     }
   }
@@ -617,15 +619,22 @@ function addIcon(type, output)
     case "lfo":
       if (iconState.lfo[output].enabled) { return false; }
       index = output;
+      initLfo(output);
       break;
     case "srr":
       index = nextAvailableIcon(type);
       if (index < 0) { return false; }
       initSrr(index, output);
       break;
-    default:
+    case "midi":
       index = nextAvailableIcon(type);
       if (index < 0) { return false; }
+      initMidi(output);
+      break
+    case "clock":
+      index = nextAvailableIcon(type);
+      if (index < 0) { return false; }
+      initClock();
       break;
   }
 
@@ -691,6 +700,8 @@ function selectIcon(type, index, output)
     output: output,
     elem:   null
   };
+  
+  if(type === "srr") { selectedSrrIndex = index; }
 
   selectedOutput = output;
 
@@ -718,7 +729,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (let type of ["midi", "lfo", "clock", "srr"])
+  for (const type of ["midi", "lfo", "clock", "srr"])
   {
     const state = iconState[type];
 
@@ -761,7 +772,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (let type of ["midi", "lfo", "clock", "srr"])
+  for (const type of ["midi", "lfo", "clock", "srr"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -792,7 +803,7 @@ function buildIconPicker()
   });
   elem("lfo-editor-trash").addEventListener("click", function()
   {
-    initLfo(selectedIcon.output);
+    disableLfo(selectedIcon.output);
     removeIcon("lfo", selectedIcon.index);
   });
   elem("midi-editor-trash").addEventListener("click", function()
@@ -942,9 +953,6 @@ function renderMidiEditor()
   const index  = selectedIcon.index;
   const midi   = iconState.midi[index];
 
-  setMidiCVValue( 0, 1);         // Enable it
-  setMidiCVValue(11, output);    // Map to right output
-  
   var reader = new ByteReader(configSysex);
   reader.seek(100 + 32*index);
 
@@ -973,34 +981,9 @@ function renderLfoEditor()
   var   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
   const loc    = 16*output;
   
-  // Does Enabling LFO MIDI Mapping exist
-  const mappings    = allMappings();
-  const enablingMap = locateMapping("lfo", "DC",  output, mappings) !== null ||
-                      locateMapping("lfo", "LFO", output, mappings) !== null  ;
-   
-  // Activate the lfo properly based on icon position
-  if(lfo.level <= 0 && !enablingMap) 
-  {
-    initLfo(output);
-    setPresetShort(160+loc, 16383); // Level is maximum
-    lfo = parsePresetLFO(new ByteReader(presetSysex), output);
-  }
-  
   if(lfo['speed'] === 0)
   {
     put("lfo-speed", 0);
-    setPresetU8(174+loc, 1);      // use base/mult
-    if(lfo['base'] === 0)
-    {
-      setPresetU8(164+loc, 24);   // base
-      lfo['base'] = 24;
-    }
-    if(lfo['multiplier'] === 0)
-    {
-      setPresetU8(165+loc, 1);    // mult
-      lfo['multiplier']=1;
-    }
-
     put("lfo-base",  lfo['base']);
     put("lfo-mult",  lfo['multiplier']);
     elem("lfo-base").disabled = false;
@@ -1010,9 +993,6 @@ function renderLfoEditor()
      put("lfo-speed", short14ToHz(lfo['speed']).toFixed(5));
      put("lfo-base",  0);
      put("lfo-mult",  0); 
-     setPresetU8(174+loc, 0);    // use base/mult
-     setPresetU8(164+loc, 0);    // base
-     setPresetU8(165+loc, 0);    // mult
      elem("lfo-base").disabled = true;
      elem("lfo-mult").disabled = true;
   }
@@ -1040,14 +1020,6 @@ function renderClockEditor()
   const index  = selectedIcon.index;  // Number in clock pool
   const clocks = parseConfigClocks(new ByteReader(configSysex));
   const clock  = clocks[index];
-  
-  // Activate the clock properly based on icon position
-  if(clock.type === 0)
-  {
-    clock.type = 1;
-    setConfigU8(2148+8*index, 1);
-  }
-  setConfigU8(2152, selectedIcon.output); // Set Output
 
   elem("clock-editor-name").textContent = "Clock "+(selectedIcon.output+1);
   put("clock-editor-type",  clock.type );
@@ -1098,8 +1070,6 @@ function renderOutputs()
       if (icons){ renderOutputIcons(unit * 8 + output, icons); }
     }
   }
-  
-  renderChainIcons();
 }
 
 function renderOutputIconsFor(output)
@@ -1219,8 +1189,8 @@ function drawGuidelines(canvas, context)
     context.beginPath();
     context.moveTo(0,     y);
     context.lineTo(width, y);
-    if (i == 0) { context.strokeStyle="red";  context.setLineDash([]);}
-    else        { context.strokeStyle="lightblue"; context.setLineDash([5,5]);   }
+    if (i === 0) { context.strokeStyle="red";  context.setLineDash([]);}
+    else         { context.strokeStyle="lightblue"; context.setLineDash([5,5]);   }
     context.stroke();
   }
   context.strokeStyle = "black";
