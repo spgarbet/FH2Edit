@@ -238,8 +238,6 @@ function disableClock(i)
 
 function disableSrr(index)
 {
-  console.log("disableSrr", index);
-  
   var loc = 3708+7*index;
   setConfigU8(loc    ,    0);  // cv
   setConfigU8(loc + 1,    0);  // change
@@ -266,7 +264,6 @@ function disableSrr(index)
 
 function initSrr(index, output)
 {
-  console.log("initSrr", index, output);
   disableSrr(index);
   setConfigU8(3708+7*index, output+1); // cv output
   setPresetU8(2400+8*index, 1       ); // FORWARD

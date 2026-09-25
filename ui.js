@@ -620,7 +620,6 @@ function addIcon(type, output)
       break;
     case "srr":
       index = nextAvailableIcon(type);
-      console.log("nextAvailableIcon srr", index);
       if (index < 0) { return false; }
       initSrr(index, output);
       break;
@@ -655,7 +654,6 @@ function addIcon(type, output)
 
 function removeSrr(index)
 {
-  console.log("removeSrr", index);
   const outputs = computeSrrOutputs(index);
   const anchor  = iconState.srr[index].output;
 
@@ -804,7 +802,6 @@ function buildIconPicker()
   });
   elem("srr-editor-trash").addEventListener("click", function()
   {
-    console.log
     removeSrr(selectedSrrIndex);
   });
 }
@@ -852,7 +849,6 @@ document.addEventListener("click", function() { hideIconPicker(); });
 
 function rebuildMidiOutputChains(parent, outputs)
 {
-  console.log("rebuildMidiOutputChains", parent, outputs);
   const oldOutputs = [];
 
   // Pull out all associated chains of the parent
@@ -860,7 +856,6 @@ function rebuildMidiOutputChains(parent, outputs)
   {
     if (sameIcon(chainIcons[i].parent, parent))
     {
-      console.log("* found", chainIcons[i]);
       oldOutputs.push(chainIcons[i].output);
       chainIcons.splice(i, 1);
     }
@@ -1677,8 +1672,6 @@ function computeSrrOutputs(index)
 
 function rebuildSrrOutputChains(index, outputs)
 {
-  console.log("rebuildSrrOutputChains", index, outputs);
-
   const oldAnchor = iconState.srr[index].output;
   const oldOutputs = [];
 
