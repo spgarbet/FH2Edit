@@ -506,7 +506,7 @@ function renderScreenshot(data)
 
 function renderSrrEditor(index=null)
 {
-  index = index === null ? num("srr-screen-index") : Number(index);
+  index = (index === null) ? num("srr-screen-index") : Number(index);
   selectedSrrIndex = index;
   
   const srr = parseSrr(index);
@@ -532,10 +532,26 @@ function renderSrrEditor(index=null)
   
   updateMidiMapButtons("#srr-editor .midi-map-button", index);
   elem("srr-editor-name").textContent = "Shift Register Random ("+(index+1)+")";
-
 }
 
 function renderEucEditor(index=null)
 {
-  console.error("FIXME");
+  index = (index === null) ? num("euc-screen-index") : Number(index);
+  selectedEucIndex = index;
+  
+  const euc = parseEuclidean(index);
+  
+  put('euc-output',   euc.onOut   );
+  put('euc-off',      euc.offOut  );
+  put('euc-pulses',   euc.pulses  );
+  put('euc-steps',    euc.steps   );
+  put('euc-rot',      euc.rotation);
+  put('euc-rate',     euc.rate    );
+  put('euc-gate-len', euc.gateLen );
+  put('euc-acc',      euc.accRate );
+  put('euc-reset',    euc.reset   );
+  
+  updateMidiMapButtons("#euc-editor .midi-map-button", index);
+  elem("euc-editor-name").textContent = "Euclidean ("+(index+1)+")";
+
 }

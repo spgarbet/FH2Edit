@@ -997,11 +997,12 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
         
 <!-- Euclidean -->
           <div id="euc-editor-host">
-            <div id="euc-editor" hidden>
-              <div class="editor-header">
-                <button id="euc-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Euclidean"></button>
-                 <h3 id="euc-editor-name">Euclidean</h3>
+            <div id="euc-editor-header" class="editor-header" hidden>
+              <button id="euc-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Euclidean"></button>
+               <h3 id="euc-editor-name">Euclidean</h3>
               </div>
+            <div id="euc-editor" hidden>
+
               <fieldset class="parameter-group">
                 <legend>Parameters</legend>
                 <div class="singleline">
@@ -1085,11 +1086,11 @@ step 1. This function is disabled if the reset value is set to zero.">Reset</lab
 
 <!-- Shift Register Random -->
           <div id="srr-editor-host">
+            <div id="srr-editor-header" class="editor-header" hidden>
+              <button id="srr-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove SRR"></button>
+              <h3 id="srr-editor-name">Shift Register Random</h3>
+            </div>
             <div id="srr-editor" hidden>
-              <div class="editor-header">
-                <button id="srr-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove SRR"></button>
-                <h3 id="srr-editor-name">Shift Register Random</h3>
-              </div>
               <fieldset class="parameter-group">
                 <legend>I/O</legend>
                 <div class="singleline">

@@ -861,7 +861,7 @@ function buildIconPicker()
   });
   elem("euc-editor-trash").addEventListener("click", function()
   {
-    removeEuc(selectedSrrIndex);
+    removeEuc(selectedEucIndex);
   });
 }
 
@@ -1075,9 +1075,12 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock", "srr"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc"])
   {
     elem(x+"-editor").hidden = sel !== x;
+    
+    if(x === "srr" ||
+       x === "euc" )  { elem(x+"-editor-header").hidden = sel !== x; }
   }
   
   if(sel != "placeholder") { centerToSelected(sel+"-editor"); }
@@ -1767,7 +1770,7 @@ function setSrrTriggerOutput(value)
  //
 // Euclidean
 
-function computeEuclideanOutputs(index)
+function computeEucOutputs(index)
 {
   const outputs = [];
   const euc     = parseConfigEuclidean(new ByteReader(configSysex), index);
@@ -1783,7 +1786,7 @@ function rebuildEucOutputChains(index, outputs)
   const oldAnchor = iconState.euc[index].output;
   const oldOutputs = [];
 
-  // Remove existing chains for this SRR.
+  // Remove existing chains for this Euclidean.
   for(let i = chainIcons.length - 1; i >= 0; --i)
   {
     const chain = chainIcons[i];

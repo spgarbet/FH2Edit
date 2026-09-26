@@ -251,13 +251,13 @@ function parsePresetEuclidean(reader, index=null)
   
   const euclidean = 
   {
-    p: reader.u8(),
-    s: reader.u8(),
-    r: reader.u8(),
-    t: reader.u8(),
-    g: reader.u8(),
-    a: reader.u8(),
-    e: reader.u8()
+    pulses:   reader.u8(),
+    steps:    reader.u8(),
+    rotation: reader.u8(),
+    rate:     reader.u8(),
+    gateLen:  reader.u8(),
+    accRate:  reader.u8(),
+    reset:    reader.u8()
   };
   reader.skip(1);
   
@@ -1003,4 +1003,10 @@ function parseSrr(index)
 {
   return { ...(parsePresetShiftRegister(new ByteReader(presetSysex), index)),
            ...(parseConfigShiftRegister(new ByteReader(configSysex), index)) };
+}
+
+function parseEuclidean(index)
+{
+  return { ...(parsePresetEuclidean(new ByteReader(presetSysex), index)),
+           ...(parseConfigEuclidean(new ByteReader(configSysex), index)) };
 }
