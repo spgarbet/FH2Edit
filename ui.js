@@ -1079,6 +1079,7 @@ function renderOutputEditor()
   {
     elem(x+"-editor").hidden = sel !== x;
     
+    // For the two screen editors
     if(x === "srr" ||
        x === "euc" )  { elem(x+"-editor-header").hidden = sel !== x; }
   }
@@ -1773,10 +1774,11 @@ function setSrrTriggerOutput(value)
 function computeEucOutputs(index)
 {
   const outputs = [];
-  const euc     = parseConfigEuclidean(new ByteReader(configSysex), index);
-
-  if(euc.onOut  >= 0) { outputs.push(euc.onOut ); }
-  if(euc.offOut >= 0) { outputs.push(euc.offOut); }
+  const euc     = parseEuclidean(index);
+  
+  if(euc.pulses === 0) { return [];                }
+  if(euc.onOut  >= 0)  { outputs.push(euc.onOut ); }
+  if(euc.offOut >= 0)  { outputs.push(euc.offOut); }
 
   return outputs.sort((a, b) => a - b);
 }

@@ -1007,17 +1007,16 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                 <legend>Parameters</legend>
                 <div class="singleline">
                   <div>
-                    <label for="euc-output">Output</label>
-                    <select id="euc-output"><script>optionChannelSelector(true, true, 0)</script></select>
+                    <label for="euc-output" class="tooltip" data-tooltip="Output for a trigger whenever a pulse occurs in the pattern.">On Output</label>
+                    <select id="euc-output"><script>optionChannelSelector(true, true)</script></select>
                   </div>
                   <div>
-                    <label for="euc-off" class="tooltip" data-tooltip="">Off Output</label>
-                    <select id="euc-off"><script>optionChannelSelector(true, true, 0)</script></select>
+                    <label for="euc-off" class="tooltip" data-tooltip="Output for a trigger whenever a pulse does not occur in the pattern.">Off Output</label>
+                    <select id="euc-off"><script>optionChannelSelector(true, true)</script></select>
                   </div>
                   <div>
-                    <label for="euc-pulses" class="tooltip" data-tooltip="Number of steps
-on which a pulse is output.">Pulses</label>
-                    <select id="euc-pulses"><script>optionRange(0,32,0)</script></select>
+                    <label for="euc-pulses" class="tooltip" data-tooltip="Number of steps on which a pulse is output.">Pulses</label>
+                    <select id="euc-pulses"><option value='0' selected>--</option><script>optionRange(1,32)</script></select>
                     <button class="midi-map-button" type="button"
                             data-type="euc" data-index="0" data-dest="P"
                             aria-label="MIDI assignment for Euclidean pulses">
@@ -1070,8 +1069,7 @@ on which a pulse is output.">Pulses</label>
                     </button>
                   </div>
                    <div>
-                    <label for="euc-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the pattern will automatically reset to
-step 1. This function is disabled if the reset value is set to zero.">Reset</label>
+                    <label for="euc-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the pattern will automatically reset to step 1. This function is disabled if the reset value is set to zero.">Reset</label>
                     <select id="euc-reset"><script>optionRange(0,32,0)</script></select>
                     <button class="midi-map-button" type="button"
                             data-type="euc" data-index="0" data-dest="E"
@@ -1253,8 +1251,7 @@ step 1. This function is disabled if the reset value is set to zero.">Reset</lab
                     </button>
                   </div>
                   <div>
-                    <label for="srr-gate-len" class="tooltip" data-tooltip="Sets the length of the gates on the Change or Trigger outputs, as a fraction of the
-clock rate. If set to zero, the global trigger length as set in the Configuration is used.">Gate Length</label>
+                    <label for="srr-gate-len" class="tooltip" data-tooltip="Sets the length of the gates on the Change or Trigger outputs, as a fraction of the clock rate. If set to zero, the global trigger length as set in the Configuration is used.">Gate Length</label>
                     <select id="srr-gate-len" onchange="setPresetSrrValue(7,this.value)">
                       <script>optionRange(0,127,0)</script>
                     </select>

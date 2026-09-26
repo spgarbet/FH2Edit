@@ -193,6 +193,19 @@ function renderConfig(data)
     }
   }
   
+  // Find Active Euclidean
+  for(let i=0; i<16; ++i)
+  {
+    const outputs = computeEucOutputs(i);
+    if(outputs.length > 0)
+    {
+      iconState.euc[i].enabled = true;
+      iconState.euc[i].output  = outputs[0];
+      renderOutputIconsFor(outputs[0]);
+      updateEucOutputs(i);
+    }
+  }
+  
   // CV/MIDI XY
   var cvMidi = config.cvMidi[0];
   put(  "cvmx_type",     cvMidi.enable ? cvMidi.type : -1);
@@ -219,280 +232,7 @@ function renderConfig(data)
   check("cvmy_out_sel",  cvMidi.outS);
   
   /* INCLUDE OTHER MAPPING RELATED RENDERINGS HERE */
-  
-/*
-  for (let j = 0; j < ac.length; ++j)
-  {
-    for (let i = 0; i < 64; ++i)
-    {
-      const ccid = "out_" + ac[j] + "_cc_" + i;
-      const chid = "out_" + ac[j] + "_ch_" + i;
 
-      put(chid, -1);
-      put(ccid, -1);
-
-      elem(ccid).style.display = "none";
-    }
-  }
-
-  for (let j = 1; j < 17; ++j)
-  {
-    clearMappings("arpeg"  + j + "_", arpControls);
-    clearMappings("mcvcom" + j + "_", mcvCommands);
-    clearMappings("mcvm2_" + j + "_", mcvMappable2Controls);
-    clearMappings("mcvm3_" + j + "_", mcvMappable3Controls);
-    clearMappings("euc_"   + j + "_", eucControls);
-    clearMappings("srr_"   + j + "_", srrControls);
-  }
-
-  for (let j = 0; j < 4; ++j)
-  {
-    clearMappings("seq" + j + "_", seqControls);
-  }
-
-  clearMappings("dseq0_", dseqControls);
-
-  for (let j = 0; j < 8; ++j)
-  {
-    clearMappings("dseq0_" + j + "_", dseqlControls);
-  }
-
-  for (let i = 0; i < global_mappable.length; ++i)
-  {
-    put(global_mappable[i] + "_ch", -1);
-    put(global_mappable[i] + "_cc", -1);
-
-    elem(global_mappable[i] + "_cc").style.display = "none";
-  }
-
-  for (let i = 0; i < config.mappings.length; ++i)
-  {
-    const mapping = config.mappings[i];
-
-    if ((mapping.channel >> 4) !== 3) { continue; }
-
-    const ch = mapping.channel & 0xf;
-    const relative = (mapping.type0 & 32) !== 0;
-    const target = mapping.type0 & ~32;
-    const value = mapping.type1;
-
-    let ccid = "";
-
-    if (target <= 8)
-    {
-      let aci = acMapLow[target];
-      let index = value;
-
-      if (index >= 64)
-      {
-        index -= 64;
-        aci = acMapHigh[target];
-      }
-
-      if (aci >= 0 && index >= 0 && index < 64)
-      {
-        const id = "out_" + ac[aci] + "_ch_" + index;
-
-        ccid = "out_" + ac[aci] + "_cc_" + index;
-
-        put(id, ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id, ccid);
-      }
-    }
-    else if (target === 9)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < arpControls.length)
-      {
-        const id = "arpeg" + j + "_" + arpControls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 10)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < eucControls.length)
-      {
-        const id = "euc_" + j + "_" + eucControls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 11)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < mcvCommands.length)
-      {
-        const id = "mcvcom" + j + "_" + mcvCommands[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 12)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < mcvMappable2Controls.length)
-      {
-        const id = "mcvm2_" + j + "_" + mcvMappable2Controls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 13)
-    {
-      let j = value >> 4;
-      const k = value & 0xf;
-
-      if (j < 4)
-      {
-        if (k < seqControls.length)
-        {
-          const id = "seq" + j + "_" + seqControls[k];
-
-          ccid = id + "_cc";
-
-          put(id + "_ch", ch + 1);
-          put(ccid, mapping.cc);
-
-          changeMIDIChannel(id + "_ch", ccid);
-        }
-      }
-      else
-      {
-        j -= 4;
-
-        if (k < dseqControls.length)
-        {
-          const id = "dseq" + j + "_" + dseqControls[k];
-
-          ccid = id + "_cc";
-
-          put(id + "_ch", ch + 1);
-          put(ccid, mapping.cc);
-
-          changeMIDIChannel(id + "_ch", ccid);
-        }
-      }
-    }
-    else if (target === 14)
-    {
-      const j = value >> 4;
-      const k = value & 0xf;
-
-      if (k < dseqlControls.length)
-      {
-        const id = "dseq0_" + j + "_" + dseqlControls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 15)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < srrControls.length)
-      {
-        const id = "srr_" + j + "_" + srrControls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else if (target === 16)
-    {
-      const j = (value >> 3) + 1;
-      const k = value & 7;
-
-      if (k < mcvMappable3Controls.length)
-      {
-        const id = "mcvm3_" + j + "_" + mcvMappable3Controls[k];
-
-        ccid = id + "_cc";
-
-        put(id + "_ch", ch + 1);
-        put(ccid, mapping.cc);
-
-        changeMIDIChannel(id + "_ch", ccid);
-      }
-    }
-    else
-    {
-      const globalMap =
-      {
-        69: [ "glb_tempo_ch",        "glb_tempo_cc"        ],
-        71: [ "dispmode_ch",         "dispmode_cc"         ],
-        72: [ "dispitem_ch",         "dispitem_cc"         ],
-        74: [ "glb_swing_type_ch",   "glb_swing_type_cc"   ],
-        75: [ "glb_swing_amount_ch", "glb_swing_amount_cc" ],
-        76: [ "nudgefaster_ch",      "nudgefaster_cc"      ],
-        77: [ "nudgeslower_ch",      "nudgeslower_cc"      ],
-        78: [ "inctempo_ch",         "inctempo_cc"         ],
-        79: [ "dectempo_ch",         "dectempo_cc"         ]
-      };
-
-      const ids = globalMap[target];
-
-      if (ids)
-      {
-        put(ids[0], ch + 1);
-        put(ids[1], mapping.cc);
-
-        changeMIDIChannel(ids[0], ids[1]);
-
-        ccid = ids[1];
-      }
-    }
-
-    if (ccid !== "")
-    {
-      const relativeElement = elem(ccid + "_rel");
-
-      if (relativeElement) { relativeElement.checked = relative; }
-    }
-  }
-  */
-  
   return true;
 }
 
@@ -538,7 +278,7 @@ function renderEucEditor(index=null)
 {
   index = (index === null) ? num("euc-screen-index") : Number(index);
   selectedEucIndex = index;
-  
+
   const euc = parseEuclidean(index);
   
   put('euc-output',   euc.onOut   );
