@@ -365,10 +365,12 @@ function disableEuc(index)
 
 function initEuc(index, output)
 {
-  setConfigU8(2916 + index, output);
-  setConfigU8(2940 + index, 0);
-  setConfigU8(4104 + index, 0);
-  setConfigU8(4120 + index, 1);
+  console.log("initEuc", index, output);
+  setConfigU8(2916 + index,   output);
+  setConfigU8(2940 + index,   0);
+  setConfigU8(4104 + index,   0);
+  setConfigU8(4120 + index,   1);
+  setPresetU8(1380 + 8*index, 8);
 }
 
 function setEucChangeOnOut(value, index = selectedEucIndex)

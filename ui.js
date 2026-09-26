@@ -647,7 +647,7 @@ function addIcon(type, output)
       initClock();
       break;
     case "euc":
-      initEuc();
+      initEuc(index, output);
       break;
   }
 
