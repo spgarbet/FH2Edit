@@ -207,9 +207,24 @@ function setCVMidiOut(value, letter, flag)
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
 
+function setOutputRange(index, value)
+{
+  setConfigU8(36 + index, Number(value));
+}
+
+function setOutputLowGate(index, value)
+{
+  setConfigShort(2404 + 2*index, Number(value));
+}
+
+function setOutputHighGate(index, value)
+{
+  setConfigShort(2406 + 2*index, Number(value));
+}
+
 function disableClock(i)
 {
-  const loc = 2048+8*i;
+  const loc = 2148+8*i;
   setConfigU8(loc,   0);
   setConfigU8(loc+1, 1);
   setConfigU8(loc+2, 1);
@@ -221,6 +236,32 @@ function disableClock(i)
   /////////////////////////////////////////////////////////////////////
  //
 // Shift Register Random
+function setConfigSrrValue(offset, value, index=selectedSrrIndex)
+{
+  setConfigU8(3708 + 7*index + offset, value);
+}
+
+function setPresetSrrValue(offset, value, index=selectedSrrIndex)
+{ 
+  setPresetU8(2400 + 8*index + offset, value);
+}
+
+function setConfigSrrAddValue(bit, disabled, index=selectedSrrIndex)
+{
+  const loc   = 4136 + index;
+  const flags = configSysex[loc];
+
+  setConfigU8(loc, disabled ? flags | (1 << bit) : flags & ~(1 << bit));
+}
+
+// Called like setSrrMidiOut(3,this.checked) from html checkbox
+function setSrrMidiOut(bit, value, index=selectedSrrIndex)
+{
+  const loc   = 3716 + 7*index;
+  const flags = configSysex[loc];
+  
+  setConfigU8(loc, value ? flags | (1 << bit) : flags & ~(1 << bit));
+}
 
 function disableSrr(index)
 {
@@ -255,12 +296,10 @@ function initSrr(index, output)
   setPresetU8(2400+8*index, 1       ); // FORWARD
 }
 
-function initMidi(index, output)
+// Midi to CV Converter values by indexed offset
+function setMidiCVValue(offset, value, index=selectedIcon.index)
 {
-  disableMidi(index);
-  setMidiCVValue( 0, 1,      index);    // Enable it
-  setMidiCVValue(11, output, index);    // Map to right output
-  setMidiCVValue(12, 0,      index);    // Turn off stride as well
+  setConfigU8(100+offset+32*index, value);
 }
 
 function disableMidi(index)
@@ -269,6 +308,25 @@ function disableMidi(index)
   clearMappings("mcv",  index);
   clearMappings("mcv2", index);
   clearMappings("mcv3", index);
+}
+
+function initMidi(index, output)
+{
+  disableMidi(index);
+  setMidiCVValue( 0, 1,      index);    // Enable it
+  setMidiCVValue(11, output, index);    // Map to right output
+  setMidiCVValue(12, 0,      index);    // Turn off stride as well
+}
+
+
+function setArpValue(offset, value)
+{
+  setPresetU8(1636+offset+8*selectedIcon.index, value);
+}
+
+function setScalaValue(offset, value)
+{
+  setPresetU8(1248+offset+4*selectedIcon.index, value);
 }
 
 function initClock(index, output)
@@ -299,10 +357,32 @@ function initArp(index)
 
 function disableEuc(index)
 {
-  console.log("disableEuc", index)
+  setConfigU8(2916 + index, 0);
+  setConfigU8(2940 + index, 0);
+  setConfigU8(4104 + index, 1);
+  setConfigU8(4120 + index, 1);
 }
 
-function initEuc(index)
+function initEuc(index, output)
 {
-  console.log("initEuc", index)
+  setConfigU8(2916 + index, output);
+  setConfigU8(2940 + index, 0);
+  setConfigU8(4104 + index, 0);
+  setConfigU8(4120 + index, 1);
+}
+
+function setEucChangeOnOut(value, index = selectedEucIndex)
+{
+  setConfigU8(2916 + index, value);
+  setConfigU8(4104 + index, 0);
+
+  updateEuc(index);
+}
+
+function setEucChangeOffOut(value, index=selectedEucIndex)
+{
+  setConfigU8(2940 + index, value);
+  setConfigU8(4120 + index, 0);
+
+  updateEuc(index);
 }

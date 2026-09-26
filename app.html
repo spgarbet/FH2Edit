@@ -59,6 +59,7 @@
     <button type="button" class="tab active" data-target="io-screen"         >I/O</button>
     <button type="button" class="tab"        data-target="globals-screen"    >Globals</button>
     <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
+    <button type="button" class="tab"        data-target="euc-screen"        >Euclidean</button>
     <button type="button" class="tab"        data-target="srr-screen"        >SSR</button>
     <button type="button" class="tab"        data-target="controllers-screen">Controllers</button>
     <button type="button" class="tab"        data-target="sequencers-screen" >Sequencers</button>
@@ -992,7 +993,94 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
               <div>Avg: <output id="stat-avg">0.000</output></div>
             </div>
             <div>Approximate representation.</div>
-            
+          </div>
+        
+<!-- Euclidean -->
+          <div id="euc-editor-host">
+            <div id="euc-editor" hidden>
+              <div class="editor-header">
+                <button id="euc-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Euclidean"></button>
+                 <h3 id="euc-editor-name">Euclidean</h3>
+              </div>
+              <fieldset class="parameter-group">
+                <legend>Parameters</legend>
+                <div class="singleline">
+                  <div>
+                    <label for="euc-output">Output</label>
+                    <select id="euc-output"><script>optionChannelSelector(true, true, 0)</script></select>
+                  </div>
+                  <div>
+                    <label for="euc-off" class="tooltip" data-tooltip="">Off Output</label>
+                    <select id="euc-off"><script>optionChannelSelector(true, true, 0)</script></select>
+                  </div>
+                  <div>
+                    <label for="euc-pulses" class="tooltip" data-tooltip="Number of steps
+on which a pulse is output.">Pulses</label>
+                    <select id="euc-pulses"><script>optionRange(0,32,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="P"
+                            aria-label="MIDI assignment for Euclidean pulses">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="euc-steps" class="tooltip" data-tooltip="Total number of steps.">Steps</label>
+                    <select id="euc-steps"><script>optionRange(1,32,1)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="S"
+                            aria-label="MIDI assignment for Euclidean steps">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="euc-rot" class="tooltip" data-tooltip="At zero rotation, the first step in the pattern will always be a pulse, and the remaining pulses distributed according to the algorithm. The rotation setting moves the first pulse by a number of steps i.e. moves the down beat.">Rotation</label>
+                    <select id="euc-rot"><script>optionRange(0,32,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="R"
+                            aria-label="MIDI assignment for Euclidean rotation">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="euc-rate" class="tooltip" data-tooltip="The rate of the pattern, in terms of 24ppqn clocks. The special value '0' means that the pattern advances on every external clock pulse (useful for irregular rhythms).">Rate</label>
+                    <select id="euc-rate"><script>optionRange(0,127,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="T"
+                            aria-label="MIDI assignment for Euclidean rate">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="euc-gate-len" class="tooltip" data-tooltip="Gate on time as a fraction of the clock rate. 64 is a 50% gate length. 0 is a special value and means a fixed length trigger pulse, unrelated to the clock rate.">Gate Length</label>
+                    <select id="euc-gate-len"><script>optionRange(0,127,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="G"
+                            aria-label="MIDI assignment for Euclidean gate length">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                  <div>
+                    <label for="euc-acc" class="tooltip" data-tooltip="The accent rate, in terms of 24ppqn clocks, or zero for off (no accents).">Accent Rate</label>
+                    <select id="euc-acc"><script>optionRange(0,127,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="A"
+                            aria-label="MIDI assignment for Euclidean accent rate">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                   <div>
+                    <label for="euc-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the pattern will automatically reset to
+step 1. This function is disabled if the reset value is set to zero.">Reset</label>
+                    <select id="euc-reset"><script>optionRange(0,32,0)</script></select>
+                    <button class="midi-map-button" type="button"
+                            data-type="euc" data-index="0" data-dest="E"
+                            aria-label="MIDI assignment for Euclidean reset">
+                      <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                    </button>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
           </div>
 
 <!-- Shift Register Random -->
@@ -1264,6 +1352,16 @@ clock rate. If set to zero, the global trigger length as set in the Configuratio
       </div>
     </section>
 
+    <section class="screen" id="euc-screen">
+      <div class="screen-header"><h2>Euclidean</h2></div>
+      <div class="screen-content" id="euc-content">
+        <div>
+          <label for="euc-screen-index">Euclidean Number</label>
+          <select id="euc-screen-index" onchange="renderEucEditor(this.value)"><script>optionRange(1,16,1,1)</script></select>
+        </div>
+        <div id="euc-screen-editor-host"></div>
+      </div>
+    </section>
 
     <!-- Controllers -->
 

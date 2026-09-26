@@ -534,3 +534,8 @@ function renderSrrEditor(index=null)
   elem("srr-editor-name").textContent = "Shift Register Random ("+(index+1)+")";
 
 }
+
+function renderEucEditor(index=null)
+{
+  console.error("FIXME");
+}

@@ -245,6 +245,25 @@ function parsePresetShiftRegister(reader, index=null)
   };
 }
 
+function parsePresetEuclidean(reader, index=null)
+{
+  if(index !== null) { reader.seek(1380 + 8*index); }
+  
+  const euclidean = 
+  {
+    p: reader.u8(),
+    s: reader.u8(),
+    r: reader.u8(),
+    t: reader.u8(),
+    g: reader.u8(),
+    a: reader.u8(),
+    e: reader.u8()
+  };
+  reader.skip(1);
+  
+  return euclidean;
+}
+
 function parsePreset(reader)
 {
   reader.skip(8);
@@ -264,28 +283,15 @@ function parsePreset(reader)
 	const directLevel = parsePresetDirectLevel(reader);     //   32
 	const lfos        = parsePresetLFOs(reader);            //  160
   const arpeg       = parseArpeg(reader);                 // 1248
+  const tempo       = reader.uLong() * 0.1;               // 1376
 
-  const tempo = reader.uLong() * 0.1;                     // 1376
-
-  const euclidean = [];                                   // 1380
-  for (let i=0; i<16; ++i)
+  euclidean = [];
+  for (let i=0; i<16; ++i)                                // 1380
   {
-    euclidean.push(
-      {
-        p: reader.u8(),
-        s: reader.u8(),
-        r: reader.u8(),
-        t: reader.u8(),
-        g: reader.u8(),
-        a: reader.u8(),
-        e: reader.u8()
-      }
-    );
-
-    reader.skip(1);
+    euclidean.push(parsePresetEuclidean(reader));
   }
 
-  const mcvm2 = [];                            // 1508
+  const mcvm2 = [];                         // 1508
   for (let i = 0; i < 16; ++i)
   {
     mcvm2.push(
@@ -302,22 +308,21 @@ function parsePreset(reader)
     );
   }
   
-  const scala = parseScala(reader);         // 1636
-
-  const sequencerActive = reader.u8();      // 1700
-  const sequencerMute   = reader.u8();      // 1701
+  const scala           = parseScala(reader); // 1636
+  const sequencerActive = reader.u8();        // 1700
+  const sequencerMute   = reader.u8();        // 1701
 
   const sequencers = [];                    
   for (let i=0; i<4; ++i)
   {
     sequencers.push({
       active: (sequencerActive >> i) & 1,
-      mute:   (sequencerMute >> i) & 1
+      mute:   (sequencerMute   >> i) & 1
     });
   }
 
-  const drumActive = reader.u8();           // 1702
-  const drumMute   = reader.u8();           // 1703
+  const drumActive = reader.u8();             // 1702
+  const drumMute   = reader.u8();             // 1703
 
   const drumSequencers = [];
   for (let i=0; i<1; ++i)
@@ -325,11 +330,10 @@ function parsePreset(reader)
     drumSequencers.push(
       {
         active: (drumActive >> i) & 1,
-        mute:   (drumMute >> i) & 1
+        mute:   (drumMute   >> i) & 1
       }
     );
   }
-
   reader.skip(8); // Triggers? 1520
 
   // Main Sequencer                           1712
@@ -694,6 +698,26 @@ function parseLfoResets(reader)
   return lfoResets;
 }
 
+// Note: Does not leave byte seek in contiguous location
+function parseConfigEuclidean(reader, index)
+{
+  const euc = {};
+  
+  reader.seek(2916 + index);
+  euc.onOut  = reader.u8();
+  
+  reader.seek(2940 + index);
+  euc.offOut = reader.u8();
+  
+  reader.seek(4104 + index);
+  if(reader.u8()) { euc.onOut = -1; }
+  
+  reader.seek(4120 + index);
+  if(reader.u8()) { euc.offOut = -1; }
+  
+  return euc;
+}
+
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -771,13 +795,14 @@ function parseConfig(reader)
   }
 
   // Euclidean outputs
-  config.euclideanOutputs = [];            // 2916
+  config.euclidean = [];
   for (let i = 0; i < 16; ++i)
   {
-    config.euclideanOutputs.push(reader.u8());
+    config.euclidean.push(parseConfigEuclidean(reader, i));
   }
  
   // Global MIDI controls                  // 2932
+  reader.seek(2932); 
   config.globalMidi =
   {
     tapType:      reader.u8(),
@@ -789,16 +814,8 @@ function parseConfig(reader)
     startCC:      reader.u8()
   };
 
-  reader.skip(1);
-
-  // Euclidean off outputs
-  config.euclideanOffOutputs = [];         // 2940
-  for (let i = 0; i < 16; ++i)
-  {
-    config.euclideanOffOutputs.push(reader.u8());
-  }
-
   // Gamepad / HID mappings
+  reader.seek(2956);
   config.hidMappings = [];                 // 2956
   for (let i = 0; i < 32; ++i)
   {
@@ -945,23 +962,6 @@ function parseConfig(reader)
 
   // Shift registers
   config.shiftRegisters = parseConfigShiftRegisters(reader); // 3708
-
-  // The addendum begins at absolute offset 4104.
-  reader.seek(4104);
-
-  // Euclidean output addendum
-  config.euclideanOutputAddendum = [];     // 4104
-  for (let i = 0; i < 16; ++i)
-  {
-    config.euclideanOutputAddendum.push(reader.u8());
-  }
-
-  // Euclidean off-output addendum
-  config.euclideanOffOutputAddendum = [];  // 4120
-  for (let i = 0; i < 16; ++i)
-  {
-    config.euclideanOffOutputAddendum.push(reader.u8());
-  }
 
   return config;
 }

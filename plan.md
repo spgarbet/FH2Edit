@@ -56,6 +56,7 @@ An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a
 enabled for a MIDI/CV if either the Arp mode is non-zero or it has an assigned cc.
 
 The Euclidean is very much like the SRR, but has two output ports that can be anywhere or none.
+Active: Pulses > 0
 
 Obviously Euclidean fits directly into the same style as SRR. The outstanding question is how to handle the Envelope and Arp. I was thinking that it could be an additional icon with an output editor. The icon to add an Envelope or Arp is only active if a MIDI/CV primary is present. 
 

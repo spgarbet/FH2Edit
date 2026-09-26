@@ -28,23 +28,25 @@ const iconState =
   midi:  Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   clock: Array.from({ length: 32 }, () => ({ enabled: false, output: null })),
   lfo:   Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
-  srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
+  srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
+  euc:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
 };
 
 let   selectedIcon     = null;
 let   selectedOutput   = null;
 let   selectedSrrIndex = 0;  // Defaults to first one
+let   selectedEucIndex = 0;
 const chainIcons       = []; // The reference icons
 
 const ICON_DEFS =
 {
-  midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
-  lfo:       { label: "LFO",        src: "icons/lfo.png",      total: 64 },
-  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 },
-  arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 16 },
-  envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 16 },
-  euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 16 },
-  srr:       { label: "Shift Reg",  src: "icons/srr.png",      total: 16 }
+  midi:  { label: "MIDI",       src: "icons/midi.png",     total: 16 },
+  lfo:   { label: "LFO",        src: "icons/lfo.png",      total: 64 },
+  clock: { label: "Clock",      src: "icons/clock.png",    total: 32 },
+  arp:   { label: "Arpeggiator",src: "icons/arp.png",      total: 16 },
+  env:   { label: "Envelope",   src: "icons/envelope.png", total: 16 },
+  euc:   { label: "Euclidean",  src: "icons/rhythm.png",   total: 16 },
+  srr:   { label: "Shift Reg",  src: "icons/srr.png",      total: 16 }
 };
 
 // Elements
@@ -280,7 +282,12 @@ function initTabs()
         case "srr-screen":
           mountSrrEditor("srr-screen-editor-host");
           renderSrrEditor();
-        break;
+          break;
+        
+        case "euc-screen":
+          mountEucEditor("euc-screen-editor-host");
+          renderEucEditor();
+          break;
       }
     });
   }
@@ -324,9 +331,9 @@ function buildOutputs()
       range.innerHTML    = "<option value=0>0-10V</option><option value=1>&plusmn;5V</option><option value=2>0-1V</option><option value=3>0-5V</option><option value=4>0-8V</option>";
       range.addEventListener("change", function()
       {
-        setConfigU8(loc+36, this.value);
-        elem("lowgate_lbl_"+loc).textContent = scaleVoltage(this.value, get("lowgate_"+loc) );
-        elem("highgate_lbl_"+loc).textContent  = scaleVoltage(this.value, get("highgate_"+loc));
+        setOutputRange(loc, this.value);
+        elem("lowgate_lbl_" +loc).textContent = scaleVoltage(this.value, get("lowgate_" +loc));
+        elem("highgate_lbl_"+loc).textContent = scaleVoltage(this.value, get("highgate_"+loc));
       });
       
       const lowGate         = document.createElement("input");
@@ -340,8 +347,9 @@ function buildOutputs()
       lowLabel.textContent  = "-10.00";
       lowGate.addEventListener("change", function()
       {
-        setConfigShort(2*loc+2404, this.value);
-        elem("lowgate_lbl_"+loc).textContent = scaleVoltage(get("rng_"+loc), this.value);
+        setOutputLowGate(loc, this.value);
+        elem("lowgate_lbl_"+loc).textContent = 
+          scaleVoltage(get("rng_"+loc), this.value);
       });
       
       const highGate        = document.createElement("input");
@@ -355,8 +363,9 @@ function buildOutputs()
       highLabel.textContent = "-10.00";      
       highGate.addEventListener("change", function()
       {
-        setConfigShort(2*loc+2406, this.value);
-        elem("highgate_lbl_"+loc).textContent = scaleVoltage(get("rng_"+loc), this.value);
+        setOutputHighGate(loc, this.value);
+        elem("highgate_lbl_"+loc).textContent = 
+          scaleVoltage(get("rng_"+loc), this.value);
       });
       const icons           = document.createElement("div");
       icons.id              = "outputs-unit"+unit+"-icons" + output;
@@ -580,7 +589,7 @@ function setExpanders(v)
     if(state[i].enabled &&
        state[i].output >= 8*(expanders+1))
     {
-      setConfigU8(100+32*i, 0);
+      disableMidi(i);
       removeIcon("midi", i);
     }
   }
@@ -611,28 +620,34 @@ function addIcon(type, output)
 {
   let index;
   const previousOutput = selectedIcon ? selectedIcon.output : null;
-
+  
+  if(type === "lfo")
+  {
+    if (iconState.lfo[output].enabled) { return false; }
+    index = output;
+  }
+  else
+  {
+    index = nextAvailableIcon(type);
+    if (index < 0) { return false; }    
+  }
+  
   switch(type)
   {
     case "lfo":
-      if (iconState.lfo[output].enabled) { return false; }
-      index = output;
       initLfo(output);
       break;
     case "srr":
-      index = nextAvailableIcon(type);
-      if (index < 0) { return false; }
       initSrr(index, output);
       break;
     case "midi":
-      index = nextAvailableIcon(type);
-      if (index < 0) { return false; }
       initMidi(index, output);
       break
     case "clock":
-      index = nextAvailableIcon(type);
-      if (index < 0) { return false; }
       initClock();
+      break;
+    case "euc":
+      initEuc();
       break;
   }
 
@@ -657,6 +672,36 @@ function addIcon(type, output)
   renderOutputEditor();
 
   return true;
+}
+
+function removeEuc(index)
+{
+  const outputs = computeEucOutputs(index);
+  const anchor  = iconState.euc[index].output;
+
+  disableEuc(index);
+
+  iconState.euc[index].enabled = false;
+  iconState.euc[index].output  = null;
+
+  rebuildEucOutputChains(index, []);
+
+  const affected = new Set(outputs);
+
+  if(anchor !== null)
+  {
+    affected.add(anchor);
+  }
+
+  for(const output of affected)
+  {
+    renderOutputIconsFor(output);
+  }
+
+  selectedIcon   = null;
+  selectedOutput = anchor;
+
+  renderOutputEditor();
 }
 
 function removeSrr(index)
@@ -700,6 +745,7 @@ function selectIcon(type, index, output)
   };
   
   if(type === "srr") { selectedSrrIndex = index; }
+  if(type === "eud") { selectedEucIndex = index; }
 
   selectedOutput = output;
 
@@ -727,7 +773,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (const type of ["midi", "lfo", "clock", "srr"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc"])
   {
     const state = iconState[type];
 
@@ -770,7 +816,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (const type of ["midi", "lfo", "clock", "srr"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -796,7 +842,7 @@ function buildIconPicker()
   
   elem("clock-editor-trash").addEventListener("click", function()
   {
-    setConfigU8(2148+selectedIcon.index,0); // Turn off clock
+    disableClock(selectedIcon.index); // Turn off clock
     removeIcon("clock", selectedIcon.index);
   });
   elem("lfo-editor-trash").addEventListener("click", function()
@@ -806,12 +852,16 @@ function buildIconPicker()
   });
   elem("midi-editor-trash").addEventListener("click", function()
   {
-    setConfigU8(100+32*selectedIcon.index, 0); // Turn off MIDI/CV
+    disableMidi(selectedIcon.index);
     removeIcon("midi", selectedIcon.index);
   });
   elem("srr-editor-trash").addEventListener("click", function()
   {
     removeSrr(selectedSrrIndex);
+  });
+  elem("euc-editor-trash").addEventListener("click", function()
+  {
+    removeEuc(selectedSrrIndex);
   });
 }
 
@@ -1040,6 +1090,10 @@ function renderOutputEditor()
     case "srr":
       mountSrrEditor("srr-editor-host");
       renderSrrEditor(selectedIcon.index);
+      break;
+    case "euc":
+      mountEucEditor("euc-editor-host");
+      renderEucEditor(selectedIcon.indx);
       break;
   }
   updateTooltips();
@@ -1351,23 +1405,6 @@ function setStartType(value)
  //
 // MIDI CV Converter UI
 //
-
-// Midi to CV Converter values by indexed offset
-function setMidiCVValue(offset, value, index=selectedIcon.index)
-{
-  setConfigU8(100+offset+32*index, value);
-}
-
-function setArpValue(offset, value)
-{
-  setPresetU8(1636+offset+8*selectedIcon.index, value);
-}
-
-function setScalaValue(offset, value)
-{
-  setPresetU8(1248+offset+4*selectedIcon.index, value);
-}
-
 function makeSeries(base, block, replicates)
 {
   return Array.from({ length: replicates }, (_, i) => base + i * block);
@@ -1707,52 +1744,128 @@ function updateSrr(index=selectedSrrIndex)
 
 function setSrrCVOutput(value)
 {
-  const index = selectedSrrIndex;
-  
-  setConfigU8(3708 + 7*index, value);
-  
-  updateSrr(index);
+  setConfigSrrValue(0, value, selectedSrrIndex);
+  updateSrr(selectedSrrIndex);
 }
 
 function setSrrChangeOutput(value)
 {
-  const index = selectedSrrIndex;
-  const loc   = 4136+index;  
-  const flags = configSysex[loc];
-  
-  setConfigU8(loc, value < 0 ? flags | 0x01 : flags & 0x7e);
-  setConfigU8(3709 + 7*index, value < 0 ? 0 : value);
-
+  setConfigSrrValue(1, value < 0 ? 0 : value, selectedSrrIndex);
+  setConfigSrrAddValue(1,  value < 0, selectedSrrIndex);
   updateSrr(index);
 }
 
 function setSrrTriggerOutput(value)
 {
-  const index = selectedSrrIndex;
-  const loc   = 4136+index;  
-  const flags = configSysex[loc];
-  
-  setConfigU8(loc, value < 0 ? flags | 0x02 : flags & 0x7d);
-  setConfigU8(3710 + 7*index, value < 0 ? 0 : value);
-
+  setConfigSrrValue(2, value < 0 ? 0 : value, selectedSrrIndex);
+  setConfigSrrAddValue(2,  value < 0, selectedSrrIndex);
   updateSrr(index);
 }
 
-function setConfigSrrValue(offset, value)
+
+  ///////////////////////////////////////////////////////////////////////////
+ //
+// Euclidean
+
+function computeEuclideanOutputs(index)
 {
-  setConfigU8(3710 + 7*selectedSrrIndex + offset, value);
+  const outputs = [];
+  const euc     = parseConfigEuclidean(new ByteReader(configSysex), index);
+
+  if(euc.onOut  >= 0) { outputs.push(euc.onOut ); }
+  if(euc.offOut >= 0) { outputs.push(euc.offOut); }
+
+  return outputs.sort((a, b) => a - b);
 }
 
-function setPresetSrrValue(offset, value)
-{ 
-  setPresetU8(2400 + 8*selectedSrrIndex + offset, value);
-}
-
-// Called like setSrrMidiOut(3,this.checked) from html checkbox
-function setSrrMidiOut(bit, value)
+function rebuildEucOutputChains(index, outputs)
 {
-  const loc   = 3716 + 7*selectedSrrIndex;
-  const flags = configSysex[loc];
+  const oldAnchor = iconState.euc[index].output;
+  const oldOutputs = [];
+
+  // Remove existing chains for this SRR.
+  for(let i = chainIcons.length - 1; i >= 0; --i)
+  {
+    const chain = chainIcons[i];
+
+    if(chain.parent.type === "euc" && chain.parent.index === index)
+    {
+      oldOutputs.push(chain.output);
+      chainIcons.splice(i, 1);
+    }
+  }
+
+  const affected = new Set(oldOutputs);
+
+  if(outputs.length === 0)
+  {
+    iconState.euc[index].output = null;
+
+    if(oldAnchor !== null)
+    {
+      renderOutputIconsFor(oldAnchor);
+    }
   
-  setConfigU8(loc, value ? flags | (1 << bit) : flags & ~(1 << bit));
+    for(const output of oldOutputs)
+    {
+      renderOutputIconsFor(output);
+    }
+  
+    return;
+  }
+  else
+  {
+    const anchor = outputs[0];
+
+    iconState.euc[index].output = anchor;
+    affected.add(anchor);
+
+    const parent =
+    {
+      type:   "euc",
+      index,
+      output: anchor
+    };
+
+    for(const output of outputs)
+    {
+      if(output !== anchor)
+      {
+        chainIcons.push({ output, parent });
+        affected.add(output);
+      }
+    }
+
+    if(oldAnchor !== null)
+    {
+      affected.add(oldAnchor);
+    }
+  }
+
+  for(const output of affected)
+  {
+    renderOutputIconsFor(output);
+  }
 }
+
+function updateEucOutputs(index)
+{
+  const outputs = computeEucOutputs(index);
+
+  rebuildEucOutputChains(index, outputs);
+}
+
+function mountEucEditor(host)
+{
+  elem(host).appendChild(elem("euc-editor"));
+  elem("euc-editor").hidden = false;
+}
+
+function updateEuc(index=selectedEucIndex)
+{
+  updateEucOutputs(index);
+  renderEucEditor(index);
+}
+
+
+
