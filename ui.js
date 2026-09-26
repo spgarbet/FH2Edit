@@ -1650,15 +1650,16 @@ function computeSrrOutputs(index)
   const outputs = [];
   const srr     = parseConfigShiftRegister(new ByteReader(configSysex), index);
   
-  if(srr.output > 0)      { outputs.push(srr.output-1); }
-  if(!(srr.addendum & 1)) { outputs.push(srr.change);   }
-  if(!(srr.addendum & 2)) { outputs.push(srr.trigger);  }
+  if(srr.output  >= 0) { outputs.push(srr.output);  }
+  if(srr.change  >= 0) { outputs.push(srr.change);  }
+  if(srr.trigger >= 0) { outputs.push(srr.trigger); }
   
   return outputs.sort((a,b) => a - b);
 }
 
 function rebuildSrrOutputChains(index, outputs)
 {
+  console.log("rebuildSrrOutputChains", index, outputs);
   const oldAnchor = iconState.srr[index].output;
   const oldOutputs = [];
 
@@ -1727,13 +1728,6 @@ function rebuildSrrOutputChains(index, outputs)
   }
 }
 
-function updateSrrOutputs(index)
-{
-  const outputs = computeSrrOutputs(index);
-
-  rebuildSrrOutputChains(index, outputs);
-}
-
 function mountSrrEditor(host)
 {
   elem(host).appendChild(elem("srr-editor"));
@@ -1742,28 +1736,32 @@ function mountSrrEditor(host)
 
 function updateSrr(index=selectedSrrIndex)
 {
-  updateSrrOutputs(index);
-  renderSrrEditor(index);
+  iconState.srr[index].enabled = srrActive(index);
+
+  const outputs = computeSrrOutputs(index);
+  
+  iconState.srr[index].output = outputs.length > 0 ? outputs[0] : null;
+  
+  rebuildSrrOutputChains(index, outputs);
 }
 
 function setSrrCVOutput(value)
 {
-  setConfigSrrValue(0, value, selectedSrrIndex);
+  console.log("setSrrCVOutput", value);
+  setSrrOut(Number(value), selectedSrrIndex);
   updateSrr(selectedSrrIndex);
 }
 
 function setSrrChangeOutput(value)
 {
-  setConfigSrrValue(1, value < 0 ? 0 : value, selectedSrrIndex);
-  setConfigSrrAddValue(1,  value < 0, selectedSrrIndex);
-  updateSrr(index);
+  setSrrChange(Number(value), selectedSrrIndex);
+  updateSrr(selectedSrrIndex);
 }
 
 function setSrrTriggerOutput(value)
 {
-  setConfigSrrValue(2, value < 0 ? 0 : value, selectedSrrIndex);
-  setConfigSrrAddValue(2,  value < 0, selectedSrrIndex);
-  updateSrr(index);
+  setSrrTrigger(Number(value), selectedSrrIndex);
+  updateSrr(selectedSrrIndex);
 }
 
 
@@ -1853,13 +1851,6 @@ function rebuildEucOutputChains(index, outputs)
   }
 }
 
-function updateEucOutputs(index)
-{
-  const outputs = computeEucOutputs(index);
-
-  rebuildEucOutputChains(index, outputs);
-}
-
 function mountEucEditor(host)
 {
   elem(host).appendChild(elem("euc-editor"));
@@ -1868,9 +1859,29 @@ function mountEucEditor(host)
 
 function updateEuc(index=selectedEucIndex)
 {
-  updateEucOutputs(index);
-  renderEucEditor(index);
+  iconState.euc[index].enabled = eucActive(index);
+
+  const outputs = computeEucOutputs(index);
+  
+  iconState.euc[index].output = outputs.length > 0 ? outputs[0] : null;
+
+  rebuildEucOutputChains(index, outputs);
 }
 
+function setEucChangeOnOut(value, index = selectedEucIndex)
+{
+  setEucOnOut(Number(value), index);
+  updateEuc(index);
+}
 
+function setEucChangeOffOut(value, index=selectedEucIndex)
+{
+  setEucOffOut(Number(value), index);
+  updateEuc(index);
+}
 
+function setEucPulses(value, index=selectedEucIndex)
+{
+  setEucValue(0, Number(value), index);
+  updateEuc(index);
+}

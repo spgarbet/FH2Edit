@@ -623,7 +623,7 @@ function parseConfigShiftRegister(reader, index=null)
   
   const shiftRegister =
   {
-    output:  reader.u8(),
+    output:  reader.u8()-1,
     change:  reader.u8(),
     trigger: reader.u8(),
     clock:   reader.u8(),
@@ -642,7 +642,9 @@ function parseConfigShiftRegister(reader, index=null)
   const loc = reader.offset;
   
   reader.seek(4136+index);
-  shiftRegister.addendum = reader.u8();
+  const addendum = reader.u8();
+  if(addendum & 0x01) { shiftRegister.change  = -1; }
+  if(addendum & 0x02) { shiftRegister.trigger = -1; }
   
   reader.seek(loc);
   
@@ -710,7 +712,7 @@ function parseConfigEuclidean(reader, index)
   euc.offOut = reader.u8();
   
   reader.seek(4104 + index);
-  if(reader.u8()) { euc.onOut = -1; }
+  if(reader.u8()) { euc.onOut  = -1; }
   
   reader.seek(4120 + index);
   if(reader.u8()) { euc.offOut = -1; }

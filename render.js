@@ -183,26 +183,24 @@ function renderConfig(data)
   // Find Active SRR
   for(let i=0; i<16; ++i)
   {
-    const outputs = computeSrrOutputs(i);
-    if(outputs.length > 0)
+    if(srrActive(i))
     {
       iconState.srr[i].enabled = true;
       iconState.srr[i].output  = outputs[0];
       renderOutputIconsFor(outputs[0]);
-      updateSrrOutputs(i);
+      updateSrr(i);
     }
   }
   
   // Find Active Euclidean
   for(let i=0; i<16; ++i)
   {
-    const outputs = computeEucOutputs(i);
-    if(outputs.length > 0)
+    if(eucActive(i))
     {
       iconState.euc[i].enabled = true;
       iconState.euc[i].output  = outputs[0];
       renderOutputIconsFor(outputs[0]);
-      updateEucOutputs(i);
+      updateEuc(i);
     }
   }
   
@@ -252,8 +250,8 @@ function renderSrrEditor(index=null)
   const srr = parseSrr(index);
 
   put(  'srr-cv-output',      srr.output      );
-  put(  'srr-change-output',  (srr.addendum & 1) ? -1 : srr.change  );
-  put(  'srr-trigger-output', (srr.addendum & 2) ? -1 : srr.trigger );
+  put(  'srr-change-output',  srr.change      );
+  put(  'srr-trigger-output', srr.trigger     );
   put(  'srr-notes-input',    srr.notes       );
   check('srr-midi-i',         srr.int         );
   check('srr-midi-c',         srr.usbc        );

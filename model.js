@@ -93,6 +93,10 @@ function clampSwing(swing)
   return( swing );
 }
 
+  ////////////////////////////////////////////////////////
+ // 
+// LFO
+
 function disableLfo(i)
 {
   const loc = 160 + 16*i;
@@ -139,7 +143,7 @@ function setLfoReset(index, type, v1, v2)
   ////////////////////////////////////////////////////////
  // 
 // Config Model
-//
+
 function setConfigName(name)
 {
   const offset = 12;
@@ -222,22 +226,13 @@ function setOutputHighGate(index, value)
   setConfigShort(2406 + 2*index, Number(value));
 }
 
-function disableClock(i)
-{
-  const loc = 2148+8*i;
-  setConfigU8(loc,   0);
-  setConfigU8(loc+1, 1);
-  setConfigU8(loc+2, 1);
-  setConfigU8(loc+3, 0);
-  setConfigU8(loc+4, 0);
-  setConfigU8(loc+5, 0);
-}
-
   /////////////////////////////////////////////////////////////////////
  //
 // Shift Register Random
+
 function setConfigSrrValue(offset, value, index=selectedSrrIndex)
 {
+  console.log("setConfigSrrValue", offset, value, index);
   setConfigU8(3708 + 7*index + offset, value);
 }
 
@@ -246,13 +241,33 @@ function setPresetSrrValue(offset, value, index=selectedSrrIndex)
   setPresetU8(2400 + 8*index + offset, value);
 }
 
-function setConfigSrrAddValue(bit, disabled, index=selectedSrrIndex)
+function setConfigSrrAddValue(bit, disabled, index)
 {
+  console.log("setConfigSrrAddValue", bit, disabled, index);
   const loc   = 4136 + index;
   const flags = configSysex[loc];
 
   setConfigU8(loc, disabled ? flags | (1 << bit) : flags & ~(1 << bit));
 }
+
+function setSrrOut(value, index)
+{
+  console.log("setSrrOut", value, index);
+  setConfigSrrValue(0, value+1, index);
+}
+
+function setSrrChange(value, index)
+{
+  setConfigSrrValue(1, value < 0 ? 0 : value, index);
+  setConfigSrrAddValue(0, value < 0, index);
+}
+
+function setSrrTrigger(value, index)
+{
+  setConfigSrrValue(2, value < 0 ? 0 : value, index);
+  setConfigSrrAddValue(1, value < 0, index);
+}
+
 
 // Called like setSrrMidiOut(3,this.checked) from html checkbox
 function setSrrMidiOut(bit, value, index=selectedSrrIndex)
@@ -296,7 +311,16 @@ function initSrr(index, output)
   setPresetU8(2400+8*index, 1       ); // FORWARD
 }
 
-// Midi to CV Converter values by indexed offset
+function srrActive(index)
+{
+// FIXME: This should include the "Direction != 0" or a mapping to direction exists.
+  return computeSrrOutputs(index).length > 0;
+}
+
+  /////////////////////////////////////////////////////////////////////
+ //
+//  Midi to CV Converter values by indexed offset
+
 function setMidiCVValue(offset, value, index=selectedIcon.index)
 {
   setConfigU8(100+offset+32*index, value);
@@ -319,14 +343,25 @@ function initMidi(index, output)
 }
 
 
-function setArpValue(offset, value)
-{
-  setPresetU8(1636+offset+8*selectedIcon.index, value);
-}
-
 function setScalaValue(offset, value)
 {
   setPresetU8(1248+offset+4*selectedIcon.index, value);
+}
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Clock
+
+
+function disableClock(i)
+{
+  const loc = 2148+8*i;
+  setConfigU8(loc,   0);
+  setConfigU8(loc+1, 1);
+  setConfigU8(loc+2, 1);
+  setConfigU8(loc+3, 0);
+  setConfigU8(loc+4, 0);
+  setConfigU8(loc+5, 0);
 }
 
 function initClock(index, output)
@@ -334,6 +369,58 @@ function initClock(index, output)
   setConfigU8(2148+8*index, 1);
   setConfigU8(2152, output); // Set Output
 }
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Euclidean
+
+function disableEuc(index)
+{
+  setConfigU8(2916 + index,   0);
+  setConfigU8(2940 + index,   0);
+  setConfigU8(4104 + index,   1);
+  setConfigU8(4120 + index,   1);
+  setPresetU8(1380 + 8*index, 0);
+}
+
+function initEuc(index, output)
+{
+  setConfigU8(2916 + index,   output);
+  setConfigU8(2940 + index,   0);
+  setConfigU8(4104 + index,   0);
+  setConfigU8(4120 + index,   1);
+  setPresetU8(1380 + 8*index, 8);
+}
+
+function setEucOnOut(value, index)
+{
+  setConfigU8(2916 + index,   value > 0 ? value : 0);
+  setConfigU8(4104 + index,   value < 0);
+}
+
+function setEucOffOut(value, index)
+{
+  setConfigU8(2940 + index,   value > 0 ? value : 0);
+  setConfigU8(4120 + index,   value < 0);
+}
+
+function setEucValue(offset, value, index=selectedEucIndex)
+{
+  setPresetU8(1380+offset+8*index, Number(value));
+}
+
+function eucActive(index)
+{
+  const euc = parseEuclidean(index);
+  
+  return (euc.onOut >= 0 || euc.offOut >= 0) &&
+         euc.pulses > 0;
+}
+
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Envelope
 
 function disableEnvelope(index)
 {
@@ -345,6 +432,10 @@ function initEnvelope(index)
   console.log("initEnvelope", index)
 }
 
+  /////////////////////////////////////////////////////////////////////
+ //
+// Arp
+
 function disableArp(index)
 {
   console.log("disableArp", index)
@@ -355,36 +446,7 @@ function initArp(index)
   console.log("initArp", index)
 }
 
-function disableEuc(index)
+function setArpValue(offset, value)
 {
-  setConfigU8(2916 + index, 0);
-  setConfigU8(2940 + index, 0);
-  setConfigU8(4104 + index, 1);
-  setConfigU8(4120 + index, 1);
-}
-
-function initEuc(index, output)
-{
-  console.log("initEuc", index, output);
-  setConfigU8(2916 + index,   output);
-  setConfigU8(2940 + index,   0);
-  setConfigU8(4104 + index,   0);
-  setConfigU8(4120 + index,   1);
-  setPresetU8(1380 + 8*index, 8);
-}
-
-function setEucChangeOnOut(value, index = selectedEucIndex)
-{
-  setConfigU8(2916 + index, value);
-  setConfigU8(4104 + index, 0);
-
-  updateEuc(index);
-}
-
-function setEucChangeOffOut(value, index=selectedEucIndex)
-{
-  setConfigU8(2940 + index, value);
-  setConfigU8(4120 + index, 0);
-
-  updateEuc(index);
+  setPresetU8(1636+offset+8*selectedIcon.index, value);
 }
