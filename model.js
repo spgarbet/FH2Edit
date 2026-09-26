@@ -224,7 +224,7 @@ function disableClock(i)
 
 function disableSrr(index)
 {
-  const loc = 3708+7*index;
+  let loc = 3708+7*index;
   setConfigU8(loc    ,    0);  // cv
   setConfigU8(loc + 1,    0);  // change
   setConfigU8(loc + 2,    0);  // trigger
