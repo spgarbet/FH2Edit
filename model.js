@@ -69,7 +69,7 @@ function setPresetName(name)
   elem("preset-name-status").textContent = "Preset: "+name.trimEnd();
 }
 
-function setTempo(v)     { setPresetULong(1376, v*10); }
+function setTempo(v)     { setPresetLong(1376, v*10); }
 
 function setSwing(i, v)  { setPresetU8(2528+i, v); }
 function clampSwing(swing)
@@ -95,7 +95,7 @@ function clampSwing(swing)
 
 function disableLfo(i)
 {
-  loc = 160 + 16*i;
+  const loc = 160 + 16*i;
   setPresetShort(loc ,  0);  // Level off
   setPresetShort(loc+2, 0); 
   setPresetU8(loc+ 4,  24);
@@ -157,22 +157,6 @@ function getConfigU8(loc)
   return configSysex[loc];
 }
 
-function setXCVMidiType(value)
-{
-  if(!value) { return; }
-  
-  const flags = configSysex[3596];
-
-  if(Number(value) < 0)
-  {
-    setConfigU8(3596, flags & 0x7e);
-    return;
-  }
-
-  setConfigU8(3596, flags | 0x01);
-  setConfigU8(3597, Number(value));
-}
-
 function setCVMidiType(value, letter)
 {
   value       = Number(value);
@@ -225,7 +209,7 @@ function setCVMidiOut(value, letter, flag)
 
 function disableClock(i)
 {
-  let loc = 2048+8*i;
+  const loc = 2048+8*i;
   setConfigU8(loc,   0);
   setConfigU8(loc+1, 1);
   setConfigU8(loc+2, 1);
@@ -240,7 +224,7 @@ function disableClock(i)
 
 function disableSrr(index)
 {
-  var loc = 3708+7*index;
+  const loc = 3708+7*index;
   setConfigU8(loc    ,    0);  // cv
   setConfigU8(loc + 1,    0);  // change
   setConfigU8(loc + 2,    0);  // trigger
@@ -291,4 +275,34 @@ function initClock(index, output)
 {
   setConfigU8(2148+8*index, 1);
   setConfigU8(2152, output); // Set Output
+}
+
+function disableEnvelope(index)
+{
+  console.log("disableEnvelope", index)
+}
+
+function initEnvelope(index)
+{
+  console.log("initEnvelope", index)
+}
+
+function disableArp(index)
+{
+  console.log("disableArp", index)
+}
+
+function initArp(index)
+{
+  console.log("initArp", index)
+}
+
+function disableEuc(index)
+{
+  console.log("disableEuc", index)
+}
+
+function initEuc(index)
+{
+  console.log("initEuc", index)
 }

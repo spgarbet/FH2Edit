@@ -40,12 +40,10 @@ const ICON_DEFS =
 {
   midi:      { label: "MIDI",       src: "icons/midi.png",     total: 16 },
   lfo:       { label: "LFO",        src: "icons/lfo.png",      total: 64 },
-  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 }, /*,
-  control:   { label: "Controller", src: "icons/controller.png",total: 32 },
-  arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 32 },
-  envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 32 },
-  euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 32 },
-  sequencer: { label: "Sequencer",  src: "icons/sequencer.png",total: 32 }, */
+  clock:     { label: "Clock",      src: "icons/clock.png",    total: 32 },
+  arp:       { label: "Arpeggiator",src: "icons/arp.png",      total: 16 },
+  envelope:  { label: "Envelope",   src: "icons/envelope.png", total: 16 },
+  euclid:    { label: "Euclidean",  src: "icons/rhythm.png",   total: 16 },
   srr:       { label: "Shift Reg",  src: "icons/srr.png",      total: 16 }
 };
 
@@ -72,13 +70,13 @@ function capitalizeFirstLetter(str)
 
 function nybbleChar( n )
 {
-	if ( n >= 10 ) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
+	if (n >= 10) { return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 ); }
 	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
 }
 
 function optionRange(low, high, selected = null, valueOffset = 0)
 {
-  for ( let i=low; i<=high; ++i)
+  for (let i=low; i<=high; ++i)
   {
     const isSelected = String(i) === String(selected) ? ' selected' : '';
     document.write(`<option value="${i-valueOffset}"${isSelected}>${i}</option>`);
@@ -126,11 +124,11 @@ function optionChannelSelector(includeNone=true, includeGate=false, offset=1)
 
 function dumpSysex( data, id )
 {
-	var len = data.length;
-	var h   = "";
-	for (var i=0; i<len; ++i)
+	let len = data.length;
+	let h   = "";
+	for(let i=0; i<len; ++i)
 	{
-		var b = data[ i ];
+		let b = data[ i ];
 		h += nybbleChar( b >> 4 );
 		h += nybbleChar( b & 0xf );
 		h += " ";
@@ -553,7 +551,7 @@ function setExpanders(v)
   }
   
   // Clear any clocks hidden by removing expanders
-  var state=iconState['clock'];
+  let state=iconState['clock'];
   for (let i = 0; i<32; ++i)
   {
     if(state[i].enabled && state[i].output >= 8*(expanders+1))
@@ -947,7 +945,7 @@ function renderMidiEditor()
   const index  = selectedIcon.index;
   const midi   = iconState.midi[index];
 
-  var reader = new ByteReader(configSysex);
+  let reader = new ByteReader(configSysex);
   reader.seek(100 + 32*index);
 
   const mcv = parseMcv(reader);
@@ -972,7 +970,7 @@ function renderMidiEditor()
 function renderLfoEditor()
 {
   const output = selectedIcon.output;
-  var   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
+  let   lfo    = parsePresetLFO(new ByteReader(presetSysex), output);
   const loc    = 16*output;
   
   if(lfo['speed'] === 0)
@@ -1000,7 +998,7 @@ function renderLfoEditor()
   
   updateMidiMapButtons("#lfo-editor .midi-map-button", output);
   
-  var   reset  = parseLfoReset(new ByteReader(configSysex),  output);
+  let   reset  = parseLfoReset(new ByteReader(configSysex),  output);
 
   put('lfo-reset',    reset.type   );
   put('lfo-reset-v1', reset.channel);
@@ -1076,22 +1074,6 @@ function renderOutputIconsFor(output)
   if (!container) { console.error("Missing icon container:", id); return; }
 
   renderOutputIcons(output, container);
-}
-
-function removeSelectedIcon()
-{
-  if (!selectedIcon) { return; }
-
-  const icon    = iconState[selectedIcon.type][selectedIcon.index];
-  icon.enabled  = false;
-  icon.output   = null;
-  
-  const output  = selectedIcon.output;
-  selectedIcon  = null;
-  selectedOutput = output;
-
-  renderOutputIconsFor(output);
-  renderOutputEditor();
 }
 
 function centerToSelected(id)
@@ -1261,7 +1243,7 @@ function short14ToHz(x)
 
 function setLfoSpeed(v)
 {
-  var speed = Number(v);
+  let speed = Number(v);
   const loc = 16*selectedIcon.output;
   if(!speed || speed < 0.1)
   {
@@ -1297,10 +1279,10 @@ function setLfoSpeed(v)
 
 function updateLfoReset()
 {
-  const type = Number(get("lfo-reset"));
+  const type = num("lfo-reset");
   
-  setLfoReset(selectedIcon.index, type,
-    Number(get("lfo-reset-v1")), Number(get("lfo-reset-v2")));
+  setLfoReset(selectedIcon.index,  type, 
+              num("lfo-reset-v1"), num("lfo-reset-v2"));
   
   switch(type)
   {
@@ -1610,12 +1592,12 @@ function setScala(scl, kbm)
 
 function setScl(value)
 {
-  setScala(Number(value), Number(get('midi-cvrt-kbm')));
+  setScala(Number(value), num('midi-cvrt-kbm'));
 }
 
 function setKbm(value)
 {
-  setScala(Number(get('midi-cvrt-scl')), Number(value));
+  setScala(num('midi-cvrt-scl'), Number(value));
 }
 
   ///////////////////////////////////////////////////////////////////////////

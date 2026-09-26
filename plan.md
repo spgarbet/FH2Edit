@@ -48,13 +48,17 @@ Testing
   
 ## Notes
 
-An Envelope if enabled is associated with a MIDI/CV
+There are 3 remaining major types of output configuration: Envelopes, Arps, and Euclidean. 
 
-An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc)
+An Envelope if enabled is associated with a MIDI/CV and has envelope checked (connecting it to an output as chain). An alternative method of utilizing one of these if via a trigger in envelope mode. 
 
-Euclidean can produce output on
-- Output Port VelGate/Trig (anywhere or none)
-- Output Port Off VelGate/Trig (anywhere or none)
+An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc). An Arp is
+enabled for a MIDI/CV if either the Arp mode is non-zero or it has an assigned cc.
+
+The Euclidean is very much like the SRR, but has two output ports that can be anywhere or none.
+
+Obviously Euclidean fits directly into the same style as SRR. The outstanding question is how to handle the Envelope and Arp. I was thinking that it could be an additional icon with an output editor. The icon to add an Envelope or Arp is only active if a MIDI/CV primary is present. 
+
 
 Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/drum requests?
   - 4x4 4 channel MIDI 32 step sequencer  (spits MIDI out)

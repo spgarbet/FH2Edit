@@ -504,10 +504,9 @@ function renderScreenshot(data)
   elem("fh2-screenshot").hidden = false;
 }
 
-
 function renderSrrEditor(index=null)
 {
-  index = index === null ? Number(get("srr-screen-index")) : Number(index);
+  index = index === null ? num("srr-screen-index") : Number(index);
   selectedSrrIndex = index;
   
   const srr = parseSrr(index);
