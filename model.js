@@ -139,6 +139,14 @@ function setLfoReset(index, type, v1, v2)
   setConfigU8(loc+1, v2);
 }
 
+function lfoActive(index, mappings=allMappings())
+{ 
+  return locateMapping("lfo", "LFO", index, mappings) !== null ||
+         locateMapping("lfo", "DC",  index, mappings) !== null ||
+         presetSysex[160 + 16*index] !== 0                   ||
+         presetSysex[161 + 16*index] !== 0;
+}
+
 
   ////////////////////////////////////////////////////////
  // 
@@ -345,7 +353,12 @@ function initMidi(index, output)
 
 function setScalaValue(offset, value)
 {
-  setPresetU8(1248+offset+4*selectedIcon.index, value);
+  setPresetU8(1248 + offset + 4*selectedIcon.index, value);
+}
+
+function midiActive(index)
+{
+  return configSysex[100 + 32*index] > 0;
 }
 
   /////////////////////////////////////////////////////////////////////
@@ -368,6 +381,16 @@ function initClock(index, output)
 {
   setConfigU8(2148+8*index, 1);
   setConfigU8(2152, output); // Set Output
+}
+
+function clockActive(index)
+{
+  return configSysex[2148 + 8*index] > 0;
+}
+
+function clockOutput(index)
+{
+  return configSysex[2152 + 8*index];
 }
 
   /////////////////////////////////////////////////////////////////////

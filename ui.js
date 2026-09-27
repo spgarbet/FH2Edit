@@ -46,7 +46,8 @@ const ICON_DEFS =
   arp:   { label: "Arpeggiator",src: "icons/arp.png",      total: 16 },
   env:   { label: "Envelope",   src: "icons/envelope.png", total: 16 },
   euc:   { label: "Euclidean",  src: "icons/rhythm.png",   total: 16 },
-  srr:   { label: "Shift Reg",  src: "icons/srr.png",      total: 16 }
+  srr:   { label: "Shift Reg",  src: "icons/srr.png",      total: 16 },
+  trig:  { label: "Trigger",    src: "icons/trigger.png",  total: 64 }
 };
 
 // Elements

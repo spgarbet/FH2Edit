@@ -33,18 +33,8 @@ function renderPreset(data)
   put('swing_pos1',   preset.swing[0]);
   put('swing_pos2',   preset.swing[1]);
   put('swing_pos3',   preset.swing[2]);
-  
-  // Update LFO state based on reading PRESET
-  const lfoState = iconState["lfo"];
-  for(let i=0; i<64; ++i)
-  {
-    if(preset.lfos[i].level > 0) // If level is greater than zero, than enabled
-    {
-      iconState["lfo"][i].enabled=true;
-      iconState["lfo"][i].output=i;
-      renderOutputIconsFor(i);
-    }
-  }
+
+  rebuildIconState();
 
   return true;
 }
@@ -109,6 +99,80 @@ function scaleVoltage(range, level, scale=16383)
   return ((level/scale) * rng + base).toFixed(3);
 }
 
+function rebuildIconState()
+{
+  for(const type of Object.keys(iconState))
+  {
+    for(const icon of iconState[type])
+    {
+      icon.enabled = false;
+      icon.output  = null;
+    }
+  }
+
+  chainIcons.length = 0;
+
+  const mappings = allMappings();
+
+  for(let i = 0; i < 16; ++i)
+  {
+    if(midiActive(i))
+    {
+      iconState.midi[i].enabled = true;
+
+      const outputs = computeMidiOutputs(i);
+      iconState.midi[i].output = outputs[0];
+
+      rebuildMidiOutputChains(
+        {
+          type:   "midi",
+          index:  i,
+          output: iconState.midi[i].output
+        },
+        outputs
+      );
+    }
+  }
+
+  for(let i=0; i<32; ++i)
+  {
+    if(clockActive(i))
+    {
+      iconState.clock[i].enabled = true;
+      iconState.clock[i].output = clockOutput(i);
+    }
+  }
+
+  for(let i=0; i<64; ++i)
+  {
+    if(lfoActive(i, mappings))
+    {
+      iconState.lfo[i].enabled = true;
+      iconState.lfo[i].output = i;
+    }
+  }
+
+  for(let i=0; i<16; ++i)
+  {
+    if(srrActive(i))
+    {
+      iconState.srr[i].enabled = true;
+      updateSrrOutputs(i);
+    }
+  }
+
+  for(let i=0; i<16; ++i)
+  {
+    if(eucActive(i))
+    {
+      iconState.euc[i].enabled = true;
+      updateEucOutputs(i);
+    }
+  }
+
+  renderOutputs();
+}
+
 function renderConfig(data)
 {
   const reader = new ByteReader(data);
@@ -138,72 +202,7 @@ function renderConfig(data)
     elem("highgate_lbl_"+i).textContent = 
       scaleVoltage(config.outputRanges[i], config.gateLevels[i].high);
   }
-  
-  // Find Active Clocks
-  for(let i=0; i<32; ++i)
-  {
-    if(config.clocks[i].type > 0)
-    {
-      iconState["clock"][i].enabled=true;
-      iconState["clock"][i].output=config.clocks[i].output;
-      renderOutputIconsFor(config.clocks[i].output);
-    }
-  }
-  
-  // Find active LFOs
-  const mappings = allMappings();
-  const lfoMaps  = mappings["lfo"];
-  for(const map of lfoMaps)
-  {
-    // Is there a MIDI map that enables LFO output?
-    if(map.dest === "LFO" || 
-       map.dest === "DC") 
-    {
-      const output = map.index;
-      
-      iconState.lfo[output].enabled = true;
-      iconState.lfo[output].output = output;
 
-      renderOutputIconsFor(output);
-    }
-  }
-  
-  // Find Active MIDI
-  for(let i=0; i<16; ++i)
-  {
-    if(config.mcvs[i].enabled > 0)
-    {
-      iconState.midi[i].enabled = true;
-      iconState.midi[i].output  = config.mcvs[i].base;
-      renderOutputIconsFor(iconState.midi[i].output);
-      updateMidiOutputs(i);
-    }
-  }
-  
-  // Find Active SRR
-  for(let i=0; i<16; ++i)
-  {
-    if(srrActive(i))
-    {
-      iconState.srr[i].enabled = true;
-      iconState.srr[i].output  = outputs[0];
-      renderOutputIconsFor(outputs[0]);
-      updateSrr(i);
-    }
-  }
-  
-  // Find Active Euclidean
-  for(let i=0; i<16; ++i)
-  {
-    if(eucActive(i))
-    {
-      iconState.euc[i].enabled = true;
-      iconState.euc[i].output  = outputs[0];
-      renderOutputIconsFor(outputs[0]);
-      updateEuc(i);
-    }
-  }
-  
   // CV/MIDI XY
   var cvMidi = config.cvMidi[0];
   put(  "cvmx_type",     cvMidi.enable ? cvMidi.type : -1);
@@ -229,7 +228,7 @@ function renderConfig(data)
   check("cvmy_out_din",  cvMidi.outD);
   check("cvmy_out_sel",  cvMidi.outS);
   
-  /* INCLUDE OTHER MAPPING RELATED RENDERINGS HERE */
+  rebuildIconState();
 
   return true;
 }
