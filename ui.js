@@ -773,7 +773,7 @@ function selectIcon(type, index, output)
   };
   
   if(type === "srr") { selectedSrrIndex = index; }
-  if(type === "eud") { selectedEucIndex = index; }
+  if(type === "euc") { selectedEucIndex = index; }
 
   selectedOutput = output;
 
@@ -1125,7 +1125,7 @@ function renderOutputEditor()
       break;
     case "euc":
       mountEucEditor("euc-editor-host");
-      renderEucEditor(selectedIcon.indx);
+      renderEucEditor(selectedIcon.index);
       break;
   }
   updateTooltips();
