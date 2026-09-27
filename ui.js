@@ -1327,6 +1327,16 @@ function short14ToHz(x)
   return Math.exp(2*LOG10*(x-1)/16382-LOG10);
 }
 
+function setLfoBase(v, index=selectedIcon.output)
+{
+  setPresetU8(164+16*index, Number(v));
+}
+
+function setLfoMult(v, index=selectedIcon.output)
+{
+  setPresetU8(165+16*index, Number(v));
+}
+
 function setLfoSpeed(v)
 {
   let speed = Number(v);

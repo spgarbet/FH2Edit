@@ -792,7 +792,7 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                 </button>&nbsp;&nbsp;
                 <label for="lfo-mult" class="tooltip" data-tooltip="Multiplies the base to give the actual LFO rate. So for example if base is 12 (1/8th notes) and 'multiplier' is 3, the LFO will run at a rate of 3/8th notes.">Multiplier</label>
-                <select id="lfo-mult" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+                <select id="lfo-mult" onchange="setLfoMult(this.value)"><script>optionRange(0,127,0)</script></select>
                 <button class="midi-map-button no-auto-margin" type="button"
                           data-type="lfo" data-index="0" data-dest="MLT"
                           aria-label="MIDI assignment for LFO Clock Multiplier">
