@@ -356,7 +356,7 @@ function changeOutput()
   }
 }
 
-async function initMIDI()
+async function initMidiUI()
 {
   // Check for WebMIDI
   appState.webMIDI = await initWebMIDI();

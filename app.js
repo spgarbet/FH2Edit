@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () =>
   initTooltips();
   buildOutputs();
   buildIconPicker();
-  initMIDI();
+  initMidiUI();
   renderPreset(presetSysex);
   renderConfig(configSysex);
   renderOutputs();

@@ -459,17 +459,63 @@ function initEnvelope(index)
  //
 // Arp
 
+function setArpPresetValue(offset, value, index)
+{
+  setPresetU8(1248 + 8*index + offset, value);
+}
+
+function setArpConfigValue(offset, value, index)
+{
+  setConfigU8(3644 + 4*index + offset, value);
+}
+
 function disableArp(index)
 {
-  console.log("disableArp", index)
+  setArpPresetValue(0, 0, index); // Mode = off
+  clearMappings("arp", index);
 }
 
-function initArp(index)
+function initArp(index, output)
 {
-  console.log("initArp", index)
+  setArpPresetValue(0,     11, index); // Mode = up
+  setArpPresetValue(1,      0, index);
+  setArpPresetValue(2,      0, index);
+  setArpPresetValue(3,      0, index);
+  setArpPresetValue(4,      0, index);
+  setArpPresetValue(6,      0, index);
+  setArpConfigValue(0, output, index);
+  setArpConfigValue(1,      0, index);
+  
+  clearMappings("arp", index);
 }
 
-function setArpValue(offset, value)
+function arpActive(index, mappings=null)
 {
-  setPresetU8(1636+offset+8*selectedIcon.index, value);
+  if(presetSysex[1248 + 8*index] <= 10) { return true; }
+  
+  // Only read if the above check failed
+  if(mappings === null) { mappings = allMappings(); }
+  
+  if(locateMapping("arp", "M", index, mappings)) { return true; }
+  
+  return false;
+}
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Triggers
+
+function trigActive(output)
+{
+  const triggers = parseTriggers();
+  for(let i=0; i<64; ++i)
+  {
+    if(triggers[i].output === output &&
+       triggers[i].enabled)
+    {
+      return true;
+    }
+  }
+  
+  return false;
 }

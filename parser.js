@@ -208,24 +208,29 @@ function parseScala(reader)
   return scala;
 }
 
-function parseArpeg(reader)
+function parsePresetArpeggiator(reader, index=null)
+{
+  if(index !== null) { reader.seek(1248 + 8*index); }
+  
+  return {
+    mode:       reader.u8(), // M 0
+    range:      reader.u8(), // R 1
+    gate:       reader.u8(), // G 2
+    latch:      reader.u8(), // L 3
+    rate:       reader.u8(), // T 4
+    portamento: reader.u8(), // P 5
+    reset:      reader.u8(), // S 6
+    transpose:  reader.u8()  // E 7
+  };
+}
+
+function parsePresetArpeggiators(reader)
 {
   reader.seek(1248);
   const arpeg = [];
   for (let i=0; i<16; ++i)
   {
-    arpeg.push(
-      {
-        mode:       reader.u8(), // M 0
-        range:      reader.u8(), // R 1
-        gate:       reader.u8(), // G 2
-        latch:      reader.u8(), // L 3
-        rate:       reader.u8(), // T 4
-        portamento: reader.u8(), // P 5
-        reset:      reader.u8(), // S 6
-        transpose:  reader.u8()  // E 7
-      }
-    );
+    arpeg.push(parsePresetArpeggiator(reader));
   }
   return arpeg;
 }
@@ -264,6 +269,26 @@ function parsePresetEuclidean(reader, index=null)
   return euclidean;
 }
 
+function parsePresetTriggers(reader)
+{
+  // Addendum Jump
+  reader.seek(4104);
+
+  const trigEnabled = []; 
+
+  for (let i = 0; i < 16; ++i)
+  {
+    const value = reader.u8();
+
+    for (let j = 0; j < 4; ++j)
+    {
+      trigEnabled.push((value >> j) & 1);
+    }
+  }
+  
+  return trigEnabled;
+}
+
 function parsePreset(reader)
 {
   reader.skip(8);
@@ -282,7 +307,7 @@ function parsePreset(reader)
   reader.skip(1);
 	const directLevel = parsePresetDirectLevel(reader);     //   32
 	const lfos        = parsePresetLFOs(reader);            //  160
-  const arpeg       = parseArpeg(reader);                 // 1248
+  const arpeg       = parsePresetArpeggiators(reader);    // 1248
   const tempo       = reader.uLong() * 0.1;               // 1376
 
   euclidean = [];
@@ -334,7 +359,7 @@ function parsePreset(reader)
       }
     );
   }
-  reader.skip(8); // Triggers? 1520
+  reader.skip(8);
 
   // Main Sequencer                           1712
   for (let i = 0; i < 4; ++i)
@@ -441,23 +466,11 @@ function parsePreset(reader)
 
     reader.skip(5);
   }
+  
+  const trigEnabled = parsePresetTriggers(reader);
 
-  // Addendum Jump
-  reader.seek(4096);
-
-  const triggers = []; // 4096
-
-  for (let i = 0; i < 16; ++i)
-  {
-    const value = reader.u8();
-
-    for (let j = 0; j < 4; ++j)
-    {
-      triggers.push((value >> j) & 1);
-    }
-  }
-
-  // Sequencer Addendum 4112
+  // Sequencer Addendum 4120
+  reader.seek(4120);
   for (let i = 0; i < 4; ++i)
   {
     const sequencer = sequencers[i];
@@ -489,7 +502,7 @@ function parsePreset(reader)
     }
   }
 
-  // Drum sequencer addendum  4372
+  // Drum sequencer addendum  4380
   for (let i = 0; i < 1; ++i)
   {
     const drum = drumSequencers[i];
@@ -529,7 +542,7 @@ function parsePreset(reader)
     scala,
     sequencers,
     drumSequencers,
-    triggers,
+    trigEnabled,
     shiftRegisters,
     swing,
     mcvm3
@@ -720,6 +733,94 @@ function parseConfigEuclidean(reader, index)
   return euc;
 }
 
+function parseConfigTrigger(reader, index=null)
+{
+  if(index !== null) { reader.seek(2660+4*index); }
+  
+  const typeEnv     = reader.u8();
+  const channelNote = reader.u8();
+  const note        = reader.u8();
+  const output      = reader.u8();
+
+  return {
+    type:     typeEnv & 0x0f,
+    channel:  (channelNote & 0x0f),
+    note:     ((channelNote >> 5) & 1) ? -1 : note,
+    output:   output,
+    envelope: (((typeEnv >> 4) << 1) | ((channelNote >> 4) & 1))
+  };
+}
+
+function parseConfigTriggers(reader)
+{
+  const triggers=[];
+  
+  reader.seek(2660);
+  for (let i = 0; i < 64; ++i)
+  {
+    triggers.push(parseConfigTrigger(reader));
+  }
+  
+  return triggers;
+}
+
+function trigEnabled(index)
+{
+  const value = presetSysex[4104 + (index >> 2)];
+  return (value >> (index & 0x02)) & 1;
+}
+
+function parseTrigger(index)
+{
+  const trigger   = parseConfigTrigger(new ByteReader(configSysex), index);
+  trigger.enabled = trigEnabled(index);
+  
+  return trigger;
+}
+
+function parseTriggers()
+{
+  const triggers = parseConfigTriggers(new ByteReader(configSysex));
+  const enabled  = parsePresetTriggers(new ByteReader(presetSysex));
+  
+  for(let i=0; i<64; ++i)
+  {
+    triggers[i].enabled = enabled[i];
+  }
+  
+  return triggers;
+}
+
+function parseConfigArpeggiator(reader, index=null)
+{
+  if(index !== null) { readers.seek(3644+4*index); }
+  
+  const clock   = reader.u8();
+  const outputs = reader.u8();
+  
+  reader.skip(2);
+
+  return {
+    clock:   clock,
+    channel: outputs & 0x0f,
+    usbc:    (outputs >> 4) & 1,
+    usba:    (outputs >> 5) & 1,
+    din:     (outputs >> 6) & 1
+  };
+}
+
+function parseConfigArpeggiators(reader)
+{
+  reader.seek(3644);
+  const arpeggiators = [];                
+  for (let i = 0; i < 16; ++i)
+  {
+    arpeggiators.push(parseConfigArpeggiator(reader));
+  }
+  
+  return arpeggiators;
+}
+
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -776,25 +877,8 @@ function parseConfig(reader)
     );
   }
 
-  // Triggers
-  config.triggers = [];                    // 2660
-  for (let i = 0; i < 64; ++i)
-  {
-    const typeEnv     = reader.u8();
-    const channelNote = reader.u8();
-    const note        = reader.u8();
-    const output      = reader.u8();
-
-    config.triggers.push(
-      {
-        type:     typeEnv & 0x0f,
-        channel:  (channelNote & 0x0f),
-        note:     ((channelNote >> 5) & 1) ? -1 : note,
-        output:   output,
-        envelope: (((typeEnv >> 4) << 1) | ((channelNote >> 4) & 1))
-      }
-    );
-  }
+  // Triggers                           2660
+  config.triggers = parseConfigTriggers(reader);
 
   // Euclidean outputs
   config.euclidean = [];
@@ -941,28 +1025,8 @@ function parseConfig(reader)
 
     config.drumSequencer.push(drum);
   }
-
-  // Arpeggiators
-  config.arpeggiators = [];                // 3644
-  for (let i = 0; i < 16; ++i)
-  {
-    const clock = reader.u8();
-    const outputs = reader.u8();
-
-    config.arpeggiators.push(
-      {
-        clock: clock,
-        channel: outputs & 0x0f,
-        cv:      (outputs >> 4) & 1,
-        accent:  (outputs >> 5) & 1,
-        drum:    (outputs >> 6) & 1
-      }
-    );
-
-    reader.skip(2);
-  }
-
-  // Shift registers
+  
+  config.arpeggiators   = parseConfigArpeggiators(reader);   // 3644
   config.shiftRegisters = parseConfigShiftRegisters(reader); // 3708
 
   return config;
@@ -999,6 +1063,12 @@ function parseScreenshot(reader)
   ctx.putImageData(imgData, 0, 0);
 
   return canvas;
+}
+
+function parseArpeggiator(index)
+{
+  return { ...(parsePresetArpeggiator(new ByteReader(presetSysex), index)),
+           ...(parseConfigArpeggiator(new ByteReader(configSysex), index)) };
 }
 
 function parseSrr(index)
