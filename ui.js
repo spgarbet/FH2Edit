@@ -674,6 +674,33 @@ function addIcon(type, output)
   return true;
 }
 
+function removeIcon(type, index)
+{
+  const icon = iconState[type][index];
+
+  if (!icon.enabled) { return; }
+  
+  const parent =
+  {
+    type,
+    index,
+    output: icon.output
+  };
+  if(type === "midi") { rebuildMidiOutputChains(parent, []); }
+  if(type === "srr")  { rebuildSrrOutputChains(index, []);  }
+  
+  const output   = icon.output;
+  
+  icon.enabled   = false;
+  icon.output    = null;
+
+  selectedIcon   = null;
+  selectedOutput = output;
+
+  renderOutputIconsFor(output);
+  renderOutputEditor();
+}
+
 function removeEuc(index)
 {
   const outputs = computeEucOutputs(index);
