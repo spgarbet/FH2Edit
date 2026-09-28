@@ -269,6 +269,17 @@ function parsePresetEuclidean(reader, index=null)
   return euclidean;
 }
 
+function parsePresetEuclideans(reader)
+{
+  const euclideans=[];
+  for(let i=0; i<16; ++i)
+  {
+    euclideans.push(parsePresetEuclidean(reader, i));
+  }
+  
+  return euclideans;
+}
+
 function parsePresetTriggers(reader)
 {
   // Addendum Jump
@@ -287,6 +298,43 @@ function parsePresetTriggers(reader)
   }
   
   return trigEnabled;
+}
+
+function parseEnvelopePartOne(reader, index=null)
+{
+  if(index !== null) { reader.seek(1508+8*index); }
+  
+  return {
+    attack:   reader.u8(), // 0
+    decay:    reader.u8(), // 1
+    sustain:  reader.u8(), // 2
+    release:  reader.u8(), // 3
+    range:    reader.u8(), // 4
+    depth:    reader.u8(), // 5
+    velocity: reader.u8(), // 6
+    random:   reader.u8()  // 7
+  };
+}
+
+function parseEnvelope(reader, index)
+{
+  const envelope=parseEnvelopePartOne(reader, index);
+  reader.seek(2532+8*index);
+  envelope.as = reader.u8(); //  8  in model setter
+  envelope.ds = reader.u8(); //  9
+  envelope.rs = reader.u8(); // 10
+  
+  return envelope;
+}
+
+function parseEnvelopes(reader)
+{
+  const envelopes=[];
+  for(i=0; i<16; ++i)
+  {
+    envelopes.push(parseEnvelope(reader,i))
+  }
+  return envelopes;
 }
 
 function parsePreset(reader)
@@ -309,31 +357,10 @@ function parsePreset(reader)
 	const lfos        = parsePresetLFOs(reader);            //  160
   const arpeg       = parsePresetArpeggiators(reader);    // 1248
   const tempo       = reader.uLong() * 0.1;               // 1376
-
-  euclidean = [];
-  for (let i=0; i<16; ++i)                                // 1380
-  {
-    euclidean.push(parsePresetEuclidean(reader));
-  }
-
-  const mcvm2 = [];                         // 1508
-  for (let i = 0; i < 16; ++i)
-  {
-    mcvm2.push(
-      {
-        a:   reader.u8(),
-        d:   reader.u8(),
-        s:   reader.u8(),
-        r:   reader.u8(),
-        n:   reader.u8(),
-        p:   reader.u8(),
-        v:   reader.u8(),
-        rnd: reader.u8()
-      }
-    );
-  }
+  const euclidean   = parsePresetEuclideans(reader);      // 1380
+  const envelope    = parseEnvelopes(reader);             // 1508
+  const scala       = parseScala(reader);                 // 1636
   
-  const scala           = parseScala(reader); // 1636
   const sequencerActive = reader.u8();        // 1700
   const sequencerMute   = reader.u8();        // 1701
 
@@ -440,7 +467,6 @@ function parsePreset(reader)
     reader.skip(15);
   }
 
-  
   const shiftRegisters = [];   // 2400
 
   for (let i = 0; i < 16; ++i)
@@ -450,22 +476,7 @@ function parsePreset(reader)
 
   const swing = [reader.u8(), reader.u8(), reader.u8()]; // 2528
 
-  reader.skip(1);
-
-  const mcvm3 = [];  // 2532
-
-  for (let i = 0; i < 16; ++i)
-  {
-    mcvm3.push(
-      {
-        as: reader.u8(),
-        ds: reader.u8(),
-        rs: reader.u8()
-      }
-    );
-
-    reader.skip(5);
-  }
+  // Envelope Part two                  2532 - 2659 (16 blocks)
   
   const trigEnabled = parsePresetTriggers(reader);
 
@@ -538,14 +549,13 @@ function parsePreset(reader)
     arpeg,
     tempo,
     euclidean,
-    mcvm2,
+    envelope,
     scala,
     sequencers,
     drumSequencers,
     trigEnabled,
     shiftRegisters,
-    swing,
-    mcvm3
+    swing
   });
 }
 

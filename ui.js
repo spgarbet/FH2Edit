@@ -95,6 +95,15 @@ function u7PercentRange(selected = 0)
   }
 }
 
+function u7SplitPercentage(selected = 0)
+{
+  for (let i=0; i<128; ++i)
+  {
+    const isSelected = i === selected ? ' selected' : '';
+    document.write(`<option value="${i}"${isSelected}>${(100*(i-63.5)/63.5).toFixed(1)}&#37;</option>`);
+  }
+}
+
 function optionChannelSelector(includeNone=true, includeGate=false, offset=1)
 {
 	if ( includeNone )
@@ -1922,4 +1931,50 @@ function setEucPulses(value, index=selectedEucIndex)
 {
   setEucValue(0, Number(value), index);
   updateEuc(index);
+}
+
+  ///////////////////////////////////////////////////////////////////////////
+ //
+// Envelopes
+const envScales = [0.2, 0.5, 1, 2, 5, 10, 20, 50];
+
+function formatEnvTime(value, scale)
+{
+  const seconds = value * envScales[scale];
+
+  if(seconds >= 60)
+  {
+    const minutes = Math.floor(seconds / 60);
+    const remaining = seconds - 60 * minutes;
+
+    return remaining > 0
+      ? minutes + "m" + formatSeconds(remaining) + "s"
+      : minutes + "m";
+  }
+
+  return formatSeconds(seconds) + "s";
+}
+
+function formatSeconds(seconds)
+{
+  return Number.isInteger(seconds)
+    ? String(seconds)
+    : seconds.toFixed(1);
+}
+
+function updateEnvTimeOptions()
+{
+  const scale = num("env-scale");
+  
+  setEnvValue(4, selectedIconIndex, scale);
+  
+  for(const id of ["env-attack", "env-decay", "env-release"])
+  {
+    const select = elem(id);
+
+    for(const option of select.options)
+    {
+      option.textContent = formatEnvTime(Number(option.value), scale);
+    }
+  }
 }

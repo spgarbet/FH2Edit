@@ -4,15 +4,15 @@ var arpControls          = [ "M", "R", "G", "L", "T", "P", "S", "E" ];
 var seqControls          = [ "T", "S", "G", "P" ];
 var dseqControls         = [ "S", "P" ];
 var dseqlControls        = [ "T", "S", "P" ];
-var mcv2Controls         = [ "A", "D", "S", "R", "N", "P", "V", "RND" ];
-var mcv3Controls         = [ "AS", "DS", "RS" ];
+var envControls          = [ "A", "D", "S", "R", "N", "P", "V", "RND" ];
+var envsControls         = [ "AS", "DS", "RS" ];
 var mcvControls          = [ "A", "R", "T", "N", "P", "K", "O" ];
 var eucControls          = [ "P", "S", "R", "T", "G", "A", "E" ];
 var srrControls          = [ "D", "L", "R", "T", "A", "S", "K", "G" ];
 var lfoLowControls       = ["DC", "LFO", "PW", "TRI", "CLK", "CLKM", "MLT", "SQR", "SIN"];
 var lfoHighControls      = [null, null, null, "SAW", "RND", "NSE", "SMO", "PHS", "FAD"];
-var typeMappings         = [ "lfo",  "arp", "seq", "dseq", "dseql", "mcv2", 
-                             "mcv3", "mcv", "euc", "srr",  "glb"];
+var typeMappings         = [ "lfo",  "arp", "seq", "dseq", "dseql", "env", 
+                             "envs", "mcv", "euc", "srr",  "glb"];
 
 const SLOT_GLOBAL_TAP   = -1;
 const SLOT_GLOBAL_START = -2;
@@ -82,12 +82,12 @@ function writeMapping(slot, type, index, dest, channel, cc, rel)
     case "arp":   t0 =  9; t1 = (index << 3)    | inverseLUTWithCheck(dest, arpControls);   break;
     case "euc":   t0 = 10; t1 = (index << 3)    | inverseLUTWithCheck(dest, eucControls);   break;
     case "mcv":   t0 = 11; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcvControls);   break;
-    case "mcv2":  t0 = 12; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcv2Controls);  break;
+    case "env":   t0 = 12; t1 = (index << 3)    | inverseLUTWithCheck(dest, envControls);   break;
     case "seq":   t0 = 13; t1 = (index << 4)    | inverseLUTWithCheck(dest, seqControls);   break;
     case "dseq":  t0 = 13; t1 = ((index+4) << 4)| inverseLUTWithCheck(dest, dseqControls);  break;
     case "dseql": t0 = 14; t1 = (index << 4)    | inverseLUTWithCheck(dest, dseqlControls); break;
     case "srr":   t0 = 15; t1 = (index << 3)    | inverseLUTWithCheck(dest, srrControls);   break;
-    case "mcv3":  t0 = 16; t1 = (index << 3)    | inverseLUTWithCheck(dest, mcv3Controls);  break;
+    case "envs":  t0 = 16; t1 = (index << 3)    | inverseLUTWithCheck(dest, envsControls);  break;
     case "glb":   t0 = inverseLUTWithCheck(dest, globalControls) + 69;                      break;
     default:
       console.error("Invalid writeMapping request", slot, type, index, dest);
@@ -168,10 +168,10 @@ function compileMapping(raw)
     case 9:  return decodeMapping(raw, "arp",   (raw.t1 >> 3), arpControls  );
     case 10: return decodeMapping(raw, "euc",   (raw.t1 >> 3), eucControls  );
     case 11: return decodeMapping(raw, "mcv",   (raw.t1 >> 3), mcvControls  );
-    case 12: return decodeMapping(raw, "mcv2",  (raw.t1 >> 3), mcv2Controls );
+    case 12: return decodeMapping(raw, "env",   (raw.t1 >> 3), envControls  );
     case 14: return decodeMapping(raw, "dseql", (raw.t1 >> 4), dseqlControls);
     case 15: return decodeMapping(raw, "srr",   (raw.t1 >> 3), srrControls  );
-    case 16: return decodeMapping(raw, "mcv3",  (raw.t1 >> 3), mcv3Controls );
+    case 16: return decodeMapping(raw, "envs",  (raw.t1 >> 3), envsControls );
     case 13:
       index = raw.t1 >> 4;
       if (index < 4)

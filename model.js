@@ -100,21 +100,24 @@ function clampSwing(swing)
 function disableLfo(i)
 {
   const loc = 160 + 16*i;
-  setPresetShort(loc ,  0);  // Level off
-  setPresetShort(loc+2, 0); 
-  setPresetU8(loc+ 4,  24);
-  setPresetU8(loc+ 5,   1);
-  setPresetU8(loc+ 6,   0);
-  setPresetU8(loc+ 7,   0);
-  setPresetU8(loc+ 8,   0);
-  setPresetU8(loc+ 9,  64);
-  setPresetU8(loc+10,  64);
-  setPresetU8(loc+11,   0);
-  setPresetU8(loc+12,   0);
-  setPresetU8(loc+13,   0);
-  setPresetU8(loc+14,   1);
-  setPresetU8(loc+15,   0);
-  setPresetShort(32+2*i, 8192); // Center
+  
+  setPresetShort(loc    , 0);  // Level off
+  setPresetShort(loc + 2, 0); 
+  
+  setPresetU8(loc +  4,  24);
+  setPresetU8(loc +  5,   1);
+  setPresetU8(loc +  6,   0);
+  setPresetU8(loc +  7,   0);
+  setPresetU8(loc +  8,   0);
+  setPresetU8(loc +  9,  64);
+  setPresetU8(loc + 10,  64);
+  setPresetU8(loc + 11,   0);
+  setPresetU8(loc + 12,   0);
+  setPresetU8(loc + 13,   0);
+  setPresetU8(loc + 14,   1);
+  setPresetU8(loc + 15,   0);
+  
+  setPresetShort(32 + 2*i, 8192); // Center
   
   clearMappings("lfo", i);
 }
@@ -124,7 +127,6 @@ function initLfo(i)
   const loc = 160 + 16*i;
   disableLfo(i); 
   setPresetShort(loc,  16383); // Level is maximum
-
   setPresetShort(loc + 2,  0); // Speed off
   setPresetU8(   loc + 14, 1); // use base/mult
   setPresetU8(   loc + 4, 24); // base
@@ -518,4 +520,14 @@ function trigActive(output)
   }
   
   return false;
+}
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// Envelopes
+
+function setEnvValue(offset, index, value)
+{
+  if(offset < 8) { setPresetU8(1508 + offset + 8*index, value);     }
+  else           { setPresetU8(2532 + offset - 8 + 8*index, value); }
 }
