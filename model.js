@@ -447,12 +447,12 @@ function eucActive(index)
  //
 // Envelope
 
-function disableEnvelope(index)
+function disableEnv(index)
 {
   console.log("disableEnvelope", index)
 }
 
-function initEnvelope(index)
+function initEnv(index)
 {
   console.log("initEnvelope", index)
 }

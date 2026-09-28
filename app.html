@@ -1001,10 +1001,28 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
           <div id="arp-editor" hidden>
             <div class="editor-header">
               <button id="arp-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove Arp"></button>
-              <h3 id="arp-editor-name">Arpeggiator Editor</h3>
+              <h3 id="arp-editor-name">Arpeggiator</h3>
             </div>
             <fieldset class="parameter-group">
-              <legend>Preset</legend>
+              <legend>Parameters</legend>
+              <div class="separator"><span>Configuration</span></div>
+              <div class="singleline">
+                <div>
+                  <label for="arp-clock">Clock</label>
+                  <select id="arp-clock"><option value="0">External</option>                      <script>for (let j=1; j<=16; ++j) { document.write( "<option value="+j+">Euclidean "+j+"</option>" ); }</script></select>
+                </div>
+                <div>
+                  <label for="arp-usbc">MIDI Output</label>
+                  C&nbsp;<input id="arp-usbc" type="checkbox">
+                  &nbsp;&#124;&ensp;A&nbsp;<input id="arp-usba" type="checkbox">
+                  &nbsp;&#124;&ensp;DIN&nbsp;<input id="arp-din" type="checkbox">
+                </div>
+                <div>
+                  <label for="arp-channel">&emsp;&emsp;Channel</label>
+                  <select id="arp-channel"><script>optionRange(1,16,1,1)</script></select>
+                </div>
+              </div>
+              <div class="separator"><span>Preset</span></div>
               <div class="singleline">
                 <div>
                   <label for="arp-mode-course" class="tooltip" data-tooltip="Off - Disabled
@@ -1033,8 +1051,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                     <option value="107">Random 3</option>
                     <option value="118">As Played</option>
                   </select>
-                  Fine:
-                  <label for="arp-mode-fine" class="tooltip" data-tooltip="Above modes are the lowest value triggering the mode. This value is added to the raw. Useful for controller exactly where a mode value sits initially when a CC controls it.">Mode Fine</label>
+                  &emsp;<span class="tooltip" data-tooltip="Amount added to base mode setting. Useful for controlling where CC overtakes the mode.">Fine:</span>&ensp;
                   <select id="arp-mode-fine"><script>optionRange(0,10,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="M"
@@ -1079,7 +1096,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   </button>
                 </div>  
                 <div>
-                  <label for="arp-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the arpeggiator will automatically reset to step 1.">Rate</label>
+                  <label for="arp-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the arpeggiator will automatically reset to step 1.">Reset</label>
                   <select id="arp-reset"><option value="0">Off</option><script>optionRange(1,127)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="S"
@@ -1088,30 +1105,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   </button>
                 </div>  
               </div>
-            </fieldset>
-            
-            <fieldset>
-              <legend>Configuration</legend>
-              <div class="singleline">
-                <div>
-                  <label for="arp-clock">Clock</label>
-                  <select id="arp-clock"><option value="0">External</option>                      <script>for (let j=1; j<=16; ++j) { document.write( "<option value="+j+">Euclidean "+j+"</option>" ); }</script></select>
-                </div>
-                <div>
-                  <label for="arp-usbc">MIDI Output</label>
-                  C&nbsp;<input id="arp-usbc" type="checkbox">
-                  &nbsp;&#124;&ensp;A&nbsp;<input id="arp-usba" type="checkbox">
-                  &nbsp;&#124;&ensp;DIN&nbsp;<input id="arp-din" type="checkbox">
-                </div>
-                <div>
-                  <label for="arp-channel">&emsp;&emsp;Channel</label>
-                  <select id="arp-channel"><script>optionRange(1,16,1,1)</script></select>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Commands</legend>
+              <div class="separator"><span>Commands</span></div>
               <div class="singleline">
                 <div>
                   <span class="tooltip" data-tooltip="While CC is 64 or higher, incoming MIDI notes are added to the arpeggiation pattern. This is most useful when Mode is set to 'As Played' and Latch is enabled, allowing repeated notes in the pattern.">Add</span>

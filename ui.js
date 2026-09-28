@@ -29,7 +29,9 @@ const iconState =
   clock: Array.from({ length: 32 }, () => ({ enabled: false, output: null })),
   lfo:   Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
   srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
-  euc:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
+  euc:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
+  arp:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
+  env:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
 };
 
 let   selectedIcon     = null;
@@ -612,9 +614,26 @@ function sameIcon(a, b)
          a.index  === b.index;
 }
 
-function nextAvailableIcon(type)
+function nextAvailableIcon(type, output)
 {
   const state = iconState[type];
+  
+  if(type === "arp" || type === "env")
+  {
+    const midi = iconState.midi;
+
+    for(let i = 0; i < midi.length; ++i)
+    {
+      if(midi[i].enabled &&
+         midi[i].output === output &&
+         !state[i].enabled)
+      {
+        return i;
+      }
+    }
+
+    return -1;
+  }
 
   for (let i = 0; i < state.length; ++i)
   {
@@ -638,7 +657,7 @@ function addIcon(type, output)
   }
   else
   {
-    index = nextAvailableIcon(type);
+    index = nextAvailableIcon(type, output);
     if (index < 0) { return false; }    
   }
   
@@ -658,6 +677,12 @@ function addIcon(type, output)
       break;
     case "euc":
       initEuc(index, output);
+      break;
+    case "arp":
+      initArp(index, output);
+      break;
+    case "env":
+      initEnv(index, output);
       break;
   }
 
@@ -810,11 +835,11 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env"])
   {
     const state = iconState[type];
 
-    for (let i = 0; i < state.length; ++i)
+    for (let i=0; i<state.length; ++i)
     {
       if (!state[i].enabled || state[i].output !== output) { continue; }
 
@@ -853,7 +878,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -900,6 +925,14 @@ function buildIconPicker()
   {
     removeEuc(selectedEucIndex);
   });
+  elem("arp-editor-trash").addEventListener("click", function()
+  {
+    removeIcon("arp", selectedIcon.index);
+  });
+  elem("env-editor-trash").addEventListener("click", function()
+  {
+    removeIcon("env", selectedIcon.index);
+  });
 }
 
 function showIconPicker(output, anchor)
@@ -914,7 +947,7 @@ function showIconPicker(output, anchor)
     const available = 
       type === "lfo"
         ? !iconState.lfo[output].enabled
-        : nextAvailableIcon(type) >= 0;
+        : nextAvailableIcon(type, output) >= 0;
 
     button.disabled = !available;
     button.classList.toggle("disabled", !available);
@@ -1046,10 +1079,14 @@ function renderMidiEditor()
   reader.skip(1);
   put("midi-cvrt-trans", reader.u8());  // Arp E
   
+  // This is off in another area as well.
   const scala=parseScala(reader)[index];
-  
   put("midi-cvrt-scl", scala.enable > 0 ? scala.scl : -1);
   put("midi-cvrt-kbm", scala.enable > 0 ? scala.kbm : -1);
+  
+  // Odd parameter hidden in envelope
+  const envelope=parseEnvelop(reader, index);
+  put("env-random", envelope.random);
   
   updateMidiMapButtons("#lfo-editor .midi-map-button", index);
 }
@@ -1112,7 +1149,7 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env"])
   {
     elem(x+"-editor").hidden = sel !== x;
     
@@ -1128,6 +1165,8 @@ function renderOutputEditor()
     case "midi":  renderMidiEditor();  break;
     case "lfo":   renderLfoEditor();   break;
     case "clock": renderClockEditor(); break;
+    case "env":   renderEnvEditor();   break;
+    case "arp":   renderArpEditor();   break;
     case "srr":
       mountSrrEditor("srr-editor-host");
       renderSrrEditor(selectedIcon.index);
@@ -1966,7 +2005,7 @@ function updateEnvTimeOptions()
 {
   const scale = num("env-scale");
   
-  setEnvValue(4, selectedIconIndex, scale);
+  setEnvValue(4, selectedIcon.index, scale);
   
   for(const id of ["env-attack", "env-decay", "env-release"])
   {
