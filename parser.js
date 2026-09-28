@@ -37,7 +37,7 @@ class ByteReader
   u8()
   {
     this.ensure(1);
-    return this.view.getUint8(this.offset++);
+    return (this.view.getUint8(this.offset++) & 0x7f);
   }
 
   u32LE()
@@ -319,6 +319,7 @@ function parseEnvelopePartOne(reader, index=null)
 function parseEnvelope(reader, index)
 {
   const envelope=parseEnvelopePartOne(reader, index);
+  
   reader.seek(2532+8*index);
   envelope.as = reader.u8(); //  8  in model setter
   envelope.ds = reader.u8(); //  9

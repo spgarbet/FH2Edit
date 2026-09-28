@@ -636,7 +636,11 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                   <input id="midi-cvrt-rnd" type="checkbox"  onchange="setMidiRandom(this.checked)">
                   <select id="env-random" onchange="setEnvValue(7, selectedIcon.index, this.value)"><script>u7PercentRange(0)</script></select>
                   <span id="midi-cvrt-p-random" class="midi-cvrt-outs"></span>
-
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="RND"
+                          aria-label="MIDI assignment for random depth">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div class="mpe-param" hidden>
                   <label for="midi-cvrt-mpey" class="tooltip" data-tooltip="MIDI CC number for MPE 'y control'.">Y CC</label>
@@ -1189,42 +1193,93 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                     <option value="6">20s</option>
                     <option value="7">50s</option>
                   </select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="N"
+                          aria-label="MIDI assignment for envelope time scale">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-attack" class="tooltip" data-tooltip="Attack time">Attack</label>
                   <select id="env-attack"><script onchange="setEnvValue(0, selectedIcon.index, this.value)">optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="A"
+                          aria-label="MIDI assignment for envelope attack">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
+
                 </div>
                 <div>
                   <label for="env-decay" class="tooltip" data-tooltip="Decay time">Decay</label>
                   <select id="env-decay" onchange="setEnvValue(1, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="D"
+                          aria-label="MIDI assignment for envelope delay">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-sustain" class="tooltip" data-tooltip="Sustain level">Sustain</label>
                   <select id="env-sustain" onchange="setEnvValue(2, selectedIcon.index, this.value)"><script>u7PercentRange(127)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="S"
+                          aria-label="MIDI assignment for envelope sustain">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-release" class="tooltip" data-tooltip="Release time">Release</label>
                   <select id="env-release" onchange="setEnvValue(3, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="R"
+                          aria-label="MIDI assignment for envelope release">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-depth" class="tooltip" data-tooltip="Envelopes amplitude around center.">Depth</label>
                   <select id="env-depth" onchange="setEnvValue(5, selectedIcon.index, this.value)"><script>u7SplitPercentage()</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="P"
+                          aria-label="MIDI assignment for envelope depth">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-vel-depth" class="tooltip" data-tooltip="The amount by which the note on velocity affects the envelope's depth.">Velocity Depth</label>
                   <select id="env-vel-depth" onchange="setEnvValue(6, selectedIcon.index, this.value)"><script>u7PercentRange(0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="env" data-index="0" data-dest="V"
+                          aria-label="MIDI assignment for envelope velocity depth">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-att-shape">Attack Shape</label>
                   <select id="env-att-shape" onchange="setEnvValue(8, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="envs" data-index="0" data-dest="AS"
+                          aria-label="MIDI assignment for envelope attack shape">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-dec-shape">Decay Shape</label>
                   <select id="env-dec-shape" onchange="setEnvValue(9, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="envs" data-index="0" data-dest="DS"
+                          aria-label="MIDI assignment for envelope decay shape">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
                 <div>
                   <label for="env-rel-shape">Release Shape</label>
                   <select id="env-rel-shape" onchange="setEnvValue(10, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
+                  <button class="midi-map-button" type="button"
+                          data-type="envs" data-index="0" data-dest="RS"
+                          aria-label="MIDI assignment for envelope release shape">
+                    <img src="icons/midi-din.svg" alt="MIDI DIN5">
+                  </button>
                 </div>
               </div>
             </fieldset>

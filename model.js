@@ -242,7 +242,6 @@ function setOutputHighGate(index, value)
 
 function setConfigSrrValue(offset, value, index=selectedSrrIndex)
 {
-  console.log("setConfigSrrValue", offset, value, index);
   setConfigU8(3708 + 7*index + offset, value);
 }
 
@@ -253,7 +252,6 @@ function setPresetSrrValue(offset, value, index=selectedSrrIndex)
 
 function setConfigSrrAddValue(bit, disabled, index)
 {
-  console.log("setConfigSrrAddValue", bit, disabled, index);
   const loc   = 4136 + index;
   const flags = configSysex[loc];
 
@@ -262,7 +260,6 @@ function setConfigSrrAddValue(bit, disabled, index)
 
 function setSrrOut(value, index)
 {
-  console.log("setSrrOut", value, index);
   setConfigSrrValue(0, value+1, index);
 }
 
@@ -447,14 +444,29 @@ function eucActive(index)
  //
 // Envelope
 
+function setEnvValue(offset, index, value)
+{
+  if(offset < 8) { setPresetU8(1508 + offset + 8*index,     value); }
+  else           { setPresetU8(2532 + offset - 8 + 8*index, value); }
+}
+
 function disableEnv(index)
 {
-  console.log("disableEnvelope", index)
+  // Envelopes are always active, but maybe not used
 }
 
 function initEnv(index)
 {
-  console.log("initEnvelope", index)
+  setEnvValue( 0, index,   0);
+  setEnvValue( 1, index,   0);
+  setEnvValue( 2, index, 127);
+  setEnvValue( 3, index,   0);
+  setEnvValue( 4, index,   0);
+  setEnvValue( 5, index, 127);
+  setEnvValue( 6, index,  64);
+  setEnvValue( 8, index,  64);
+  setEnvValue( 9, index,  64);
+  setEnvValue(10, index,  64);
 }
 
   /////////////////////////////////////////////////////////////////////
@@ -522,12 +534,3 @@ function trigActive(output)
   return false;
 }
 
-  /////////////////////////////////////////////////////////////////////
- //
-// Envelopes
-
-function setEnvValue(offset, index, value)
-{
-  if(offset < 8) { setPresetU8(1508 + offset + 8*index, value);     }
-  else           { setPresetU8(2532 + offset - 8 + 8*index, value); }
-}

@@ -292,3 +292,21 @@ function renderEucEditor(index=null)
   elem("euc-editor-name").textContent = "Euclidean ("+(index+1)+")";
 
 }
+
+function renderEnvEditor(index=null)
+{
+  if(index === null) { index = selectedIcon.index; }
+  const env = parseEnvelope(new ByteReader(presetSysex), index);
+  
+  put('env-scale',      env.range    );
+  updateEnvTimeOptions();
+  put('env-attack',     env.attack   );
+  put('env-decay',      env.decay    );
+  put('env-sustain',    env.sustain  );
+  put('env-release',    env.release  );
+  put('env-depth',      env.depth    );
+  put('env-vel-depth',  env.velocity );
+  put('env-att-shape',  env.as       );
+  put('env-dec-shape',  env.ds       );
+  put('env-rel-shape',  env.rs       );
+}

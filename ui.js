@@ -1085,7 +1085,7 @@ function renderMidiEditor()
   put("midi-cvrt-kbm", scala.enable > 0 ? scala.kbm : -1);
   
   // Odd parameter hidden in envelope
-  const envelope=parseEnvelop(reader, index);
+  const envelope=parseEnvelope(reader, index);
   put("env-random", envelope.random);
   
   updateMidiMapButtons("#lfo-editor .midi-map-button", index);
@@ -1745,7 +1745,6 @@ function computeSrrOutputs(index)
 
 function rebuildSrrOutputChains(index, outputs)
 {
-  console.log("rebuildSrrOutputChains", index, outputs);
   const oldAnchor = iconState.srr[index].output;
   const oldOutputs = [];
 
@@ -1833,7 +1832,6 @@ function updateSrr(index=selectedSrrIndex)
 
 function setSrrCVOutput(value)
 {
-  console.log("setSrrCVOutput", value);
   setSrrOut(Number(value), selectedSrrIndex);
   updateSrr(selectedSrrIndex);
 }
