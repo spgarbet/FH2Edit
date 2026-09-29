@@ -1,10 +1,7 @@
-# FH2Editor Plan
+# FH2Edit Plan
 
 ## Known Bugs
 
-- SRR is not populating icons on startup.
-  Are all the CV outputs set really?, oh, it's could be the "enabled definition"
-  Enabled: A CV output is set on *any* and the (Direction is not STOP or a MIDI mapping exists)
 
 ## Completed
 
@@ -26,33 +23,28 @@
   - (ICON-Sine) LFO assign to output with MIDI
   - (ICON-Keys) MAIN 16 Midi to CV
   - (ICON-Criss Cross) 16 Shift Registers
-  - (ICON-Drums) 16 Euclidean Patterns, (7 channel/cc)
+  - (ICON-Drums) 16 Euclidean Patterns
+  - (ICON-Envelope) A separate editor for the Envelope
+  - (ICON-Arpeggiator) A separate editor for the Arp
 
 ## In Process
 
-- (ICON-Lightning) 64 Triggers Independent like clocks, (? channel/cc)
+- (ICON-Lightning) 64 Triggers Independent like clocks
 
 ## TODO
 
-- Outputs
-  - (ICON-Envelope) A separate editor for the Envelope (13 channels/cc)
-  - (ICON-Arpeggiator) A separate editor for the Arp (13 channels/cc)
+- MIDI Mapping Learn mode
+- Testing
+  - Flash
+  - MIDI/CV Center effects
+  - All the Arps
 - Tunings 32 slots for Scala/Keyboard
-- MIDI Routing - A visual display of all MIDI routes.
-- Outputs (cont)
-  - (ICON-Game Controller) 32 HID Gamepad, assign to output
-  - (ICON-Keyboard) 32 HID Keyboard, assign to output
-  - (ICON ? ) ? Novation Pad This is so far down the list I will probably never do it
-- Gates tab (edit things on Gates like Expanders)
+- Outputs
+  - (ICON-Gamepad) HID Gamepad, assign to output
+  - (ICON-Keyboard) HID Keyboard, assign to output
+  - (ICON-Grid) Novation Pad/Sequencer. Probably not going to do.
   
 ## Notes
-
-There are 3 remaining major types of output configuration: Envelopes, Arps, and Triggers. 
-
-An Envelope if enabled is associated with a MIDI/CV and has envelope checked (connecting it to an output as chain). An alternative method of utilizing one of these if via a trigger in envelope mode.
-
-An Arp is associated with a MIDI/CV, it has a mode 0-10 that turns it off (and a cc). An Arp is
-enabled for a MIDI/CV if either the Arp mode is non-zero or it has an assigned cc.
 
 Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/drum requests?
   - 4x4 4 channel MIDI 32 step sequencer  (spits MIDI out)
@@ -62,3 +54,6 @@ Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/dr
 
 - What is the scale of portamento? 0-127 means what?
 - Why does every output go red with my default configuration that I send?
+- When 64 is the center of a value that goes from -100% to 100% over 0 to 127, does the slope change either side since 63.5 is the center of 0 to 127?
+- When in configuration trigger can a note be set to "--"? What value is that? -1
+
