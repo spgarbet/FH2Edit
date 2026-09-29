@@ -362,3 +362,28 @@ function renderArpEditor(index=null)
 
   updateMidiMapButtons("#arp-editor .midi-map-button", index);
 }
+
+function renderTrigEditor(output)
+{
+  const rows     = elem("trig-rows");
+  const template = elem("trig-row-template");
+
+  rows.replaceChildren();
+
+  for(const index of triggersForOutput(output))
+  {
+    const row = template.cloneNode(true);
+
+    row.removeAttribute("id");
+    row.dataset.index = index;
+
+    row.querySelector(".trig-type"   ).value = trig[index].type;
+    row.querySelector(".trig-channel").value = trig[index].channel;
+    row.querySelector(".trig-note"   ).value = trig[index].note;
+    row.querySelector(".trig-env"    ).value = trig[index].env;
+    
+    row.querySelector(".trig-env"    ).disabled = trig[index].type != 9;
+
+    rows.appendChild(row);
+  }
+}

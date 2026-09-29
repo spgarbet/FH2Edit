@@ -778,7 +778,7 @@ function parseConfigTriggers(reader)
 function trigEnabled(index)
 {
   const value = presetSysex[4104 + (index >> 2)];
-  return (value >> (index & 0x02)) & 1;
+  return (value >> (index & 0x03)) & 1;
 }
 
 function parseTrigger(index)

@@ -31,7 +31,8 @@ const iconState =
   srr:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   euc:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   arp:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
-  env:   Array.from({ length: 16 }, () => ({ enabled: false, output: null }))
+  env:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
+  trig:  Array.from({ length: 64 }, () => ({ enabled: false, output: null }))
 };
 
 let   selectedIcon     = null;
@@ -205,7 +206,6 @@ function initTooltips()
   window.addEventListener("resize", updateTooltips);
   window.addEventListener("scroll", updateTooltips, true);
 }
-
 
 function showTooltip(tooltip)
 {
@@ -618,6 +618,20 @@ function nextAvailableIcon(type, output)
 {
   const state = iconState[type];
   
+  if(type === "trig")
+  {
+    if(!trigAvailable()) { return -1; }
+    for(let i = 0; i < iconState.trig.length; ++i)
+    {
+      if(!iconState.trig[i].enabled)
+      {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+  
   if(type === "arp" || type === "env")
   {
     const midi = iconState.midi;
@@ -683,6 +697,9 @@ function addIcon(type, output)
       break;
     case "env":
       initEnv(index, output);
+      break;
+    case "trig":
+      initTrig(index, output);
       break;
   }
 
@@ -835,7 +852,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
   {
     const state = iconState[type];
 
@@ -878,7 +895,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -932,6 +949,11 @@ function buildIconPicker()
   elem("env-editor-trash").addEventListener("click", function()
   {
     removeIcon("env", selectedIcon.index);
+  });
+  elem("trig-editor-trash").addEventListener("click", function()
+  {
+    disableTriggersOnOutput(selectedIcon.output);
+    removeIcon("trig", selectedIcon.index);
   });
 }
 
@@ -1175,6 +1197,7 @@ function renderOutputEditor()
       mountEucEditor("euc-editor-host");
       renderEucEditor(selectedIcon.index);
       break;
+    case "trig":  renderTrigEditor();  break;
   }
   updateTooltips();
 }
@@ -2024,3 +2047,40 @@ function setArpMode()
     selectedIcon.index);
 }
 
+function initTriggerUI()
+{
+  elem("trig-rows").addEventListener("change", function(event)
+  {
+    const row = event.target.closest("tr");
+    if(!row) { return; }
+  
+    const index = Number(row.dataset.index);
+  
+    if(event.target.matches(".trig-type"))
+    {
+      setTrigType(event.target.value, index);
+    }
+    else if(event.target.matches(".trig-channel"))
+    {
+      setTrigChannel(event.target.value, index);
+    }
+    else if(event.target.matches(".trig-note"))
+    {
+      setTrigNote(event.target.value, index);
+    }
+    else if(event.target.matches(".trig-env"))
+    {
+      setTrigEnv(event.target.value, index);
+    }
+  });
+  elem("trig-rows").addEventListener("click", function(event)
+  {
+    const button = event.target.closest(".trig-single-trash");
+    if(!button) { return; }
+  
+    const row = button.closest("tr");
+    const index = Number(row.dataset.index);
+  
+    removeTrigger(index);
+  });
+}

@@ -522,7 +522,7 @@ function arpActive(index, mappings=null)
 
 function setArpC(value, index)
 {
-  const loc   = 3644 + 4*index + 1;
+  const loc   = 3645 + 4*index;
   const byte  = configSysex[loc];
 
   setConfigU8(loc, value ? byte | 0x10 : byte & ~0x10);
@@ -530,7 +530,7 @@ function setArpC(value, index)
 
 function setArpA(value, index)
 {
-  const loc   = 3644 + 4*index + 1;
+  const loc   = 3645 + 4*index;
   const byte  = configSysex[loc];
 
   setConfigU8(loc, value ? byte | 0x20 : byte & ~0x20);
@@ -538,7 +538,7 @@ function setArpA(value, index)
 
 function setArpDin(value, index)
 {
-  const loc   = 3644 + 4*index + 1;
+  const loc   = 3645 + 4*index;
   const byte  = configSysex[loc];
 
   setConfigU8(loc, value ? byte | 0x40 : byte & ~0x40);
@@ -562,7 +562,7 @@ function trigActive(output)
   for(let i=0; i<64; ++i)
   {
     if(triggers[i].output === output &&
-       triggers[i].enabled)
+       triggers[i].type > 0)
     {
       return true;
     }
@@ -571,3 +571,99 @@ function trigActive(output)
   return false;
 }
 
+function trigAvailable()
+{
+  const triggers = parseTriggers();
+  const active   = 0;
+  for(let i=0; i<64; ++i)
+  {
+    if(triggers[i].type > 0) { ++active; }
+  }
+  
+  return active < 64;
+}
+
+function enableTrig(index)
+{
+  presetSysex[4104 + (index >> 2)] |= (1 << (index & 0x03));
+}
+
+function disableTrig(index)
+{
+  presetSysex[4104 + (index >> 2)] &= ~(1 << (index & 0x03));
+  configSysex[triggerAddress(index)] = 0;
+}
+
+function disableTriggersOnOutput(output)
+{
+  const triggers = parseTriggers();
+  for(let i=0; i<64; ++i)
+  {
+    if(triggers[i].output === output &&
+       triggers[i].type > 0)
+    {
+      disableTrig(i);
+    }
+  }
+}
+
+function triggerAddress(index) { return 2660 + 4 * index; }
+
+function setTriggerType(index, type)
+{
+  const address        = triggerAddress(index);
+  configSysex[address] = (configSysex[address] & 0xf0) | (type & 0x0f);
+}
+
+function setTriggerChannel(index, channel)
+{
+  const address = triggerAddress(index) + 1;
+  configSysex[address] = (configSysex[address] & 0xf0) | (channel & 0x0f);
+}
+
+function setTriggerNote(index, note)
+{
+  const address = triggerAddress(index);
+
+  if(note < 0)
+  {
+    configSysex[address + 1] |= 0x20;
+  }
+  else
+  {
+    configSysex[address + 1] &= ~0x20;
+    configSysex[address + 2] = note & 0x7f;
+  }
+}
+
+function setTriggerOutput(index, output)
+{
+  configSysex[triggerAddress(index) + 3] = output & 0xff;
+}
+
+function setTriggerEnvelope(index, envelope)
+{
+  const address = triggerAddress(index);
+
+  // upper bits of the envelope live in the high nibble of byte 0
+  configSysex[address] =
+    (configSysex[address] & 0x0f) | (((envelope >> 1) & 0x0f) << 4);
+
+  // lowest bit of the envelope lives in bit 4 of byte 1
+  configSysex[address + 1] =
+    (configSysex[address + 1] & ~0x10) | ((envelope & 1) << 4);
+}
+
+function initTrig(index, output)
+{ 
+  enableTrig(index);
+  setTriggerOutput(index, output);
+  setTriggerType(index, 1);
+  setTriggerChannel(index, 1);
+  setTriggerNote(index, 0);
+}
+
+function triggersForOutput(output)
+{
+  return parseTriggers().filter(trig => trig.output === output);
+}

@@ -1001,6 +1001,48 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
             <div>Approximate representation.</div>
           </div>
           
+<!-- Triggers -->
+          <div id="trig-editor" hidden>
+            <div class="editor-header">
+              <button id="trig-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove All Triggers"></button>
+              <h3 id="trig-editor-name">Triggers</h3>
+              <h4 id="trig-available">64 Available</h4>
+            </div>
+            <div class="singleline">
+              <table>
+                <tr><th>Enable</th></th></ht><th>Type</th><th>Channel</th><th>Note</th><th>(Envelope)</th><th></th></tr>
+                <tbody id="trig-rows"></tbody>
+              </table>
+            </div>
+            <div id="trig-template">
+              <table>
+                <tr id="trig-row-template">
+                  <td>
+                    <input type="checkbox" class="trig-enable">
+                  </td>
+                  <td>
+                    <select class="trig-type">
+                      <option value="1">Trigger</option>
+                      <option value="2">Gate</option>
+                      <option value="3">Velocity Trig</option>
+                      <option value="4">Velocity Gate</option>
+                      <option value="5">Accent Trig</option>
+                      <option value="6">Accent Gate</option>
+                      <option value="7">Toggle</option>
+                      <option value="8">On/Off Trig</option>
+                      <option value="9">Envelope</option>
+                      <option value="10">Velocity</option>
+                    </select>
+                  </td>
+                  <td><select class="trig-channel"><script>optionRange(1,16,1)</script></select></td>
+                  <td><select class="trig-note"><option value="-1">--</option><script>optionRange(0,127,1)</script></select></td>
+                  <td><select class="trig-env" disabled><script>optionRange(1,16)</script></select></td>
+                  <td><button type="button" class="outputs-button trig-single-trash"><img src="icons/trash.png" alt="Remove Trigger"></button></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
 <!-- Arpeggiator -->
           <div id="arp-editor" hidden>
             <div class="editor-header">
