@@ -571,16 +571,20 @@ function trigActive(output)
   return false;
 }
 
-function trigAvailable()
+function trigCount()
 {
   const triggers = parseTriggers();
-  const active   = 0;
+  let   active   = 0;
   for(let i=0; i<64; ++i)
   {
     if(triggers[i].type > 0) { ++active; }
   }
-  
-  return active < 64;
+  return active;
+}
+
+function trigAvailable()
+{
+  return trigCount() < 64;
 }
 
 function enableTrig(index)
@@ -609,19 +613,19 @@ function disableTriggersOnOutput(output)
 
 function triggerAddress(index) { return 2660 + 4 * index; }
 
-function setTriggerType(index, type)
+function setTrigType(index, type)
 {
   const address        = triggerAddress(index);
   configSysex[address] = (configSysex[address] & 0xf0) | (type & 0x0f);
 }
 
-function setTriggerChannel(index, channel)
+function setTrigChannel(index, channel)
 {
   const address = triggerAddress(index) + 1;
   configSysex[address] = (configSysex[address] & 0xf0) | (channel & 0x0f);
 }
 
-function setTriggerNote(index, note)
+function setTrigNote(index, note)
 {
   const address = triggerAddress(index);
 
@@ -636,12 +640,12 @@ function setTriggerNote(index, note)
   }
 }
 
-function setTriggerOutput(index, output)
+function setTrigOutput(index, output)
 {
   configSysex[triggerAddress(index) + 3] = output & 0xff;
 }
 
-function setTriggerEnvelope(index, envelope)
+function setTrigEnv(index, envelope)
 {
   const address = triggerAddress(index);
 
@@ -657,13 +661,26 @@ function setTriggerEnvelope(index, envelope)
 function initTrig(index, output)
 { 
   enableTrig(index);
-  setTriggerOutput(index, output);
-  setTriggerType(index, 1);
-  setTriggerChannel(index, 1);
-  setTriggerNote(index, 0);
+  setTrigOutput(index, output);
+  setTrigType(index, 1);
+  setTrigChannel(index, 1);
+  setTrigNote(index, 0);
+  setTrigEnv(index, 1);
 }
 
 function triggersForOutput(output)
 {
-  return parseTriggers().filter(trig => trig.output === output);
+  return parseTriggers().filter(trig => trig.output === output && trig.type > 0);
+}
+
+function nextAvailableTrig()
+{
+  const trigs = parseTriggers();
+  
+  for(let i=0; i<64; ++i)
+  {
+    if(trigs[i].type === 0) { return i; }
+  }
+  
+  return -1;
 }

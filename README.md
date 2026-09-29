@@ -39,10 +39,9 @@ FH2Edit is under active development.
   - Euclidean patterns
   - Envelope
   - Arpeggiator
+  - Trigger editor
 
 **In progress**
-
-- Trigger editor
 
 **Planned**
 

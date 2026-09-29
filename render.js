@@ -363,27 +363,37 @@ function renderArpEditor(index=null)
   updateMidiMapButtons("#arp-editor .midi-map-button", index);
 }
 
-function renderTrigEditor(output)
+function appendTrigRow(trig)
 {
   const rows     = elem("trig-rows");
   const template = elem("trig-row-template");
+  const row      = template.cloneNode(true);
 
-  rows.replaceChildren();
+  row.removeAttribute("id");
+  
+  row.dataset.index                           = trig.index;
+  row.querySelector(".trig-enabled").checked  = trig.enabled;
+  row.querySelector(".trig-type"   ).value    = trig.type;
+  row.querySelector(".trig-channel").value    = trig.channel;
+  row.querySelector(".trig-note"   ).value    = trig.note;
+  row.querySelector(".trig-env"    ).value    = trig.envelope;
+  row.querySelector(".trig-env"    ).disabled = trig.type != 9;
 
-  for(const index of triggersForOutput(output))
+  rows.appendChild(row);
+}
+
+function renderTrigEditor(output)
+{
+  const avail    = 64-trigCount();
+  
+  elem("trig-rows").replaceChildren();
+
+  elem('trig-available').textContent   = "Available: " + avail ;
+  elem('trig-editor-name').textContent = "Output " + (output+1) + " Triggers";
+  elem('trig-editor-plus').hidden      = avail === 0;
+  
+  for(const trig of triggersForOutput(output))
   {
-    const row = template.cloneNode(true);
-
-    row.removeAttribute("id");
-    row.dataset.index = index;
-
-    row.querySelector(".trig-type"   ).value = trig[index].type;
-    row.querySelector(".trig-channel").value = trig[index].channel;
-    row.querySelector(".trig-note"   ).value = trig[index].note;
-    row.querySelector(".trig-env"    ).value = trig[index].env;
-    
-    row.querySelector(".trig-env"    ).disabled = trig[index].type != 9;
-
-    rows.appendChild(row);
+    appendTrigRow(trig);
   }
 }

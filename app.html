@@ -61,8 +61,6 @@
     <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
     <button type="button" class="tab"        data-target="euc-screen"        >Euclidean</button>
     <button type="button" class="tab"        data-target="srr-screen"        >SSR</button>
-    <button type="button" class="tab"        data-target="controllers-screen">Controllers</button>
-    <button type="button" class="tab"        data-target="sequencers-screen" >Sequencers</button>
   </nav>
 
   <main id="main">
@@ -1004,25 +1002,30 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
 <!-- Triggers -->
           <div id="trig-editor" hidden>
             <div class="editor-header">
-              <button id="trig-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove All Triggers"></button>
+              <button id="trig-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove All Output Triggers"></button>
               <h3 id="trig-editor-name">Triggers</h3>
-              <h4 id="trig-available">64 Available</h4>
+              <h5 id="trig-available">64 Available</h5>
+            </div>
+            <div>
+              <button id="trig-editor-plus" type="button" class="outputs-button"><img src="icons/curly-plus.png" alt="Add an Output Trigger"></button>
             </div>
             <div class="singleline">
               <table>
-                <tr><th>Enable</th></th></ht><th>Type</th><th>Channel</th><th>Note</th><th>(Envelope)</th><th></th></tr>
-                <tbody id="trig-rows"></tbody>
+                <thead>
+                <tr><th>Enable</th></th><th>Type</th><th>Channel</th><th>Note</th><th>(Envelope)</th><th></th></tr></thead>
+                <tbody id="trig-rows">
+                </tbody>
               </table>
             </div>
-            <div id="trig-template">
-              <table>
+            <div id="trig-template" hidden>
+              <table><tbody>
                 <tr id="trig-row-template">
                   <td>
-                    <input type="checkbox" class="trig-enable">
+                    <input type="checkbox" class="trig-enabled">
                   </td>
                   <td>
                     <select class="trig-type">
-                      <option value="1">Trigger</option>
+                      <option value="1" selected>Trigger</option>
                       <option value="2">Gate</option>
                       <option value="3">Velocity Trig</option>
                       <option value="4">Velocity Gate</option>
@@ -1039,7 +1042,7 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
                   <td><select class="trig-env" disabled><script>optionRange(1,16)</script></select></td>
                   <td><button type="button" class="outputs-button trig-single-trash"><img src="icons/trash.png" alt="Remove Trigger"></button></td>
                 </tr>
-              </table>
+              </tbody></table>
             </div>
           </div>
           

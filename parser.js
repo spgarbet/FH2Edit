@@ -785,6 +785,7 @@ function parseTrigger(index)
 {
   const trigger   = parseConfigTrigger(new ByteReader(configSysex), index);
   trigger.enabled = trigEnabled(index);
+  trigger.index   = index;
   
   return trigger;
 }
@@ -797,6 +798,7 @@ function parseTriggers()
   for(let i=0; i<64; ++i)
   {
     triggers[i].enabled = enabled[i];
+    triggers[i].index   = i;
   }
   
   return triggers;

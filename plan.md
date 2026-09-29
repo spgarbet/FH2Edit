@@ -26,10 +26,10 @@
   - (ICON-Drums) 16 Euclidean Patterns
   - (ICON-Envelope) A separate editor for the Envelope
   - (ICON-Arpeggiator) A separate editor for the Arp
+  - (ICON-Lightning) Triggers
 
 ## In Process
 
-- (ICON-Lightning) 64 Triggers Independent like clocks
 
 ## TODO
 

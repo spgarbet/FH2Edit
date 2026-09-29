@@ -922,3 +922,40 @@ canvas
   padding-left: 1em;
   float:right;
 }
+
+#trig-editor .singleline table
+{
+  border-collapse: collapse;
+}
+
+#trig-editor .singleline tbody tr:nth-child(even)
+{
+  background-color: #fffade;
+}
+
+#trig-editor .singleline th,
+#trig-editor .singleline td
+{
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+}
+
+#trig-editor .singleline tbody tr
+{
+  line-height: 1;
+}
+
+#trig-editor .trig-single-trash
+{
+  width: 17px;
+  height: 17px;
+  padding: 2px;
+  margin: 0;
+}
+
+#trig-editor .trig-single-trash img
+{
+  width: 11px;
+  height: 11px;
+  display: block;
+}

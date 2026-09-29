@@ -623,10 +623,7 @@ function nextAvailableIcon(type, output)
     if(!trigAvailable()) { return -1; }
     for(let i = 0; i < iconState.trig.length; ++i)
     {
-      if(!iconState.trig[i].enabled)
-      {
-        return i;
-      }
+      if(!iconState.trig[i].enabled) { return i; }
     }
 
     return -1;
@@ -1171,7 +1168,7 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
   {
     elem(x+"-editor").hidden = sel !== x;
     
@@ -1197,7 +1194,7 @@ function renderOutputEditor()
       mountEucEditor("euc-editor-host");
       renderEucEditor(selectedIcon.index);
       break;
-    case "trig":  renderTrigEditor();  break;
+    case "trig":  renderTrigEditor(selectedIcon.output);  break;
   }
   updateTooltips();
 }
@@ -2059,6 +2056,7 @@ function initTriggerUI()
     if(event.target.matches(".trig-type"))
     {
       setTrigType(event.target.value, index);
+      row.querySelector(".trig-env").disabled = Number(event.target.value) !== 9;
     }
     else if(event.target.matches(".trig-channel"))
     {
@@ -2078,9 +2076,33 @@ function initTriggerUI()
     const button = event.target.closest(".trig-single-trash");
     if(!button) { return; }
   
-    const row = button.closest("tr");
+    const row   = button.closest("tr");
+    const tbody = row.closest("tbody");
     const index = Number(row.dataset.index);
+    
+    setTrigType(index, 0);
   
-    removeTrigger(index);
+    row.remove();
+    
+    elem('trig-available').textContent = "Available: " + (64-trigCount()) ;
+    elem('trig-editor-plus').hidden    = false;
+
+    if(tbody.rows.length === 0) { removeIcon("trig", selectedIcon.index); }
+  });
+  elem("trig-editor-plus").addEventListener("click", function(event)
+  {
+    const index = nextAvailableTrig();
+    if(index === -1) { console.error("Adding a trig with none available"); return; }
+    
+    initTrig(index, selectedIcon.output);
+    
+    const trig = parseTrigger(index);
+    
+    appendTrigRow(trig);
+    
+    elem('trig-available').textContent = "Available: " + (64-trigCount()) ;
+
+    if(nextAvailableTrig() === -1) { elem("trig-editor-plus").hidden = true; }
+    
   });
 }
