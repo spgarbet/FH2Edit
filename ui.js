@@ -814,21 +814,33 @@ function selectIcon(type, index, output)
 {
   selectedIcon =
   {
-    type:   type,
-    index:  index,
-    output: output,
-    elem:   null
+    type,
+    index,
+    output,
+    elem: null
   };
-  
+
   if(type === "srr") { selectedSrrIndex = index; }
   if(type === "euc") { selectedEucIndex = index; }
 
   selectedOutput = output;
 
-  renderOutputs();
+  document
+    .querySelectorAll(".outputs-icon-item.selected")
+    .forEach(button => button.classList.remove("selected"));
+
+  const button = document.querySelector(
+    ".outputs-icon-item[data-type=\"" + type + "\"][data-index=\"" + index + "\"]"
+  );
+
+  if(button)
+  {
+    button.classList.add("selected");
+    selectedIcon.elem = button;
+  }
+
   renderOutputEditor();
 }
-
 function renderOutputIcons(output, container)
 {
   container.replaceChildren();
@@ -857,9 +869,11 @@ function renderOutputIcons(output, container)
     {
       if (!state[i].enabled || state[i].output !== output) { continue; }
 
-      const button     = document.createElement("button");
-      button.type      = "button";
-      button.className = "outputs-icon-item";
+      const button         = document.createElement("button");
+      button.type          = "button";
+      button.className     = "outputs-icon-item";
+      button.dataset.type  = type;
+      button.dataset.index = i;
 
       if (selectedIcon                &&
           selectedIcon.type  === type &&
@@ -2102,6 +2116,7 @@ function initTriggerUI()
     
     elem('trig-available').textContent = "Available: " + (64-trigCount()) ;
 
+    
     if(nextAvailableTrig() === -1) { elem("trig-editor-plus").hidden = true; }
     
   });
