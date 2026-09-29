@@ -2,6 +2,8 @@
 
 A lighter editor for the Expert Sleepers FH-2.
 
+![](./assets/example.png)
+
 To use, no installation is required. Simply open [FH2Edit](https://raw.githack.com/spgarbet/FH2Edit/main/FH2Edit.html) in Chrome or Opera and attach the FH-2 to your computer via USB. 
 
 This is a simple (but incomplete!) combined preset/configuration editor for the FH-2. It focuses on an output-centric viewpoint. It shows one narrow set of concerns at a time, with tooltips built in. [Expert Sleepers](https://www.expert-sleepers.co.uk/) provided [open-source editors](https://github.com/expertsleepersltd/FH-2_tools) for their [FH-2](https://www.expert-sleepers.co.uk/fh2.html). The stock editors, while complete, can be overwhelming for a beginner and this editor is a focused set view exposing to the user what is affecting the output of a port. This editor hides most of the distinction between presets and configuration from the user. Consider this editor the "quick start" but not suitable for advanced work.
