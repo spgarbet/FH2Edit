@@ -1013,23 +1013,23 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
               <div class="singleline">
                 <div>
                   <label for="arp-clock">Clock</label>
-                  <select id="arp-clock"><option value="0">External</option>                      <script>for (let j=1; j<=16; ++j) { document.write( "<option value="+j+">Euclidean "+j+"</option>" ); }</script></select>
+                  <select id="arp-clock" onchange="setArpConfigValue(0, this.value, selectedIcon.index)"><option value="0">External</option>                      <script>for (let j=1; j<=16; ++j) { document.write( "<option value="+j+">Euclidean "+j+"</option>" ); }</script></select>
                 </div>
                 <div>
                   <label for="arp-usbc">MIDI Output</label>
-                  C&nbsp;<input id="arp-usbc" type="checkbox">
-                  &nbsp;&#124;&ensp;A&nbsp;<input id="arp-usba" type="checkbox">
-                  &nbsp;&#124;&ensp;DIN&nbsp;<input id="arp-din" type="checkbox">
+                  C&nbsp;<input id="arp-usbc" type="checkbox" onchange="setArpC(this.value, selectedIcon.index)">
+                  &nbsp;&#124;&ensp;A&nbsp;<input id="arp-usba" type="checkbox" onchange="setArpA(this.value, selectedIcon.index)">
+                  &nbsp;&#124;&ensp;DIN&nbsp;<input id="arp-din" type="checkbox" onchange="setArpDin(this.value, selectedIcon.index)">
                 </div>
                 <div>
                   <label for="arp-channel">&emsp;&emsp;Channel</label>
-                  <select id="arp-channel"><script>optionRange(1,16,1,1)</script></select>
+                  <select id="arp-channel" onchange="setArpChannel(this.value, selectedIcon.index)"><script>optionRange(1,16,1,1)</script></select>
                 </div>
               </div>
               <div class="separator"><span>Preset</span></div>
               <div class="singleline">
                 <div>
-                  <label for="arp-mode-course" class="tooltip" data-tooltip="Off - Disabled
+                  <label for="arp-mode-coarse" class="tooltip" data-tooltip="Off - Disabled
 Up - Lowest to highested.
 Down - Highest to lowest
 Alt - Alternate up and down.
@@ -1041,7 +1041,7 @@ Random - The notes held play in random order.
 Random 2 - Plays in random order with no repeats.
 Random 3 - Random permutation each time through.
 As Played - The notes are repeated in the order they are played.">Mode</label>
-                  <select id="arp-mode-course">
+                  <select id="arp-mode-coarse" onchange="setArpMode()">
                     <option value="0">Off</option>
                     <option value="11">Up</option>
                     <option value="22">Down</option>
@@ -1056,7 +1056,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                     <option value="118">As Played</option>
                   </select>
                   &emsp;<span class="tooltip" data-tooltip="Amount added to base mode setting. Useful for controlling where CC overtakes the mode.">Fine:</span>&ensp;
-                  <select id="arp-mode-fine"><script>optionRange(0,10,0)</script></select>
+                  <select id="arp-mode-fine" onchange="setArpMode()"><script>optionRange(0,10,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="M"
                           aria-label="MIDI assignment for arpeggiator fine value of mode">
@@ -1065,7 +1065,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="arp-range" class="tooltip" data-tooltip="Number of octaves to repeat the pattern over. When mapped, CC values 0-127 map to 1-3 octaves.">Range</label>
-                  <select id="arp-range"><script>optionRange(0,127,0)</script></select>
+                  <select id="arp-range" onchange="setArpPresetValue(1,this.value,selectedIcon.index)"><script>optionRange(0,127,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="R"
                           aria-label="MIDI assignment for arpeggiator range">
@@ -1074,7 +1074,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="arp-gate-len" class="tooltip" data-tooltip="Gate on time as a fraction of the clock rate. 64 is a 50% gate length.0 is a special value and means a fixed length trigger pulse, unrelated to the clockrate.">Gate Length</label>
-                  <select id="arp-gate-len"><script>optionRange(0,127,0)</script></select>
+                  <select id="arp-gate-len" onchange="setArpPresetValue(2,this.value,selectedIcon.index)"><script>optionRange(0,127,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="G"
                           aria-label="MIDI assignment for arpeggiator gate length">
@@ -1083,7 +1083,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="arp-latch" class="tooltip" data-tooltip="If 'latch' is enabled, notes are held until all keys are released and a new note played. This makes it particularly easy to play a chord, have it repeat and arpeggiate.">Latch</label>
-                  <select id="arp-latch"><option value="0">Off</option><option value="1">On</option></select>
+                  <select id="arp-latch" onchange="setArpPresetValue(3,this.value,selectedIcon.index)"><option value="0">Off</option><option value="1">On</option></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="L"
                           aria-label="MIDI assignment for arpeggiator latch">
@@ -1092,7 +1092,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="arp-rate" class="tooltip" data-tooltip="Rate in terms of 24ppqn clocks. The value '0' means that the arpeggiator advances every time an external clock pulse or  Euclidean trigger.">Rate</label>
-                  <select id="arp-rate"><script>optionRange(0,127,0)</script></select>
+                  <select id="arp-rate" onchange="setArpPresetValue(4,this.value,selectedIcon.index)"><script>optionRange(0,127,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="T"
                           aria-label="MIDI assignment for arpeggiator rate">
@@ -1101,7 +1101,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>  
                 <div>
                   <label for="arp-reset" class="tooltip" data-tooltip="Sets a number of quarter notes after which the arpeggiator will automatically reset to step 1.">Reset</label>
-                  <select id="arp-reset"><option value="0">Off</option><script>optionRange(1,127)</script></select>
+                  <select id="arp-reset" onchange="setArpPresetValue(6,this.value,selectedIcon.index)"><option value="0">Off</option><script>optionRange(1,127)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="S"
                           aria-label="MIDI assignment for arpeggiator reset">

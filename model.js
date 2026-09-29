@@ -520,6 +520,38 @@ function arpActive(index, mappings=null)
   return false;
 }
 
+function setArpC(value, index)
+{
+  const loc   = 3644 + 4*index + 1;
+  const byte  = configSysex[loc];
+
+  setConfigU8(loc, value ? byte | 0x10 : byte & ~0x10);
+}
+
+function setArpA(value, index)
+{
+  const loc   = 3644 + 4*index + 1;
+  const byte  = configSysex[loc];
+
+  setConfigU8(loc, value ? byte | 0x20 : byte & ~0x20);
+}
+
+function setArpDin(value, index)
+{
+  const loc   = 3644 + 4*index + 1;
+  const byte  = configSysex[loc];
+
+  setConfigU8(loc, value ? byte | 0x40 : byte & ~0x40);
+}
+
+function setArpChannel(value, index)
+{
+  const loc   = 3644 + 4*index + 1;
+  const byte  = configSysex[loc];
+
+  setConfigU8(loc, (byte & 0x70) | (Number(value) & 0x0f));
+}
+
   /////////////////////////////////////////////////////////////////////
  //
 // Triggers

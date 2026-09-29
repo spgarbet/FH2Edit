@@ -2015,3 +2015,12 @@ function updateEnvTimeOptions()
     }
   }
 }
+
+function setArpMode()
+{
+  setArpPresetValue(
+    0,
+    num('arp-mode-coarse')+num('arp-mode-fine'),
+    selectedIcon.index);
+}
+

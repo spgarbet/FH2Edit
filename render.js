@@ -327,18 +327,18 @@ function renderEnvEditor(index=null)
 
 function setArpMode(value)
 {
-  const course = elem("arp-mode-course");
+  const coarse = elem("arp-mode-coarse");
 
   let base = 0;
 
-  for(const option of course.options)
+  for(const option of coarse.options)
   {
     const n = Number(option.value);
     if(n > value) { break; }
     base = n;
   }
 
-  put('arp-mode-course', base);
+  put('arp-mode-coarse', base);
   put('arp-mode-fine',   value - base);
 }
 
