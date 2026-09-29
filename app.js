@@ -30,7 +30,6 @@ const appState =
   lastFrameTime:    0
 };
 
-
 function getFastStep(target) { return Number(target.max) > 127 ? 100 : 5; }
 
 function snapValue(target)
