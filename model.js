@@ -469,6 +469,11 @@ function initEnv(index)
   setEnvValue(10, index,  64);
 }
 
+function envActive(index)
+{
+  return configSysex[124+32*index] != 0;
+}
+
   /////////////////////////////////////////////////////////////////////
  //
 // Arp
@@ -505,12 +510,12 @@ function initArp(index, output)
 
 function arpActive(index, mappings=null)
 {
-  if(presetSysex[1248 + 8*index] <= 10) { return true; }
+  if(presetSysex[1248 + 8*index] > 10) { return true; }
   
   // Only read if the above check failed
   if(mappings === null) { mappings = allMappings(); }
   
-  if(locateMapping("arp", "M", index, mappings)) { return true; }
+  if(locateMapping("arp", "M", index, mappings) !== null) { return true; }
   
   return false;
 }

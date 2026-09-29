@@ -122,6 +122,18 @@ function rebuildIconState()
 
       const outputs = computeMidiOutputs(i);
       iconState.midi[i].output = outputs[0];
+      
+      // Dependent icons
+      if(envActive(i))
+      {
+        iconState.env[i].enabled = true;
+        iconState.env[i].output  = outputs[0];
+      }
+      if(arpActive(i))
+      {
+        iconState.arp[i].enabled = true;
+        iconState.arp[i].output  = outputs[0];
+      }
 
       rebuildMidiOutputChains(
         {
@@ -309,4 +321,44 @@ function renderEnvEditor(index=null)
   put('env-att-shape',  env.as       );
   put('env-dec-shape',  env.ds       );
   put('env-rel-shape',  env.rs       );
+  
+  updateMidiMapButtons("#env-editor .midi-map-button", index);
+}
+
+function setArpMode(value)
+{
+  const course = elem("arp-mode-course");
+
+  let base = 0;
+
+  for(const option of course.options)
+  {
+    const n = Number(option.value);
+    if(n > value) { break; }
+    base = n;
+  }
+
+  put('arp-mode-course', base);
+  put('arp-mode-fine',   value - base);
+}
+
+function renderArpEditor(index=null)
+{
+  if(index === null) { index = selectedIcon.index; }
+  const arp = parseArpeggiator(index);
+  
+  setArpMode(arp.mode);
+  
+  put(  'arp-clock',    arp.clock);
+  check('arp-usbc',     arp.usbc);
+  check('arp-usba',     arp.usba);
+  check('arp-din',      arp.din);
+  put(  'arp-channel',  arp.channel);
+  put(  'arp-range',    arp.range);
+  put(  'arp-gate-len', arp.gate);
+  put(  'arp-latch',    arp.latch);
+  put(  'arp-rate',     arp.rate);
+  put(  'arp-reset',    arp.reset);
+
+  updateMidiMapButtons("#arp-editor .midi-map-button", index);
 }

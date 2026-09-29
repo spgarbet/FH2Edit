@@ -804,7 +804,7 @@ function parseTriggers()
 
 function parseConfigArpeggiator(reader, index=null)
 {
-  if(index !== null) { readers.seek(3644+4*index); }
+  if(index !== null) { reader.seek(3644+4*index); }
   
   const clock   = reader.u8();
   const outputs = reader.u8();
