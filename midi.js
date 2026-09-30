@@ -316,7 +316,11 @@ function onMIDIMessage(message)
 	{
 	  log("Received screenshot");
 		renderScreenshot( data );
-	} else
+	} else if ( data[5] == 0x32 )
+	{
+	  log(String.fromCharCode.apply(null, data.slice(6, -1 )));
+	}
+	else
 	{
 	  log("Received unknown sysex");
 	}
