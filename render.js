@@ -169,7 +169,7 @@ function rebuildIconState()
     if(srrActive(i))
     {
       iconState.srr[i].enabled = true;
-      //updateSrrOutputs(i);
+      updateSrr(i);
     }
   }
 
@@ -178,7 +178,7 @@ function rebuildIconState()
     if(eucActive(i))
     {
       iconState.euc[i].enabled = true;
-      //updateEucOutputs(i);
+      updateEuc(i);
     }
   }
 

@@ -740,7 +740,7 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                 
                 <div>
                   <label for="midi-cvrt-porta" class="tooltip" data-tooltip="Monophonic and Unison MIDI/CV converters use the portamento setting. This sets a glide time between notes played legato ('fingered portamento').">Portamento</label>
-                  <select id="midi-cvrt-porta" onchange="setArpValue(5, this.value)">
+                  <select id="midi-cvrt-porta" onchange="setArpPresetValue(5, this.value, selectedIcon.index)">
                     <script>optionRange(0,127,0)</script>
                   </select>&emsp;
                   <button class="midi-map-button" type="button"
@@ -751,7 +751,7 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                 </div>
                 <div>
                   <label for="midi-cvrt-trans" class="tooltip" data-tooltip="Each MIDI/CV converter has a transpose setting, which transposes its notes up or down in semitones.">Transpose</label>
-                  <select id="midi-cvrt-trans" onchange="setArpValue(7,this.value)">
+                  <select id="midi-cvrt-trans" onchange="setArpPresetValue(7,this.value,selectedIcon.index)">
                     <script>optionRange(-48,48,0,-64)</script>
                   </select>&emsp;
                   <button class="midi-map-button" type="button"
