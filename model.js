@@ -337,8 +337,9 @@ function disableMidi(index)
 {
   setMidiCVValue( 0, 0, index); // Disable it
   clearMappings("mcv",  index);
-  clearMappings("mcv2", index);
-  clearMappings("mcv3", index);
+  clearMappings("arp",  index);
+  clearMappings("env",  index);
+  clearMappings("envs", index);
 }
 
 function initMidi(index, output)
@@ -480,12 +481,12 @@ function envActive(index)
 
 function setArpPresetValue(offset, value, index)
 {
-  setPresetU8(1248 + 8*index + offset, value);
+  setPresetU8(1248 + 8*index + offset, Number(value));
 }
 
 function setArpConfigValue(offset, value, index)
 {
-  setConfigU8(3644 + 4*index + offset, value);
+  setConfigU8(3644 + 4*index + offset, Number(value));
 }
 
 function disableArp(index)

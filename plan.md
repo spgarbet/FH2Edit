@@ -2,6 +2,10 @@
 
 ## Known Bugs
 
+- Removing a Euclidean output does not remove the icon.
+- Save/Reload preset not quite working with SRR/Euclidean,
+  updateSrrOutputs and updateEucOutputs need to be written properly
+- Flash doesn't appear to work.
 
 ## Completed
 
