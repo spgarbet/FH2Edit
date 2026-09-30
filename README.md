@@ -1,6 +1,6 @@
 # FH2Edit
 
-A lighter editor for the Expert Sleepers FH-2.
+A quick start editor for the Expert Sleepers FH-2.
 
 ![](./assets/example.png)
 
@@ -61,7 +61,9 @@ Use the official editors for these features.
 
 This is not an official product of Expert Sleepers, nor is affliated in any way. They maintain trademark and copyright over all their materials, and no infringing claim is made in the licensing of this software.
 
-Back up configurations and presets before using this editor. 
+Back up configurations and presets before using this editor.
+
+FH2Edit is not rated for submarine, space, or microwave operation. We strongly advise against use while showering. In rare cases, it may trigger existential dread and recursive anxiety loops. Do not taunt FH2Edit—taunting voids our non-existent warranty and leads to vacuous sanity implosion. It absorbs 99% of excess reality if exposed to pangolins.
 
 FH2Edit An Expert Sleepers Configuration/Preset Edit Tool
 Copyright (C) 2026 Shawn Garbett

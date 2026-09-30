@@ -1628,7 +1628,13 @@ function updateMidiOutputs(index=selectedIcon.index)
     output: iconState.midi[index].output
   };
   
+  const env = iconState.env[index];
+  
+  env.enabled = envActive(index);
+  env.output  = env.enabled ? parent.output : null;
+  
   rebuildMidiOutputChains(parent, outputs);
+  renderOutputIconsFor(parent.output);
 }
 
 function setMidiCVType(value)

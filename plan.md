@@ -29,28 +29,28 @@
 
 ## In Process
 
+- Clicking the "Envelope" output should automatically add an Envelope icon.
 
 ## TODO
 
 - MIDI Mapping Learn mode
 - Testing
   - All the Arps
+  - Envelopes
 - Tunings 32 slots for Scala/Keyboard
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output
-  - (ICON-Grid) Novation Pad/Sequencer. Probably not going to do.
+
+## Not Planned 
+
+- Outputs
+  - (ICON-Grid) Novation Pad/Sequencer
   
-## Notes
-
-Sequencer is utterly confusing 64 checkbox triggers (preset)?, sequencer bank/drum requests?
-  - 4x4 4 channel MIDI 32 step sequencer  (spits MIDI out)
-  - 1x26 1 drum 32 step sequencer         (spits trigs out)
-
 ## Questions
 
 - What is the scale of portamento? 0-127 means what?
-- Why does every output go red with my default configuration that I send?
-- When 64 is the center of a value that goes from -100% to 100% over 0 to 127, does the slope change either side since 63.5 is the center of 0 to 127?
-- When in configuration trigger can a note be set to "--"? What value is that? -1
-
+- When 64 is the center of a value that goes from -100% to 100% over 0 to 127, does the slope change either side of 64 since 63.5 is the center of 0 to 127?
+- When in configuration trigger can a note be set to "--"? What value is that? -1?
+- Is there a sysex to read the tunings?
+- Do paraphonic outputs still maintain stride?
