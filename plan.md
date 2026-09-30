@@ -2,11 +2,6 @@
 
 ## Known Bugs
 
-- Removing a Euclidean output does not remove the icon.
-- Save/Reload preset not quite working with SRR/Euclidean,
-  updateSrrOutputs and updateEucOutputs need to be written properly
-- Flash doesn't appear to work.
-
 ## Completed
 
 - I/O
@@ -39,8 +34,6 @@
 
 - MIDI Mapping Learn mode
 - Testing
-  - Flash
-  - MIDI/CV Center effects
   - All the Arps
 - Tunings 32 slots for Scala/Keyboard
 - Outputs
