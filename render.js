@@ -363,9 +363,8 @@ function renderArpEditor(index=null)
   updateMidiMapButtons("#arp-editor .midi-map-button", index);
 }
 
-function appendTrigRow(trig)
+function appendTrigRow(trig, fragment)
 {
-  const rows     = elem("trig-rows");
   const template = elem("trig-row-template");
   const row      = template.cloneNode(true);
 
@@ -379,21 +378,25 @@ function appendTrigRow(trig)
   row.querySelector(".trig-env"    ).value    = trig.envelope;
   row.querySelector(".trig-env"    ).disabled = trig.type != 9;
 
-  rows.appendChild(row);
+  fragment.appendChild(row);
 }
 
 function renderTrigEditor(output)
 {
   const avail    = 64-trigCount();
+  const fragment = document.createDocumentFragment();
+  const rows     = elem("trig-rows");
   
-  elem("trig-rows").replaceChildren();
-
   elem('trig-available').textContent   = "Available: " + avail ;
   elem('trig-editor-name').textContent = "Output " + (output+1) + " Triggers";
   elem('trig-editor-plus').hidden      = avail === 0;
   
+  elem("trig-rows").replaceChildren();
+
   for(const trig of triggersForOutput(output))
   {
-    appendTrigRow(trig);
+    appendTrigRow(trig, fragment);
   }
+  
+  rows.appendChild(fragment);
 }

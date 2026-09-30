@@ -1191,8 +1191,6 @@ function renderOutputEditor()
        x === "euc" )  { elem(x+"-editor-header").hidden = sel !== x; }
   }
   
-  if(sel != "placeholder") { centerToSelected(sel+"-editor"); }
-
   switch (sel)
   {
     case "midi":  renderMidiEditor();  break;
@@ -1208,9 +1206,15 @@ function renderOutputEditor()
       mountEucEditor("euc-editor-host");
       renderEucEditor(selectedIcon.index);
       break;
-    case "trig":  renderTrigEditor(selectedIcon.output);  break;
+    case "trig":
+      renderTrigEditor(selectedIcon.output);
+      break;
   }
   updateTooltips();
+  if(sel != "placeholder")
+  {
+    centerToSelected(sel+"-editor");
+  }
 }
 
 function renderOutputs()
@@ -1265,7 +1269,7 @@ function centerToSelected(id)
   top = Math.max(0, Math.min(top, maxTop));
   
   editor.style.top = `${top}px`;
-  updateTooltips();
+  //updateTooltips();
 }
 
 // LFO Code
@@ -1972,7 +1976,6 @@ function mountEucEditor(host)
   elem("euc-editor").hidden = false;
 }
 
-
 function updateEuc(index=selectedEucIndex)
 {
   iconState.euc[index].enabled = eucActive(index);
@@ -2107,10 +2110,9 @@ function initTriggerUI()
     
     const trig = parseTrigger(index);
     
-    appendTrigRow(trig);
+    appendTrigRow(trig, elem("trig-rows"));
     
     elem('trig-available').textContent = "Available: " + (64-trigCount()) ;
-
     
     if(nextAvailableTrig() === -1) { elem("trig-editor-plus").hidden = true; }
     
