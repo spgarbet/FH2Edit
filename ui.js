@@ -1858,9 +1858,6 @@ function updateSrr(index=selectedSrrIndex)
   iconState.srr[index].enabled = srrActive(index);
 
   const outputs = computeSrrOutputs(index);
-  
-  iconState.srr[index].output = outputs.length > 0 ? outputs[0] : null;
-  
   rebuildSrrOutputChains(index, outputs);
 }
 
@@ -1975,14 +1972,12 @@ function mountEucEditor(host)
   elem("euc-editor").hidden = false;
 }
 
+
 function updateEuc(index=selectedEucIndex)
 {
   iconState.euc[index].enabled = eucActive(index);
 
   const outputs = computeEucOutputs(index);
-  
-  iconState.euc[index].output = outputs.length > 0 ? outputs[0] : null;
-
   rebuildEucOutputChains(index, outputs);
 }
 
