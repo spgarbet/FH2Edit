@@ -44,3 +44,4 @@ You need to include one line for each author (not for each icon).
 - [Link](https://www.flaticon.com/free-icon/link_659999?term=chain&page=1&position=8&origin=search&related_id=659999) icon created by [Smashicons](https://www.flaticon.com/authors/smashicons) from [Flaticon](https://flaticon.com)
 - MIDI DIN5 icon created by Shawn Garbett, an author of this package, licensed via GPL-3.
 - [Trigger](https://www.flaticon.com/free-icon/lightning_2024098?term=lightning&page=1&position=18&origin=search&related_id=2024098) icon made by [Magnific](https://www.flaticon.com/authors/manific) from [Flaticon](https://flaticon.com)
+- [Mute and Music Note](https://www.flaticon.com/free-icon/music-sign_3787391?related_id=3787391&origin=pack) icon made by [DenIcon](https://www.flaticon.com/authors/denicon) from [Flaticon](https://flaticon.com)

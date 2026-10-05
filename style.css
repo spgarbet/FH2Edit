@@ -1037,5 +1037,12 @@ canvas
 
 #drum_seq_table tbody td
 {
-  vertical-align: top;
+  vertical-align: center;
+}
+
+#drum_seq_table .midi-map-button
+{
+  display: inline;
+  margin-left: 0;
+  margin-right: 0;
 }
