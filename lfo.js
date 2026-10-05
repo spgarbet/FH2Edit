@@ -196,7 +196,7 @@ function generateLFO(
   const triangle     = parameters.triangle / LFO_COMPONENT_MAX;
   const random       = parameters.random   / LFO_COMPONENT_MAX;
   const noise        = parameters.noise    / LFO_COMPONENT_MAX;
-  const saw          = parameters.saw===64 ? 0 : (parameters.saw-63.5) / 63.5;
+  const saw          = (parameters.saw-64) / 63;
 
   const phaseSamples = phaseOffset(parameters.phase);
 

@@ -48,7 +48,5 @@
 ## Questions
 
 - What is the scale of portamento? 0-127 means what?
-- When 64 is the center of a value that goes from -100% to 100% over 0 to 127, does the slope change either side of 64 since 63.5 is the center of 0 to 127?
 - When in configuration trigger can a note be set to "--"? What value is that? -1?
-- Is there a sysex to read the tunings?
 - Do paraphonic outputs still maintain stride?
