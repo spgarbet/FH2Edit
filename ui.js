@@ -2124,3 +2124,234 @@ function initTriggerUI()
     
   });
 }
+
+  ///////////////////////////////////////////////////////////////////////////
+ //
+// Drum Sequencer
+function toggleDrumMute(lane)
+{
+  const n = lane + 1;
+  const button = document.getElementById("drum_mute_" + n);
+  const image  = button.querySelector("img");
+  const row    = document.getElementById("drum_lane_" + n);
+  const muted  = row.classList.toggle("muted");
+
+  if(muted)
+  {
+    image.src = "icons/mute.png";
+    image.alt = "Muted lane " + n;
+    button.setAttribute("aria-pressed", "true");
+  }
+  else
+  {
+    image.src = "icons/unmute.png";
+    image.alt = "Unmuted lane " + n;
+    button.setAttribute("aria-pressed", "false");
+  }
+}
+
+function laneHeaders()
+{
+  document.write("<td class=\"spacer\"></td>");
+
+  for(let i = 0; i < 32; ++i)
+  {
+    document.write("<td>" + (i + 1) + "</td>");
+
+    if((i + 1) % 8 === 0)
+    {
+      document.write("<td class=\"spacer\"></td>");
+    }
+  }
+}
+
+function drumLanes()
+{
+  for(let lane = 0; lane < 8; ++lane)
+  {
+    drumLane(lane);
+  }
+}
+
+function durationOptions()
+{
+  const musicalRates =
+  [
+    [3, "1/32"],
+    [6, "1/16"],
+    [8, "1/8T"],
+    [9, "1/16&#183;"],
+    [12, "1/8"],
+    [16, "1/4T"],
+    [18, "1/8&#183;"],
+    [21, "1/8&#183;&#183;"],
+    [24, "1/4"],
+    [32, "1/2T"],
+    [36, "1/4&#183;"],
+    [42, "1/4&#183;&#183;"],
+    [48, "1/2"],
+    [72, "1/2&#183;"],
+    [84, "1/2&#183;&#183;"],
+    [96, "Whole"]
+  ];
+
+  const musicalRateValues = new Set();
+
+  for(const [value, label] of musicalRates)
+  {
+    document.write("<option value=\"" + value + "\""+(value===24?' selected':'')+">" + label + "</option>");
+    musicalRateValues.add(value);
+  }
+
+  for(let i = 1; i <= 127; ++i)
+  {
+    if(!musicalRateValues.has(i))
+    {
+      document.write("<option value=\"" + i + "\">" + i + "</option>");
+    }
+  }
+}
+
+function writeMidiMapButton(id, type, index, dest, aria)
+{
+  document.write("<button class=\"midi-map-button\" type=\"button\" ");
+  document.write("id=\""+id+"\"");
+  document.write("data-type=\""+type+"\" ");
+  document.write("data-index=\""+index+"\" ");
+  document.write("data-dest=\""+dest+"\" ");
+  document.write("aria-label=\""+aria+"\">");
+  document.write("<img src=\"icons/midi-din.svg\" alt=\"MIDI DIN5\">");
+  document.write("</button>");
+}
+
+function drumLane(lane)
+{
+  let n = lane + 1;
+
+  document.write("<tr id=\"drum_lane_" + n + "\">");
+  document.write("<td>" + n + "</td>");
+
+  document.write("<td>");
+  document.write("<button class=\"mute-button\" type=\"button\"");
+  document.write(" id=\"drum_mute_" + n + "\"");
+  document.write(" onclick=\"toggleDrumMute(" + lane + ")\"");
+  document.write(" aria-label=\"Drum sequencer mute for lane " + n + "\">");
+  document.write("<img src=\"icons/unmute.png\" alt=\"Unmuted lane " + n + "\">");
+  document.write("</button>");
+  document.write("</td>");
+
+  document.write("<td><select id=\"drum_note_" + n + "\">");
+  optionRange(0, 127, lane+1);
+  document.write("</select></td>");
+
+  document.write("<td><select id=\"drum_start_" + n + "\"");
+  document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
+  optionRange(1, 32, 1, 1);
+  document.write("</select></td>");
+  
+  document.write("<td><select id=\"drum_end_" + n + "\"");
+  document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
+  optionRange(1, 32, 16, 1);
+  document.write("</select></td>");
+
+  document.write("<td><select id=\"drum_rate_" + n + "\">");
+  durationOptions();
+  document.write("</select>");
+    writeMidiMapButton("drum_rate_map_" + n, "dseql", n, "T", 
+    "MIDI rate for drum lane " + (n+1));
+  document.write("</td>");
+
+  document.write("<td><select id=\"drum_reset_" + n + "\">");
+  document.write("<option value=\"0\">--</option>");
+  optionRange(2, 32, 1, 1);
+  document.write("</select>");
+  writeMidiMapButton("drum_reset_map_" + n, "dseql", n, "S", 
+    "MIDI reset for drum lane " + (n+1));
+  document.write("</td>");
+  
+  document.write("<td><br>");
+  writeMidiMapButton("drum_position_" + n, "dseql", n, "P", 
+    "MIDI position for drum lane " + (n+1));
+  document.write("</td>");
+
+  laneDrumTrigs(lane);
+
+  document.write("</tr>");
+}
+
+function laneDrumTrigs(lane)
+{
+  document.write("<td class=\"spacer\"></td>");
+
+  for(let i = 0; i < 32; ++i)
+  {
+    document.write("<td id=\"drum_step_" + lane + "_" + i + "\">");
+    document.write("<button id=\"drum_trig_" + lane + "_" + i + "\"");
+    document.write(" data-lane=\"" + lane + "\"");
+    document.write(" data-index=\"" + i + "\"");
+    document.write(" class=\"notrig\"");
+    document.write(" onclick=\"toggleDrumTrig(this)\">&nbsp;</button>");
+    document.write("</td>");
+
+    if((i + 1) % 8 === 0)
+    {
+      document.write("<td></td>");
+    }
+  }
+}
+
+function toggleDrumTrig(trig)
+{
+  switch(trig.textContent)
+  {
+    case "o":
+      trig.textContent="X";
+      trig.classList.add("accent");
+      trig.classList.remove("trig");
+      break;
+    case "X":
+      trig.textContent=" ";
+      trig.classList.add("notrig");
+      trig.classList.remove("accent");
+      break;
+    default:
+      trig.textContent="o";
+      trig.classList.add("trig");
+      trig.classList.remove("notrig");
+      break;
+  }
+}
+
+function updateDrumLaneRange(lane)
+{
+  const n     = lane + 1;
+  const start = parseInt(document.getElementById("drum_start_" + n).value);
+  const end   = parseInt(document.getElementById("drum_end_" + n).value);
+
+  for(let i = 0; i < 32; ++i)
+  {
+    const cell = document.getElementById("drum_step_" + lane + "_" + i);
+
+    if(i >= start && i <= end)
+    {
+      cell.classList.add("step-active");
+      cell.classList.remove("step-inactive");
+    }
+    else
+    {
+      cell.classList.add("step-inactive");
+      cell.classList.remove("step-active");
+    }
+  }
+}
+
+function initDrumSeq()
+{
+  window.addEventListener("load", function()
+  {
+    for(let lane = 0; lane < 8; ++lane)
+    {
+      updateDrumLaneRange(lane);
+    }
+  });
+}

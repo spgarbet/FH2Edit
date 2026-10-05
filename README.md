@@ -43,18 +43,14 @@ FH2Edit is under active development.
 
 **In progress**
 
+- Drum Sequencer
+
 **Planned**
 
 - MIDI mapping learn mode
 - Tunings (32 slots, Scala/keyboard)
 - HID gamepad and HID keyboard outputs
 - A Gates tab (for things like expanders)
-
-**Not planned**
-
-Use the official editors for these features.
-
-- Novation Pad interface
 - Sequencer editing
 
 ## Aftermatter

@@ -61,6 +61,7 @@
     <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
     <button type="button" class="tab"        data-target="euc-screen"        >Euclidean</button>
     <button type="button" class="tab"        data-target="srr-screen"        >SSR</button>
+    <button type="button" class="tab"        data-target="drum-screen"       >Drum</button>
   </nav>
 
   <main id="main">
@@ -1712,28 +1713,75 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
       </div>
     </section>
 
-    <!-- Controllers -->
+    <!-- Drum Sequencer -->
 
-    <section class="screen" id="controllers-screen">
+    <section class="screen" id="drum-screen">
 
-      <div class="screen-header"><h2>Controllers</h2></div>
+      <div class="screen-header"><h2>Drum Sequencer</h2></div>
 
-      <div class="screen-content" id="controllers-content">
-        <div class="placeholder">
-          MIDI controller configuration
-        </div>
+      <div class="screen-content" id="drum-content">
+        <fieldset class="parameter-group">
+          <legend>Global</legend>
+          <div class="singleline">
+            <div>
+              <label for="drum_channel">MIDI Channel</label>
+              <select id="drum_channel"><script>optionRange(1,16,1,1)</script></select>
+            </div>
+            <div>
+              <label for="drum_out_int">&emsp;Output</label>
+              Int&nbsp;<input id="drum_out_i" type="checkbox">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="drum_out_c" type="checkbox">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="drum_out_a" type="checkbox">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="drum_out_d" type="checkbox">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="drum_out_s" type="checkbox">
+            </div>           
+            <div>
+              <label for="drum_running" class="tooltip" data-tooltip="Actively running">Running</label>
+              <input id="drum_running" type="checkbox">
+            </div>
+            <div>
+              <label for="drum_muted" class="tooltip" data-tooltip="Mute all drum output">Muted</label>
+              <input id="drum_muted" type="checkbox">
+            </div>
+            <div>
+              <label for="drum_reset" class="tooltip" data-tooltip="Force the sequence back to the first step after this many quarter notes elapsed">Reset</label>
+              <select id="drum_reset"><option value="0" selected>Off</option><script>optionRange(1,127,0)</script></select>
+              <button class="midi-map-button" type="button"
+                      data-type="dseq" data-index="0" data-dest="S"
+                      aria-label="MIDI assignment for global drum sequencer reset">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="drum_position">Position</label>
+              <button class="midi-map-button" type="button" id="drum_position"
+                      data-type="dseq" data-index="0" data-dest="P"
+                      aria-label="MIDI assignment for global drum sequencer position">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="parameter-group">
+          <legend>Lanes</legend>
+          <table id="drum_seq_table">
+            <thead>
+              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td>Reset</td><td>Pos</td></td><script>laneHeaders()</script></tr>
+            </thead>
+            <tbody><script>drumLanes()</script></tbody>
+          </table>
+        </fieldset>
       </div>
 
     </section>
+    
+    <!-- Note Sequencer -->
 
+    <section class="screen" id="sequencer-screen">
 
-    <!-- Sequencers -->
+      <div class="screen-header"><h2>Sequencer</h2></div>
 
-    <section class="screen" id="sequencers-screen">
-
-      <div class="screen-header"><h2>Sequencers</h2></div>
-
-      <div class="screen-content" id="sequencers-content">
+      <div class="screen-content" id="sequencer-content">
         <div class="placeholder">
           Sequencer configuration
         </div>
@@ -1769,7 +1817,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
   
   <footer id="footer">
     <span><a href="https://github.com/spgarbet/FH2Edit" id="github-link">Source</a></span>
-    <span>Version 0.1.0</span>
+    <span>Version 0.1.0.9999</span>
     <span>©2026 <a href="https://garbett.org">Shawn Garbett</a></span>
     <span>
       <a href="https://www.gnu.org/licenses/gpl-3.0.html"
@@ -1815,6 +1863,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
         <li>MIDI DIN5 icon created by Shawn Garbett, an author of this package.</li>
         <li><a href="https://www.flaticon.com/free-icon/link_659999?term=chain&page=1&position=8&origin=search&related_id=659999" target="_blank" rel="noopener">Link</a> icon created by <a href="https://www.flaticon.com/authors/smashicons" target="_blank" rel="noopener">Smashicons</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         <li><a href="https://www.flaticon.com/free-icon/lightning_2024098?term=lightning&page=1&position=18&origin=search&related_id=2024098" target="_blank" rel="noopener">Trigger</a> icon made by <a href="https://www.flaticon.com/authors/manific" target="_blank" rel="noopener">Manific</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/music-sign_3787391?related_id=3787391&origin=pack" target="_blank" rel="noopener">Mute and Music Note</a> icon made by <a href="https://www.flaticon.com/authors/denicon" target="_blank" rel="noopener">DenIcon</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         </ul>
       </div>
   

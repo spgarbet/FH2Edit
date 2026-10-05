@@ -2,6 +2,8 @@
 
 ## Known Bugs
 
+- Tempo limits from configuration seem to be missing
+
 ## Completed
 
 - I/O
@@ -29,7 +31,7 @@
 
 ## In Process
 
-- Clicking the "Envelope" output should automatically add an Envelope icon.
+- Drum sequencer!
 
 ## TODO
 
@@ -41,10 +43,6 @@
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output
-
-## Not Planned 
-
-- Outputs
   - (ICON-Grid) Novation Pad/Sequencer
   
 ## Questions

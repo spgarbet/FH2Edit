@@ -640,7 +640,8 @@ body
   gap: 1em;
 }
 
-.outputs-button {
+.outputs-button
+{
   width: 28px;
   height: 28px;
   padding: 0;
@@ -652,7 +653,8 @@ body
   cursor: pointer;
 }
 
-.outputs-button img {
+.outputs-button img
+{
   width: 28px;
   height: 28px;
   display: block;
@@ -799,6 +801,16 @@ canvas
   margin-right: 0;
 }
 
+.mute-button
+{
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
 #globals-content .midi-map-button
 {
   display: inline;
@@ -879,7 +891,7 @@ canvas
   margin-right: 0;
 }
 
-#midi-map-popup img
+#midi-map-popup img, .mute-button img
 {
   flex: 0 0 16px;
   width: 16px;
@@ -958,4 +970,72 @@ canvas
   width: 11px;
   height: 11px;
   display: block;
+}
+
+/* Drum Seq */
+
+.spacer
+{
+  width: 1em;
+  min-width: 1em;
+}
+
+.notrig, .trig, .accent
+{
+  border: 1px solid #d3d3d3;
+  background: transparent;
+  cursor: pointer;
+  width: 1.2em;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 1px;
+  font-size: 1.2em;
+  line-height: 1.4em;
+  height: 1.4em;
+}
+
+.notrig
+{
+
+}
+
+.trig
+{
+}
+
+.accent
+{
+  font-weight: bold;
+}
+
+#drum-content td
+{
+  background: transparent;
+}
+
+#drum-content tr.muted, #drum-content tr.muted td
+{
+  background: #999;
+}
+
+#drum-content table
+{
+  background: transparent;
+  border-collapse: collapse;
+}
+
+#drum-content td.step-active
+{
+  background: white;
+}
+
+#drum-content td.step-inactive
+{
+  background: #dddddd;
+}
+
+#drum_seq_table tbody td
+{
+  vertical-align: top;
 }

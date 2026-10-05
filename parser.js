@@ -341,7 +341,7 @@ function parseEnvelopes(reader)
 function parsePreset(reader)
 {
   reader.skip(8);
-  const version = reader.u32LE();                          //   8
+  const version = reader.u32LE();                             //   8
   if (version !== 8)
   {
     log("Preset Version Unsupported");
@@ -349,21 +349,21 @@ function parsePreset(reader)
     return null;
   }
 
-  const name = reader.fixedString(16).trimEnd();          //   12
-  reader.skip(1);
-  const swingType   = reader.u8();                        //   29
-  const swingAmount = reader.u8();                        //   30
-  reader.skip(1);
-	const directLevel = parsePresetDirectLevel(reader);     //   32
-	const lfos        = parsePresetLFOs(reader);            //  160
-  const arpeg       = parsePresetArpeggiators(reader);    // 1248
-  const tempo       = reader.uLong() * 0.1;               // 1376
-  const euclidean   = parsePresetEuclideans(reader);      // 1380
-  const envelope    = parseEnvelopes(reader);             // 1508
-  const scala       = parseScala(reader);                 // 1636
+  const name = reader.fixedString(16).trimEnd();              //   12
   
-  const sequencerActive = reader.u8();        // 1700
-  const sequencerMute   = reader.u8();        // 1701
+  reader.skip(1);
+  const swingType       = reader.u8();                        //   29
+  const swingAmount     = reader.u8();                        //   30
+
+	const directLevel     = parsePresetDirectLevel(reader);     //   32
+	const lfos            = parsePresetLFOs(reader);            //  160
+  const arpeg           = parsePresetArpeggiators(reader);    // 1248
+  const tempo           = reader.uLong() * 0.1;               // 1376
+  const euclidean       = parsePresetEuclideans(reader);      // 1380
+  const envelope        = parseEnvelopes(reader);             // 1508
+  const scala           = parseScala(reader);                 // 1636
+  const sequencerActive = reader.u8();                        // 1700
+  const sequencerMute   = reader.u8();                        // 1701
 
   const sequencers = [];                    
   for (let i=0; i<4; ++i)
@@ -744,6 +744,17 @@ function parseConfigEuclidean(reader, index)
   return euc;
 }
 
+function parseConfigEuclideans(reader)
+{
+  reader.seek();
+  const euclidean = [];
+  for (let i = 0; i < 16; ++i)
+  {
+    euclidean.push(parseConfigEuclidean(reader, i));
+  }
+  return euclidean;
+}
+
 function parseConfigTrigger(reader, index=null)
 {
   if(index !== null) { reader.seek(2660+4*index); }
@@ -822,103 +833,14 @@ function parseConfigArpeggiator(reader, index=null)
   };
 }
 
-function parseConfigArpeggiators(reader)
+function parseGamepad(reader)
 {
-  reader.seek(3644);
-  const arpeggiators = [];                
-  for (let i = 0; i < 16; ++i)
-  {
-    arpeggiators.push(parseConfigArpeggiator(reader));
-  }
-  
-  return arpeggiators;
-}
-
-function parseConfig(reader)
-{
-  reader.skip(8);
-
-  const version = reader.u32LE(); // 8
-
-  if (version !== 11)
-  {
-    log("FH-2 Config Version Unsupported");
-    alert("This version of the tool does support the configuration version.");
-    return null;
-  }
-
-  const config =
-  {
-    version: version,
-    name: reader.fixedString(16).trimEnd() // 12
-  };
-
-  reader.skip(1);
-
-  // Globals
-  config.globals =
-  {
-    triglen:      reader.u8(),             // 29
-    transpose:    reader.s8(),             // 30
-    legvel:       reader.u8(),             // 31
-    extclkmult:   reader.u8(),             // 32
-    extclkrun:    reader.u8(),             // 33
-    presetprogch: reader.u8(),             // 34
-    softtakeover: reader.u8()              // 35
-  };
-
-  // Output ranges
-  config.outputRanges = [];                // 36
-  for (let i = 0; i < 64; ++i) { config.outputRanges.push(reader.u8()); }
-
-  // MCVs
-  config.mcvs = [];                        // 100
-  for (let i = 0; i < 16; ++i) { config.mcvs.push(parseMcv(reader));    }
-
-  config.mappings = parseMappings(reader);     //  612 
-  config.clocks   = parseConfigClocks(reader); // 2148
-
-  // Gate levels
-  config.gateLevels = [];                  // 2404
-  for (let i = 0; i < 64; ++i)
-  {
-    config.gateLevels.push(
-      {
-        low:  reader.uShort(),
-        high: reader.uShort()
-      }
-    );
-  }
-
-  // Triggers                           2660
-  config.triggers = parseConfigTriggers(reader);
-
-  // Euclidean outputs
-  config.euclidean = [];
-  for (let i = 0; i < 16; ++i)
-  {
-    config.euclidean.push(parseConfigEuclidean(reader, i));
-  }
- 
-  // Global MIDI controls                  // 2932
-  reader.seek(2932); 
-  config.globalMidi =
-  {
-    tapType:      reader.u8(),
-    tapChannel:   reader.u8(),
-    tapCC:        reader.u8(),
-    eucAccent:    reader.u8(),
-    startType:    reader.u8(),
-    startChannel: reader.u8(),
-    startCC:      reader.u8()
-  };
-
   // Gamepad / HID mappings
   reader.seek(2956);
-  config.hidMappings = [];                 // 2956
+  const gamepad = [];              
   for (let i = 0; i < 32; ++i)
   {
-    config.hidMappings.push(
+    gamepad.push(
       {
         usage:   reader.u8(),
         output:  reader.u8(),
@@ -929,18 +851,23 @@ function parseConfig(reader)
 
     reader.skip(2);
   }
+  
+  return gamepad;
+}
 
-  // Keyboard mappings
-  config.keyboardMappings = [];            // 3212
+function parseKeyboard(reader)
+{  
+  reader.seek(3212);
+  const keyboard = [];
   for (let i = 0; i < 32; ++i)
   {
-    const type = reader.u8();
+    const type   = reader.u8();
     const output = reader.u8();
-    const key = reader.u8();
+    const key    = reader.u8();
 
     reader.skip(1);
 
-    config.keyboardMappings.push(
+    keyboard.push(
       {
         type:   type,
         output: output,
@@ -950,18 +877,37 @@ function parseConfig(reader)
       }
     );
   }
+  
+  return keyboard;
+}
 
-  // LFO resets
-  config.lfoResets = parseLfoResets(reader); // 3468
+function parseGateLevels(reader)
+{
+  reader.seek(2404);
+  const gateLevels = [];
+  for (let i = 0; i < 64; ++i)
+  {
+    gateLevels.push(
+      {
+        low:  reader.uShort(),
+        high: reader.uShort()
+      }
+    );
+  }
+  
+  return gateLevels;
+}
 
-  // CV/MIDI
-  config.cvMidi = [];                      // 3596
+function parseCvMidi(reader)
+{
+  reader.seek(3596);
+  const cvMidi = [];
   for (let i = 0; i < 2; ++i)
   {
     const flags       = reader.u8();       // 3596 or 3604
     const typeChannel = reader.u8();       // 3597 or 3605
 
-    config.cvMidi.push(
+    cvMidi.push(
       {
         enable:  (flags & (1 << 0)) != 0,
         outI:    (flags & (1 << 1)) != 0,
@@ -979,27 +925,59 @@ function parseConfig(reader)
 
     reader.skip(1);
 
-    config.cvMidi[i].zeroV = reader.sShort();  // 3600 or 3608
-    config.cvMidi[i].fiveV = reader.sShort();  // 3602 or 3610
+    cvMidi[i].zeroV = reader.sShort();  // 3600 or 3608
+    cvMidi[i].fiveV = reader.sShort();  // 3602 or 3610
   }
+  
+  return cvMidi;
+}
 
-  // Tempo limits                          // 3612
-  config.tempo =
+function parseConfigArpeggiators(reader)
+{
+  reader.seek(3644);
+  const arpeggiators = [];                
+  for (let i = 0; i < 16; ++i)
   {
+    arpeggiators.push(parseConfigArpeggiator(reader));
+  }
+  
+  return arpeggiators;
+}
+
+function parseConfigGlobalMidi(reader)
+{  
+  reader.seek(2932);
+  return {
+    tapType:      reader.u8(),
+    tapChannel:   reader.u8(),
+    tapCC:        reader.u8(),
+    eucAccent:    reader.u8(),
+    startType:    reader.u8(),
+    startChannel: reader.u8(),
+    startCC:      reader.u8()
+  };
+}
+
+function parseTempoLimits(reader)
+{
+  reader.seek(3612);
+  return {
     min: reader.u8(),
     max: reader.u8()
   };
+}
 
-  reader.skip(2);
-
+function parseConfigSequencers(reader)
+{
   // Sequencers
-  config.sequencers = [];                  // 3616
+  reader.seek(3616);
+  const sequencers = [];
   for (let i = 0; i < 4; ++i)
   {
     const channel = reader.u8();
     const outputs = reader.u8();
 
-    config.sequencers.push(
+    sequencers.push(
       {
         channel: channel,
         internal: (outputs >> 0) & 1,
@@ -1013,9 +991,14 @@ function parseConfig(reader)
 
     reader.skip(1);
   }
+  
+  return sequencers;
+}
 
-  // Drum sequencer
-  config.drumSequencer = [];               // 3632
+function parseConfigDrumSeq(reader)
+{
+  reader.seek(3632);
+  const drumSequencer = [];
   for (let i = 0; i < 1; ++i)
   {
     const channel = reader.u8();
@@ -1036,9 +1019,88 @@ function parseConfig(reader)
 
     for (let j = 0; j < 8; ++j) { drum.notes.push(reader.u8()); }
 
-    config.drumSequencer.push(drum);
+    drumSequencer.push(drum);
   }
   
+  return drumSequencer;
+}
+
+function parseOutputRanges(reader)
+{
+  reader.seek(36);
+  
+  const outputRanges = [];
+  for (let i = 0; i < 64; ++i)
+  {
+    outputRanges.push(reader.u8());
+  }
+
+  return outputRanges;
+}
+
+function parseMcvs(reader)
+{
+  reader.seek(100);
+  const mcvs = [];
+  for (let i = 0; i < 16; ++i)
+  {
+    mcvs.push(parseMcv(reader));
+  }
+
+  return mcvs;
+}
+
+function parseConfigGlobals(reader)
+{
+  reader.seek(29);
+  
+  return {
+    triglen:      reader.u8(),             // 29
+    transpose:    reader.s8(),             // 30
+    legvel:       reader.u8(),             // 31
+    extclkmult:   reader.u8(),             // 32
+    extclkrun:    reader.u8(),             // 33
+    presetprogch: reader.u8(),             // 34
+    softtakeover: reader.u8()              // 35
+  };
+}
+
+function parseConfig(reader)
+{
+  reader.skip(8);
+
+  const version = reader.u32LE(); // 8
+
+  if (version !== 11)
+  {
+    log("FH-2 Config Version Unsupported");
+    alert("This version of the tool does support the configuration version.");
+    return null;
+  }
+
+  const config =
+  {
+    version: version,
+    name:    reader.fixedString(16).trimEnd() // 12
+  };
+
+  // Globals
+  config.globals        = parseConfigGlobals(reader);        //   29
+  config.outputRanges   = parseOutputRanges(reader);         //   36
+  config.mcvs           = parseMcvs(reader);                 //  100
+  config.mappings       = parseMappings(reader);             //  612 
+  config.clocks         = parseConfigClocks(reader);         // 2148
+  config.gateLevels     = parseGateLevels(reader);           // 2404
+  config.triggers       = parseConfigTriggers(reader);       // 2660
+  config.euclidean      = parseConfigEuclideans(reader); 
+  config.globalMidi     = parseConfigGlobalMidi(reader);
+  config.gamepad        = parseGamepad(reader);
+  config.keyboard       = parseKeyboard(reader);
+  config.lfoResets      = parseLfoResets(reader);            // 3468
+  config.cvMidi         = parseCvMidi(reader);
+  config.tempo          = parseTempoLimits(reader);          // 3612
+  config.sequencers     = parseConfigSequencers(reader);     // 3616
+  config.drumSequencer  = parseConfigDrumSeq(reader);        // 3632
   config.arpeggiators   = parseConfigArpeggiators(reader);   // 3644
   config.shiftRegisters = parseConfigShiftRegisters(reader); // 3708
 
