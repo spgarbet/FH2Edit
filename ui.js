@@ -100,10 +100,10 @@ function u7PercentRange(selected = 0)
 
 function u7SplitPercentage(selected = 0)
 {
-  for (let i=0; i<128; ++i)
+  for (let i=1; i<128; ++i)
   {
     const isSelected = i === selected ? ' selected' : '';
-    document.write(`<option value="${i}"${isSelected}>${(100*(i-63.5)/63.5).toFixed(1)}&#37;</option>`);
+    document.write(`<option value="${i}"${isSelected}>${(100*(i-64)/63).toFixed(1)}&#37;</option>`);
   }
 }
 
@@ -2269,7 +2269,7 @@ function drumLane(lane)
     "MIDI reset for drum lane " + (n+1));
   document.write("</td>");
   
-  document.write("<td><br>");
+  document.write("<td>");
   writeMidiMapButton("drum_position_" + n, "dseql", n, "P", 
     "MIDI position for drum lane " + (n+1));
   document.write("</td>");
