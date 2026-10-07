@@ -1763,7 +1763,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
           <legend>Lanes</legend>
           <table id="drum-seq-table">
             <thead>
-              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td class="tooltip" data-tooltip="Reset to beginning after this many steps, or 0 to disable.">Reset</td><td class="tooltip" data-tooltip="Control lane position via MIDI CC">Pos</td></td><script>laneHeaders()</script></tr>
+              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td><span class="tooltip" data-tooltip="Reset the sequence to its first step when playback reaches this step.">Reset</span></td><td><span class="tooltip" data-tooltip="Set the position of the drum sequence lane via MIDI CC">Pos</span></td><script>laneHeaders()</script></tr>
             </thead>
             <tbody><script>drumLanes()</script></tbody>
           </table>
