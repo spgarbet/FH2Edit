@@ -430,8 +430,8 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                             aria-label="MIDI assignment for internal tempo">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
               </button>
-              Min:&nbsp;<select id="glb_tempo_min"><script>optionRange(1,128,60,1)</script></select>
-              &nbsp;Max:&nbsp;<select id="glb_tempo_max"><script>optionRange(128,255,187,128)</script></select>
+              Min:&nbsp;<select id="glb_tempo_min" onchange="setConfigU8(3612,Number(this.value))"><script>optionRange(1,128,60,1)</script></select>
+              &nbsp;Max:&nbsp;<select id="glb_tempo_max" onchange="setConfigU8(3613,Number(this.value))"><script>optionRange(128,255,187,128)</script></select>
             </div> 
             <div>
               <label for="glb_swing_type" class="tooltip" data-tooltip="MIDI CCs controlling the swing type and amount for clocks and other timing signals.">Swing Type</label>
@@ -791,7 +791,7 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                     <img src="icons/midi-din.svg" alt="MIDI DIN5">
                 </button> &nbsp; or &nbsp;
                 <label for="lfo-base" class="tooltip" data-tooltip="The rate of the current tempo in 24ppqn.">Base</label>
-                <select id="lfo-base" onchange="setLfoBase(this.value)"><script>optionRange(0,127,0)</script></select>
+                <select id="lfo-base" onchange="setLfoBase(this.value)"><script>durationOptions(24)</script></select>
                 <button class="midi-map-button no-auto-margin" type="button"
                           data-type="lfo" data-index="0" data-dest="CLKM"
                           aria-label="MIDI assignment for LFO Clock Base">

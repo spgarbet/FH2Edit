@@ -338,6 +338,38 @@ function parseEnvelopes(reader)
   return envelopes;
 }
 
+function parsePresetGlobals(reader)
+{
+  reader.seek(8);
+  const version = reader.u32LE();                             //   8
+  if (version !== 8)
+  {
+    log("Preset Version Unsupported");
+    alert("This version of the tool does not support the preset version number.");
+    return null;
+  }
+
+  const name = reader.fixedString(16).trimEnd();              //   12
+  
+  reader.skip(1);
+  const swingType       = reader.u8();                        //   29
+  const swingAmount     = reader.u8();                        //   30
+  reader.seek(1376);
+  const tempo           = reader.uLong() * 0.1;               // 1376
+  reader.seek(2528);
+  const swing           = [reader.u8(), reader.u8(), reader.u8()]; // 2528
+
+  return (
+  {
+    version,
+    name,
+    swingType,
+    swingAmount,
+    swing
+  });
+}
+
+/* For reference purposes
 function parsePreset(reader)
 {
   reader.skip(8);
@@ -559,6 +591,8 @@ function parsePreset(reader)
     swing
   });
 }
+
+*/
 
 function parseMcv(reader)  // 32 bytes total
 {
@@ -1065,6 +1099,37 @@ function parseConfigGlobals(reader)
   };
 }
 
+function parseConfigAllGlobals(reader)
+{
+  reader.seek(8);
+
+  const version = reader.u32LE(); // 8
+
+  if (version !== 11)
+  {
+    log("FH-2 Config Version Unsupported");
+    alert("This version of the tool does support the configuration version.");
+    return null;
+  }
+
+  const config =
+  {
+    version: version,
+    name:    reader.fixedString(16).trimEnd() // 12
+  };
+
+  // Globals
+  config.globals        = parseConfigGlobals(reader);
+  config.outputRanges   = parseOutputRanges(reader);         //   36
+  config.gateLevels     = parseGateLevels(reader);           // 2404
+  config.cvMidi         = parseCvMidi(reader);
+  config.globalMidi     = parseConfigGlobalMidi(reader);
+  config.tempo          = parseTempoLimits(reader);          // 3612
+  
+  return config;
+}
+
+/* For reference purposes
 function parseConfig(reader)
 {
   reader.skip(8);
@@ -1106,6 +1171,7 @@ function parseConfig(reader)
 
   return config;
 }
+*/
 
 function parseScreenshot(reader)
 {

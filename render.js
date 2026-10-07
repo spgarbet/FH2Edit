@@ -19,7 +19,7 @@
 function renderPreset(data)
 {
   const reader = new ByteReader(data);
-  const preset = parsePreset(reader);
+  const preset = parsePresetGlobals(reader);
   if (preset === null) { return false; }
   presetSysex  = data;
   
@@ -188,7 +188,7 @@ function rebuildIconState()
 function renderConfig(data)
 {
   const reader = new ByteReader(data);
-  const config = parseConfig(reader);
+  const config = parseConfigAllGlobals(reader);
   if (config === null) { return false; }
   configSysex  = data;
   
@@ -202,6 +202,9 @@ function renderConfig(data)
   put(  "glb_eucaccent",    config.globalMidi.eucAccent);
   put(  "glb_presetprogch", config.globals.presetprogch);
   check("glb_softtakeover", config.globals.softtakeover);
+  
+  put(  "glb_tempo_min",    config.tempo.min);
+  put(  "glb_tempo_max",    config.tempo.max);
   
   for(let i=0; i<64; ++i)
   { 
