@@ -2,8 +2,6 @@
 
 ## Known Bugs
 
-- Tempo limits from configuration seem to be missing
-
 ## Completed
 
 - I/O
