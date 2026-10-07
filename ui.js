@@ -266,7 +266,7 @@ function updateTooltips()
 
 function initTabs()
 {
-  const tabs = document.querySelectorAll(".tab");
+  const tabs    = document.querySelectorAll(".tab");
   const screens = document.querySelectorAll(".screen");
 
   for (const tab of tabs)
@@ -300,6 +300,10 @@ function initTabs()
           mountEucEditor("euc-screen-editor-host");
           renderEucEditor();
           break;
+        
+        case "drum-screen":
+          renderDrumSeq();
+          break;
       }
     });
   }
@@ -325,9 +329,9 @@ function buildOutputs()
     panel.className     = "outputs-panel";
     panel.style.gridRow = "1 / span 8";
     panel.innerHTML =
-      "<img src=\"" +
+      "<img src='" +
       (unit === 0 ? "assets/fh-2-panel.png" : "assets/fhx-8cv-panel.png") +
-      "\" alt=\"FH-2 output panel\">";
+      "' alt='FH-2 output panel'>";
     
     element.appendChild(panel);
 
@@ -830,7 +834,7 @@ function selectIcon(type, index, output)
     .forEach(button => button.classList.remove("selected"));
 
   const button = document.querySelector(
-    ".outputs-icon-item[data-type=\"" + type + "\"][data-index=\"" + index + "\"]"
+    ".outputs-icon-item[data-type='" + type + "'][data-index='" + index + "']"
   );
 
   if(button)
@@ -1221,7 +1225,7 @@ function renderOutputs()
 {
   for (let unit = 0; unit < 8; ++unit)
   {
-    const element = document.getElementById("outputs-unit" + unit);
+    const element = elem("outputs-unit" + unit);
 
     if (!element) { continue; }
 
@@ -2128,31 +2132,35 @@ function initTriggerUI()
   ///////////////////////////////////////////////////////////////////////////
  //
 // Drum Sequencer
-function toggleDrumMute(lane)
+function updateDrumMute(lane, muted)
 {
-  const n = lane + 1;
-  const button = document.getElementById("drum-mute-" + n);
+  const button = elem("drum-mute-" + lane);
   const image  = button.querySelector("img");
-  const row    = document.getElementById("drum-lane-" + n);
-  const muted  = row.classList.toggle("muted");
 
   if(muted)
   {
     image.src = "icons/mute.png";
-    image.alt = "Muted lane " + n;
+    image.alt = "Muted lane " + (lane+1);
     button.setAttribute("aria-pressed", "true");
   }
   else
   {
     image.src = "icons/unmute.png";
-    image.alt = "Unmuted lane " + n;
+    image.alt = "Unmuted lane " + (lane+1);
     button.setAttribute("aria-pressed", "false");
   }
 }
 
+function toggleDrumMute(lane)
+{
+  const row   = elem("drum-lane-" + lane);
+  const muted = row.classList.toggle("muted");
+  updateDrumMute(lane, muted);
+}
+
 function laneHeaders()
 {
-  document.write("<td class=\"spacer\"></td>");
+  document.write("<td class='spacer'></td>");
 
   for(let i = 0; i < 32; ++i)
   {
@@ -2160,7 +2168,7 @@ function laneHeaders()
 
     if((i + 1) % 8 === 0)
     {
-      document.write("<td class=\"spacer\"></td>");
+      document.write("<td class='spacer'></td>");
     }
   }
 }
@@ -2197,11 +2205,11 @@ function durationOptions(selected)
 
   const musicalRateValues = new Set();
   
-  document.write("<option value=\"0\">Every</option>");
+  document.write("<option value='0'>Every</option>");
 
   for(const [value, label] of musicalRates)
   {
-    document.write("<option value=\"" + value + "\""+(value===selected?' selected':'')+">" + label + "</option>");
+    document.write("<option value='" + value + "'"+(value===selected?' selected':'')+">" + label + "</option>");
     musicalRateValues.add(value);
   }
 
@@ -2209,71 +2217,69 @@ function durationOptions(selected)
   {
     if(!musicalRateValues.has(i))
     {
-      document.write("<option value=\"" + i + "\""+(i===selected?' selected':'')+">" + i + "</option>");
+      document.write("<option value='" + i + "'"+(i===selected?' selected':'')+">" + i + "</option>");
     }
   }
 }
 
 function writeMidiMapButton(id, type, index, dest, aria)
 {
-  document.write("<button class=\"midi-map-button\" type=\"button\" ");
-  document.write("id=\""+id+"\"");
-  document.write("data-type=\""+type+"\" ");
-  document.write("data-index=\""+index+"\" ");
-  document.write("data-dest=\""+dest+"\" ");
-  document.write("aria-label=\""+aria+"\">");
-  document.write("<img src=\"icons/midi-din.svg\" alt=\"MIDI DIN5\">");
+  document.write("<button class='midi-map-button' type='button' ");
+  document.write("id='"+id+"'");
+  document.write("data-type='"+type+"' ");
+  document.write("data-index='"+index+"' ");
+  document.write("data-dest='"+dest+"' ");
+  document.write("aria-label='"+aria+"'>");
+  document.write("<img src='icons/midi-din.svg' alt='MIDI DIN5'>");
   document.write("</button>");
 }
 
 function drumLane(lane)
 {
-  let n = lane + 1;
-
-  document.write("<tr id=\"drum-lane-" + n + "\">");
-  document.write("<td>" + n + "</td>");
+  document.write("<tr id='drum-lane-" + lane + "'>");
+  document.write("<td>" + (lane+1) + "</td>");
 
   document.write("<td>");
-  document.write("<button class=\"mute-button\" type=\"button\"");
-  document.write(" id=\"drum-mute-" + n + "\"");
-  document.write(" onclick=\"toggleDrumMute(" + lane + ")\"");
-  document.write(" aria-label=\"Drum sequencer mute for lane " + n + "\">");
-  document.write("<img src=\"icons/unmute.png\" alt=\"Unmuted lane " + n + "\">");
+  document.write("<button class='mute-button' type='button'");
+  document.write(" id='drum-mute-" + lane + "'");
+  document.write(" onclick='toggleDrumMute(" + lane + ")'");
+  document.write(" aria-label='Drum sequencer mute for lane " + lane + "'>");
+  document.write("<img src='icons/unmute.png' alt='Unmuted lane " + lane + "'>");
   document.write("</button>");
   document.write("</td>");
 
-  document.write("<td><select id=\"drum-note-" + n + "\">");
-  midiNoteOptions(lane+1);
+  document.write("<td><select id='drum-note-" + lane + "'>");
+  midiNoteOptions(lane);
   document.write("</select></td>");
 
-  document.write("<td><select id=\"drum-start-" + n + "\"");
-  document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
+  document.write("<td><select id='drum-start-" + lane + "'");
+  document.write(" onchange='updateDrumLaneRange(" + lane + ")'>");
   optionRange(1, 32, 1, 1);
   document.write("</select></td>");
   
-  document.write("<td><select id=\"drum-end-" + n + "\"");
-  document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
+  document.write("<td><select id='drum-end-" + lane + "'");
+  document.write(" onchange='updateDrumLaneRange(" + lane + ")'>");
   optionRange(1, 32, 16, 1);
   document.write("</select></td>");
 
-  document.write("<td><select id=\"drum-rate-" + n + "\">");
+  document.write("<td><select id='drum-rate-" + lane + "'>");
   durationOptions();
   document.write("</select>");
-    writeMidiMapButton("drum-rate-map-" + n, "dseql", n, "T", 
-    "MIDI rate for drum lane " + (n+1));
+    writeMidiMapButton("drum-rate-map-" + lane, "dseql", lane, "T", 
+    "MIDI rate for drum lane " + (lane+1));
   document.write("</td>");
 
-  document.write("<td><select id=\"drum-reset-" + n + "\">");
-  document.write("<option value=\"0\">--</option>");
+  document.write("<td><select id='drum-reset-" + lane + "'>");
+  document.write("<option value='0'>--</option>");
   optionRange(2, 32, 1, 1);
   document.write("</select>");
-  writeMidiMapButton("drum-reset-map-" + n, "dseql", n, "S", 
-    "MIDI reset for drum lane " + (n+1));
+  writeMidiMapButton("drum-reset-map-" + lane, "dseql", lane, "S", 
+    "MIDI reset for drum lane " + (lane+1));
   document.write("</td>");
   
   document.write("<td>");
-  writeMidiMapButton("drum-position-" + n, "dseql", n, "P", 
-    "MIDI position for drum lane " + (n+1));
+  writeMidiMapButton("drum-position-" + lane, "dseql", lane, "P", 
+    "MIDI position for drum lane " + (lane+1));
   document.write("</td>");
 
   laneDrumTrigs(lane);
@@ -2283,16 +2289,16 @@ function drumLane(lane)
 
 function laneDrumTrigs(lane)
 {
-  document.write("<td class=\"spacer\"></td>");
+  document.write("<td class='spacer'></td>");
 
   for(let i = 0; i < 32; ++i)
   {
-    document.write("<td id=\"drum-step-" + lane + "_" + i + "\">");
-    document.write("<button id=\"drum-trig-" + lane + "_" + i + "\"");
-    document.write(" data-lane=\"" + lane + "\"");
-    document.write(" data-index=\"" + i + "\"");
-    document.write(" class=\"notrig\"");
-    document.write(" onclick=\"toggleDrumTrig(this)\">&nbsp;</button>");
+    document.write("<td id='drum-step-" + lane + "-" + i + "'>");
+    document.write("<button id='drum-trig-" + lane + "-" + i + "'");
+    document.write(" data-lane='" + lane + "'");
+    document.write(" data-index='" + i + "'");
+    document.write(" class='notrig'");
+    document.write(" onclick='toggleDrumTrig(this)'>&nbsp;</button>");
     document.write("</td>");
 
     if((i + 1) % 8 === 0)
@@ -2302,37 +2308,46 @@ function laneDrumTrigs(lane)
   }
 }
 
+function updateDrumTrig(trig, value)
+{
+  trig.classList.remove("notrig");
+  trig.classList.remove("trig");
+  trig.classList.remove("accent");
+  switch(value)
+  {
+    case 1:
+      trig.textContent="o";
+      trig.classList.add("trig");
+      break;
+    case 2:
+      trig.textContent="X";
+      trig.classList.add("accent");
+      break;
+    default:
+      trig.textContent=" ";
+      trig.classList.add("notrig");
+      break;
+  }
+}
+
 function toggleDrumTrig(trig)
 {
   switch(trig.textContent)
   {
-    case "o":
-      trig.textContent="X";
-      trig.classList.add("accent");
-      trig.classList.remove("trig");
-      break;
-    case "X":
-      trig.textContent=" ";
-      trig.classList.add("notrig");
-      trig.classList.remove("accent");
-      break;
-    default:
-      trig.textContent="o";
-      trig.classList.add("trig");
-      trig.classList.remove("notrig");
-      break;
+    case "o": updateDrumTrig(trig, 2); break;
+    case "X": updateDrumTrig(trig, 0); break;
+    default:  updateDrumTrig(trig, 1); break;
   }
 }
 
 function updateDrumLaneRange(lane)
 {
-  const n     = lane + 1;
-  const start = parseInt(document.getElementById("drum-start-" + n).value);
-  const end   = parseInt(document.getElementById("drum-end-" + n).value);
+  const start = parseInt(elem("drum-start-" + lane).value);
+  const end   = parseInt(elem("drum-end-"   + lane).value);
 
   for(let i = 0; i < 32; ++i)
   {
-    const cell = document.getElementById("drum-step-" + lane + "_" + i);
+    const cell = elem("drum-step-" + lane + "-" + i);
 
     if(i >= start && i <= end)
     {
@@ -2371,7 +2386,7 @@ function midiNoteOptions(selected)
   
   for(let value=0; value<128; ++value)
   {
-    document.write("<option value=\""+value+"\""+(value===selected ? ' selected':'')+">");
+    document.write("<option value='"+value+"'"+(value===selected ? ' selected':'')+">");
     document.write(value + " " + midiNote[note] + number);
     document.write("</option>");
     
@@ -2403,7 +2418,7 @@ function toggleSeqPattern(button)
       }
 
       // Get previous
-      const previous = elem("seq-pattern-" + step + "-" + (substep - 1));
+      const previous      = elem("seq-pattern-" + step + "-" + (substep - 1));
       const previousState = parseInt(previous.dataset.state || "0");
       
       state = previousState === 0 ? 0 : 2;
@@ -2425,9 +2440,7 @@ function toggleSeqPattern(button)
       // See if next step is a tie that needs set to on.
       if(substep < 7)
       {
-        const next = document.getElementById(
-          "seq-pattern-" + step + "-" + (substep + 1)
-        );
+        const next = elem("seq-pattern-" + step + "-" + (substep + 1));
 
         if(parseInt(next.dataset.state || "0") === 2)
         {
@@ -2450,11 +2463,11 @@ function toggleSeqPattern(button)
 
 function updateSeqPatternLength(step)
 {
-  const length = parseInt(document.getElementById("seq-length-" + step).value) + 1;
+  const length = num("seq-length-" + step) + 1;
 
   for(let sub = 0; sub < 8; ++sub)
   {
-    const cell = document.getElementById("seq-pattern-" + step + "-" + sub);
+    const cell = elem("seq-pattern-" + step + "-" + sub);
 
     if(sub < length)
     {
@@ -2469,17 +2482,17 @@ function updateSeqPatternLength(step)
 
 function seqPattern(step)
 {
-  document.write("<div class=\"seq-pattern\">");
+  document.write("<div class='seq-pattern'>");
 
   for(let substep = 0; substep < 8; ++substep)
   {
     document.write("<button");
-    document.write(" id=\"seq-pattern-" + step + "-" + substep + "\"");
-    document.write(" class=\"pattern-off\"");
-    document.write(" data-step=\"" + step + "\"");
-    document.write(" data-substep=\"" + substep + "\"");
-    document.write(" onclick=\"toggleSeqPattern(this)\"");
-    document.write(" aria-label=\"Step " + (step + 1) + ", substep " + (substep + 1) + "\">");
+    document.write(" id='seq-pattern-" + step + "-" + substep + "'");
+    document.write(" class='pattern-off'");
+    document.write(" data-step='" + step + "'");
+    document.write(" data-substep='" + substep + "'");
+    document.write(" onclick='toggleSeqPattern(this)'");
+    document.write(" aria-label='Step " + (step + 1) + ", substep " + (substep + 1) + "'>");
     document.write("</button>");
   }
 
@@ -2488,77 +2501,77 @@ function seqPattern(step)
 
 function seqSteps(start, finish)
 {
-  document.write("<tr><td class=\"colhdr\">Degree</td>");
+  document.write("<tr><td class='colhdr'>Degree</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id=\"seq-degree-"+step+"\">");
+    document.write("<td><select id='seq-degree-"+step+"'>");
     optionRange(0,15);
     document.write("</select></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Octave</td>");
+  document.write("<tr><td class='colhdr'>Octave</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id=\"seq-octave-"+step+"\">");
+    document.write("<td><select id='seq-octave-"+step+"'>");
     optionRange(0,7,3);
     document.write("</select></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Pattern</td>");
+  document.write("<tr><td class='colhdr'>Pattern</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td class=\"seq-pattern-cell\">");
+    document.write("<td class='seq-pattern-cell'>");
     seqPattern(step);
     document.write("</td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Length</td>");
+  document.write("<tr><td class='colhdr'>Length</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id=\"seq-length-" + step + "\"");
-    document.write(" onchange=\"updateSeqPatternLength(" + step + ")\">");
+    document.write("<td><select id='seq-length-" + step + "'");
+    document.write(" onchange='updateSeqPatternLength(" + step + ")'>");
     optionRange(1, 8, 1, 1);
     document.write("</select></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Divide this step into multiple rapid note triggers.\">Ratchet</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Divide this step into multiple rapid note triggers.'>Ratchet</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id=\"seq-ratchet-"+step+"\" type=\"checkbox\"></td>");
+    document.write("<td><input id='seq-ratchet-"+step+"' type='checkbox'></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Skip this step without advancing the sequence normally.\">Skip</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Skip this step without advancing the sequence normally.'>Skip</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id=\"seq-skip-"+step+"\" type=\"checkbox\"></td>");
+    document.write("<td><input id='seq-skip-"+step+"' type='checkbox'></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Reset the sequence to its first step when playback reaches this step.\">Reset</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Reset the sequence to its first step when playback reaches this step.'>Reset</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id=\"seq-reset-"+step+"\" type=\"checkbox\"></td>");
+    document.write("<td><input id='seq-reset-"+step+"' type='checkbox'></td>");
   }
   document.write("</tr>");
   
   // A flipped view of "mute" to the more common viewpoint of probability
-  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Chance that this step will play.\">Probability</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Chance that this step will play.'>Probability</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id=\"seq-prob-"+step+"\">");
-    document.write("<option value=\"0\">100%</option>");
-    document.write("<option value=\"1\">86%</option>");
-    document.write("<option value=\"2\">71%</option>");
-    document.write("<option value=\"3\">57%</option>");
-    document.write("<option value=\"4\">43%</option>");
-    document.write("<option value=\"5\">29%</option>");
-    document.write("<option value=\"6\">14%</option>");
-    document.write("<option value=\"7\">0%</option>");
+    document.write("<td><select id='seq-prob-"+step+"'>");
+    document.write("<option value='0'>100%</option>");
+    document.write("<option value='1'>86%</option>");
+    document.write("<option value='2'>71%</option>");
+    document.write("<option value='3'>57%</option>");
+    document.write("<option value='4'>43%</option>");
+    document.write("<option value='5'>29%</option>");
+    document.write("<option value='6'>14%</option>");
+    document.write("<option value='7'>0%</option>");
     document.write("</select></td>");
   }
   document.write("</tr>");

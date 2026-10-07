@@ -1115,11 +1115,11 @@ function parseConfigDrumSeq(reader)
     {
       channel: channel,
       internal: (outputs >> 0) & 1,
-      cv:       (outputs >> 1) & 1,
-      accent:   (outputs >> 2) & 1,
-      drum:     (outputs >> 3) & 1,
-      slide:    (outputs >> 4) & 1,
-      notes: []
+      usbc:     (outputs >> 1) & 1,
+      usba:     (outputs >> 2) & 1,
+      din:      (outputs >> 3) & 1,
+      select:   (outputs >> 4) & 1,
+      notes:    []
     };
 
     reader.skip(2);
@@ -1295,4 +1295,10 @@ function parseEuclidean(index)
 {
   return { ...(parsePresetEuclidean(new ByteReader(presetSysex), index)),
            ...(parseConfigEuclidean(new ByteReader(configSysex), index)) };
+}
+
+function parseDrumSeq()
+{
+  return { ...(parsePresetDrumSeq(new ByteReader(presetSysex))),
+           ...(parseConfigDrumSeq(new ByteReader(configSysex))) };
 }

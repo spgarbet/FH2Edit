@@ -403,3 +403,39 @@ function renderTrigEditor(output)
   
   rows.appendChild(fragment);
 }
+
+function renderDrumSeq()
+{
+  console.log("renderDrumSeq");
+  
+  const drum = parseDrumSeq();
+  
+  put('drum-channel', drum.channel  );
+  put('drum-out-i',   drum.internal );
+  put('drum-out-c',   drum.usbc     );
+  put('drum-out-a',   drum.usba     );
+  put('drum-out-d',   drum.din      );
+  put('drum-out-s',   drum.select   );
+  put('drum-running', drum.active   );
+  put('drum-muted',   drum.mute     );
+  put('drum-reset',   drum.reset    );
+  
+  for(let i=0; i<8; ++i)
+  {
+    const lane = drum.lanes[i];
+    
+    updateDrumMute(i, lane.mute > 0);
+    put('drum-note-' + i, drum.notes[i] );
+    put('drum-start-'+ i, lane.start    );
+    put('drum-end-'  + i, lane.end      );
+    put('drum-rate-' + i, lane.rate     );
+    put('drum-reset-'+ i, lane.reset    );
+
+    for(let step=0; step<32; ++step)
+    {
+      updateDrumTrig(elem('drum-trig-'+i+'-'+step), lane.pattern[step]);
+    }
+    
+    updateDrumLaneRange(i);
+  }
+}
