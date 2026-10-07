@@ -442,6 +442,83 @@ function parsePresetDrumSeq(reader)
   return drum;
 }
 
+function parsePresetSequencers(reader)
+{
+  reader.seek(1700);
+  
+  const running    = reader.u8(); // 1700
+  const muted      = reader.u8(); // 1701
+  const sequencers = [];
+
+  for (let i=0; i<4; ++i)
+  {
+    sequencers.push({
+      active: (running >> i) & 1,
+      mute:   (muted   >> i) & 1
+    });
+  }
+  
+  reader.seek(1712);
+  for (let i=0; i<4; ++i)
+  {
+    const sequencer = sequencers[i];
+
+    sequencer.pattern = [];
+
+    for (let j = 0; j < 32; ++j)
+    {
+      const pattern = reader.uShort();
+      const v0      = reader.u8();
+      const v1      = reader.u8();
+
+      sequencer.pattern.push({
+          value:   pattern,
+          degree:  v0 & 0xf,
+          octave:  (v0 >> 4) & 0x7,
+          length:  v1 & 0x7,
+          ratchet: (v1 >> 3) & 1,
+          reset:   (v1 >> 4) & 1
+      });
+    }
+
+    sequencer.start     = reader.u8();
+    sequencer.end       = reader.u8();
+    sequencer.rate      = reader.u8();
+    sequencer.gateLen   = reader.u8();
+    sequencer.reset     = reader.u8();
+    sequencer.rootNote  = reader.u8();
+    sequencer.direction = reader.u8();
+  }
+  
+  // Sequencer Addendum
+  reader.seek(4120);
+  for (let i=0; i<4; ++i)
+  {
+    const sequencer = sequencers[i];
+
+    sequencer.permutation = reader.u8();
+
+    for (let j=0; j<32; ++j)
+    {
+      const v0      = reader.u8();
+      const v1      = reader.u8();
+      const pattern = sequencer.pattern[j];
+
+      pattern.value = pattern.value | (v0 << 14);
+      pattern.skip  = v1 & 1;
+      pattern.mute  = (v1 >> 1) & 0x7;
+      pattern.steps = [];
+
+      for (let k = 0; k < 8; ++k)
+      {
+        pattern.steps.push((pattern.value >> (2 * k)) & 3);
+      }
+    }
+  }
+
+  return sequencers;
+}
+
 /* For reference purposes
 function parsePreset(reader)
 {
@@ -1298,4 +1375,10 @@ function parseDrumSeq()
 {
   return { ...(parsePresetDrumSeq(new ByteReader(presetSysex))),
            ...(parseConfigDrumSeq(new ByteReader(configSysex))) };
+}
+
+function parseSequencers()
+{
+  return { ...(parsePresetSequencers(new ByteReader(presetSysex))),
+           ...(parseConfigSequencers(new ByteReader(configSysex))) };
 }

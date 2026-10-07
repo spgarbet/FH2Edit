@@ -417,7 +417,7 @@ function renderDrumSeq()
   put('drum-running', drum.active   );
   put('drum-muted',   drum.mute     );
   put('drum-reset',   drum.reset    );
-  
+
   for(let i=0; i<8; ++i)
   {
     const lane = drum.lanes[i];
