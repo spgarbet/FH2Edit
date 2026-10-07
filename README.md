@@ -21,6 +21,11 @@ This is an open-source project and encourages participation. There are several w
 - Pull Requests: Encouraged, but before putting the effort in start a discussion as an improvement idea above.
 - Seek Support: Just ask questions. Understanding what is confusing for someone leads to improvement as well. The insights to make the interface more intuitive come from such discussions.
 
+## Needs
+
+- Test users with a Novation Pad.
+- Test users with gate expanders.
+
 ## Status
 
 FH2Edit is under active development.
@@ -43,7 +48,8 @@ FH2Edit is under active development.
 
 **In progress**
 
-- Drum Sequencer
+- Drum Sequencer (html is just boilerplate)
+- Sequencer (html is just boilerplate)
 
 **Planned**
 
@@ -51,7 +57,6 @@ FH2Edit is under active development.
 - Tunings (32 slots, Scala/keyboard)
 - HID gamepad and HID keyboard outputs
 - A Gates tab (for things like expanders)
-- Sequencer editing
 
 ## Aftermatter
 

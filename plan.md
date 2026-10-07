@@ -31,17 +31,20 @@
 
 ## In Process
 
-- Drum sequencer!
+- Drum sequencer
   - Tooltips
   - Hook up reading values
   - Hook writing values
-  - Fix layout style issues.
-    - Needs to have column flow always
-    - lane dropdown alignment wonky
+- Sequencer
+  - Tooltips
+  - Hook up reading values
+  - Hook up writing values.
+  
 
 ## TODO
 
 - MIDI Mapping Learn mode
+- MIDI Map display routes
 - Testing
   - All the Arps
   - Envelopes
@@ -50,8 +53,9 @@
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output
-  - (ICON-Grid) Novation Pad/Sequencer
-  
+- Read/Write sequences from Novation
+- Deal properly with Gate expanders
+ 
 ## Questions
 
 - What is the scale of portamento? 0-127 means what?
