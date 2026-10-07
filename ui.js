@@ -2243,7 +2243,7 @@ function drumLane(lane)
   document.write("</td>");
 
   document.write("<td><select id=\"drum-note-" + n + "\">");
-  optionRange(0, 127, lane+1);
+  midiNoteOptions(lane+1);
   document.write("</select></td>");
 
   document.write("<td><select id=\"drum-start-" + n + "\"");
@@ -2525,21 +2525,21 @@ function seqSteps(start, finish)
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Ratchet</td>");
+  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Divide this step into multiple rapid note triggers.\">Ratchet</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td><input id=\"seq-ratchet-"+step+"\" type=\"checkbox\"></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Skip</td>");
+  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Skip this step without advancing the sequence normally.\">Skip</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td><input id=\"seq-skip-"+step+"\" type=\"checkbox\"></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class=\"colhdr\">Reset</td>");
+  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Reset the sequence to its first step when playback reaches this step.\">Reset</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td><input id=\"seq-reset-"+step+"\" type=\"checkbox\"></td>");
@@ -2547,7 +2547,7 @@ function seqSteps(start, finish)
   document.write("</tr>");
   
   // A flipped view of "mute" to the more common viewpoint of probability
-  document.write("<tr><td class=\"colhdr\">Probability</td>");
+  document.write("<tr><td class=\"colhdr tooltip\" data-tooltip=\"Chance that this step will play.\">Probability</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td><select id=\"seq-prob-"+step+"\">");

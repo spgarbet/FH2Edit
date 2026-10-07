@@ -1750,7 +1750,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
               </button>
             </div>
             <div>
-              <label for="drum-position">Position</label>
+              <label for="drum-position" class="tooltip" data-tooltip="Control the current sequence position via MIDI CC">Position</label>
               <button class="midi-map-button" type="button" id="drum-position"
                       data-type="dseq" data-index="0" data-dest="P"
                       aria-label="MIDI assignment for global drum sequencer position">
@@ -1763,7 +1763,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
           <legend>Lanes</legend>
           <table id="drum-seq-table">
             <thead>
-              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td>Reset</td><td>Pos</td></td><script>laneHeaders()</script></tr>
+              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td class="tooltip" data-tooltip="Reset to beginning after this many steps, or 0 to disable.">Reset</td><td class="tooltip" data-tooltip="Control lane position via MIDI CC">Pos</td></td><script>laneHeaders()</script></tr>
             </thead>
             <tbody><script>drumLanes()</script></tbody>
           </table>
@@ -1781,12 +1781,12 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
       <div class="screen-content" id="sequencer-content">
 
         <div>
-          All Reset
+          <span class="tooltip" data-tooltip="Reset all sequencers via MIDI CC 64 or higher.">All Reset</span>
           <button class="midi-map-button" type="button"
                   data-type="seq" data-index="0" data-dest="G"
                   aria-label="MIDI assignment for global sequencer reset">
             <img src="icons/midi-din.svg" alt="MIDI DIN5">
-          </button>&emsp;All Position
+          </button>&emsp;<span class="tooltip" data-tooltip="Set the position of all sequencer lanes using MIDI CC">All Position</span>
           <button class="midi-map-button" type="button"
                   data-type="seq" data-index="1" data-dest="G"
                   aria-label="MIDI assignment for global sequencer position">
@@ -1841,7 +1841,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
               <select id="seq-end"><script>optionRange(1,32,1,1)</script></select>
             </div>
             <div>
-              <label for="seq-rate">Rate</label>
+              <label for="seq-rate" class="tooltip" data-tooltip="Duration of a step in terms of 24ppqn.">Rate</label>
               <select id="seq-rate"><script>durationOptions(24)</script></select>
               <button class="midi-map-button" type="button"
                       data-type="seq" data-index="0" data-dest="G"
@@ -1850,7 +1850,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
               </button>
             </div>
             <div>
-              <label for="seq-reset">Reset</label>
+              <label for="seq-reset" class="tooltip" data-tooltip="Reset all lanes after this many steps.">Reset</label>
               <select id="seq-reset"><option value="0">--</option><script>optionRange(1,127)</script></select>
               <button class="midi-map-button" type="button"
                       data-type="seq" data-index="0" data-dest="G"
@@ -1859,7 +1859,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
               </button>
             </div>
             <div>
-              <label for="seq-gate-len">Gate Length</label>
+              <label for="seq-gate-len" class="tooltip" data-tooltip="Length of gate relative to a step.">Gate Length</label>
               <select id="seq-gate-len"><script>u7PercentRange(64)</script></select>
             </div>
             <div>
@@ -1898,7 +1898,6 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
             </div>
           </div>
         </fieldset>
-
 
         <fieldset class="parameter-group">
           <legend>Steps</legend>
