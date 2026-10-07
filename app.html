@@ -1139,7 +1139,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="arp-rate" class="tooltip" data-tooltip="Rate in terms of 24ppqn clocks, or every pulse.">Rate</label>
-                  <select id="arp-rate" onchange="setArpPresetValue(4,this.value,selectedIcon.index)"><option value="0">Every</option></option><script>durationOptions(24)</script></select>
+                  <select id="arp-rate" onchange="setArpPresetValue(4,this.value,selectedIcon.index)"><script>durationOptions(24)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="T"
                           aria-label="MIDI assignment for arpeggiator rate">
@@ -1389,7 +1389,6 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   <div>
                     <label for="euc-rate" class="tooltip" data-tooltip="The rate of the pattern, in terms of 24ppqn clocks or every pulse">Rate</label>
                     <select id="euc-rate" onchange="setEucValue(3,this.value)">
-                      <option value="0">Every</option>
                       <script>durationOptions(24)</script>
                     </select>
                     <button class="midi-map-button" type="button"

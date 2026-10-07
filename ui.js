@@ -2180,22 +2180,24 @@ function durationOptions(selected)
     [3, "1/32"],
     [6, "1/16"],
     [8, "1/8T"],
-    [9, "1/16&#183;"],
+    [9, "1/16&bull;"],
     [12, "1/8"],
     [16, "1/4T"],
-    [18, "1/8&#183;"],
-    [21, "1/8&#183;&#183;"],
+    [18, "1/8&bull;"],
+    [21, "1/8&bull;&bull;"],
     [24, "1/4"],
     [32, "1/2T"],
-    [36, "1/4&#183;"],
-    [42, "1/4&#183;&#183;"],
+    [36, "1/4&bull;"],
+    [42, "1/4&bull;&bull;"],
     [48, "1/2"],
-    [72, "1/2&#183;"],
-    [84, "1/2&#183;&#183;"],
+    [72, "1/2&bull;"],
+    [84, "1/2&bull;&bull;"],
     [96, "Whole"]
   ];
 
   const musicalRateValues = new Set();
+  
+  document.write("<option value=\"0\">Every</option>");
 
   for(const [value, label] of musicalRates)
   {
