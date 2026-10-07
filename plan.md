@@ -32,6 +32,12 @@
 ## In Process
 
 - Drum sequencer!
+  - Tooltips
+  - Hook up reading values
+  - Hook writing values
+  - Fix layout style issues.
+    - Needs to have column flow always
+    - lane dropdown alignment wonky
 
 ## TODO
 
@@ -40,6 +46,7 @@
   - All the Arps
   - Envelopes
 - Tunings 32 slots for Scala/Keyboard
+  - Use local memory? 
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output

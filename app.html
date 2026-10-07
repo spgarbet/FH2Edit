@@ -61,7 +61,8 @@
     <button type="button" class="tab"        data-target="outputs-screen"    >Outputs</button>
     <button type="button" class="tab"        data-target="euc-screen"        >Euclidean</button>
     <button type="button" class="tab"        data-target="srr-screen"        >SSR</button>
-    <button type="button" class="tab"        data-target="drum-screen"       >Drum</button>
+    <button type="button" class="tab"        data-target="drum-screen"       >Drum Seq</button>
+    <button type="button" class="tab"        data-target="sequencer-screen"  >Sequencer</button></button>
   </nav>
 
   <main id="main">
@@ -1724,28 +1725,28 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
           <legend>Global</legend>
           <div class="singleline">
             <div>
-              <label for="drum_channel">MIDI Channel</label>
-              <select id="drum_channel"><script>optionRange(1,16,1,1)</script></select>
+              <label for="drum-channel">MIDI Channel</label>
+              <select id="drum-channel"><script>optionRange(1,16,1,1)</script></select>
             </div>
             <div>
-              <label for="drum_out_int">&emsp;Output</label>
-              Int&nbsp;<input id="drum_out_i" type="checkbox">
-              &nbsp;&#124;&ensp;C&nbsp;<input id="drum_out_c" type="checkbox">
-              &nbsp;&#124;&ensp;A&nbsp;<input id="drum_out_a" type="checkbox">
-              &nbsp;&#124;&ensp;DIN&nbsp;<input id="drum_out_d" type="checkbox">
-              &nbsp;&#124;&ensp;Sel&nbsp;<input id="drum_out_s" type="checkbox">
+              <label for="drum-out-i">&emsp;Output</label>
+              Int&nbsp;<input id="drum-out_i" type="checkbox">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="drum-out-c" type="checkbox">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="drum-out-a" type="checkbox">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="drum-out-d" type="checkbox">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="drum-out-s" type="checkbox">
             </div>           
             <div>
-              <label for="drum_running" class="tooltip" data-tooltip="Actively running">Running</label>
-              <input id="drum_running" type="checkbox">
+              <label for="drum-running" class="tooltip" data-tooltip="Actively running">Running</label>
+              <input id="drum-running" type="checkbox">
             </div>
             <div>
-              <label for="drum_muted" class="tooltip" data-tooltip="Mute all drum output">Muted</label>
-              <input id="drum_muted" type="checkbox">
+              <label for="drum-muted" class="tooltip" data-tooltip="Mute all drum output">Muted</label>
+              <input id="drum-muted" type="checkbox">
             </div>
             <div>
-              <label for="drum_reset" class="tooltip" data-tooltip="Force the sequence back to the first step after this many quarter notes elapsed">Reset</label>
-              <select id="drum_reset"><option value="0" selected>Off</option><script>optionRange(1,127,0)</script></select>
+              <label for="drum-reset" class="tooltip" data-tooltip="Force the sequence back to the first step after this many quarter notes elapsed">Reset</label>
+              <select id="drum-reset"><option value="0" selected>Off</option><script>optionRange(1,127,0)</script></select>
               <button class="midi-map-button" type="button"
                       data-type="dseq" data-index="0" data-dest="S"
                       aria-label="MIDI assignment for global drum sequencer reset">
@@ -1753,8 +1754,8 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
               </button>
             </div>
             <div>
-              <label for="drum_position">Position</label>
-              <button class="midi-map-button" type="button" id="drum_position"
+              <label for="drum-position">Position</label>
+              <button class="midi-map-button" type="button" id="drum-position"
                       data-type="dseq" data-index="0" data-dest="P"
                       aria-label="MIDI assignment for global drum sequencer position">
                 <img src="icons/midi-din.svg" alt="MIDI DIN5">
@@ -1764,7 +1765,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
         </fieldset>
         <fieldset class="parameter-group">
           <legend>Lanes</legend>
-          <table id="drum_seq_table">
+          <table id="drum-seq-table">
             <thead>
               <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td>Reset</td><td>Pos</td></td><script>laneHeaders()</script></tr>
             </thead>
@@ -1782,11 +1783,146 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
       <div class="screen-header"><h2>Sequencer</h2></div>
 
       <div class="screen-content" id="sequencer-content">
-        <div class="placeholder">
-          Sequencer configuration
-        </div>
-      </div>
 
+        <div>
+          All Reset
+          <button class="midi-map-button" type="button"
+                  data-type="seq" data-index="0" data-dest="G"
+                  aria-label="MIDI assignment for global sequencer reset">
+            <img src="icons/midi-din.svg" alt="MIDI DIN5">
+          </button>&emsp;All Position
+          <button class="midi-map-button" type="button"
+                  data-type="seq" data-index="1" data-dest="G"
+                  aria-label="MIDI assignment for global sequencer position">
+            <img src="icons/midi-din.svg" alt="MIDI DIN5">
+          </button>
+          <label for="seq-screen-index">&emsp;Sequencer Number</label>
+          <select id="seq-screen-index" onchange="renderEucEditor(this.value)"><script>optionRange(1,4,1,1)</script></select>&emsp;
+        </div>
+  
+        <fieldset class="parameter-group">
+          <legend>Settings</legend>
+          <div class="singleline">
+            <div>
+              <label for="seq-running" class="tooltip" data-tooltip="Actively running">Running</label>
+              <input id="seq-running" type="checkbox">
+            </div>
+            <div>
+              <label for="seq-channel">MIDI Channel</label>
+              <select id="seq-channel"><script>optionRange(1,16,1,1)</script></select>
+              <button id="seq-mute" type="button" class="mute-button"
+                      onclick="toggleSeqMute()"
+                      aria-label="Sequence Mute">
+                <img src="icons/unmute.png" alt="Unmuted Sequencer">
+              </button>
+            </div>
+            <div>
+              <label for="seq-out-i">Output</label>
+              Int&nbsp;<input id="seq_out_i" type="checkbox">
+              &nbsp;&#124;&ensp;C&nbsp;<input id="seq_out_c" type="checkbox">
+              &nbsp;&#124;&ensp;A&nbsp;<input id="seq_out_a" type="checkbox">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="seq_out_d" type="checkbox">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="seq_out_s" type="checkbox">
+            </div>
+            <div>
+              <label for="seq-clock">Clock Source</label>
+              <select id="seq-clock">
+                <option value="0">External</option>
+                <script>
+                  for (let j=1; j<=16; ++j)
+                  {
+                    document.write( "<option value="+j+">Euclidean "+j+"</option>" );
+                  }
+                </script>
+              </select>
+            </div>
+            <div>
+              <label for="seq-start">Start</label>
+              <select id="seq-start"><script>optionRange(1,32,1,1)</script></select>
+            </div>
+            <div>
+              <label for="seq-end">End</label>
+              <select id="seq-end"><script>optionRange(1,32,1,1)</script></select>
+            </div>
+            <div>
+              <label for="seq-rate">Rate</label>
+              <select id="seq-rate"><script>durationOptions()</script></select>
+              <button class="midi-map-button" type="button"
+                      data-type="seq" data-index="0" data-dest="G"
+                      aria-label="MIDI assignment for global sequencer reset">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="seq-reset">Reset</label>
+              <select id="seq-reset"><option value="0">--</option><script>optionRange(1,127)</script></select>
+              <button class="midi-map-button" type="button"
+                      data-type="seq" data-index="0" data-dest="G"
+                      aria-label="MIDI assignment for global sequencer reset">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+            <div>
+              <label for="seq-gate-len">Gate Length</label>
+              <select id="seq-gate-len"><script>u7PercentRange(64)</script></select>
+            </div>
+            <div>
+              <label for="seq-direction">Direction</label>
+              <select id="seq-direction">
+                <option value="0">Forward</option>
+                <option value="1">Backward</option>
+                <option value="2">Alternate</option>
+                <option value="3">Forward/Backward</option>
+                <option value="4">Random</option>
+                <option value="5">Random No Repeats</option>
+                <option value="6">Random Permutations</option>
+                <option value="7">??</option>
+              </select>
+            </div>
+            <div>
+              <label for="seq-permutation">Permutation</label>
+              <select id="seq-permutation">
+                <option value="0">None</option>
+                <option value="1">Odd/Even</option>
+                <option value="2">Halves</option>
+                <option value="3">Inwards</option>
+              </select>
+            </div>
+            <div>
+              <label for="seq-root-note">Root Note</label>
+              <select id="seq-root-note"><script>midiNoteOptions(60)</script></select>
+            </div>
+            <div>
+              Position
+              <button class="midi-map-button" type="button"
+                      data-type="seq" data-index="1" data-dest="G"
+                      aria-label="MIDI assignment for global sequencer position">
+                <img src="icons/midi-din.svg" alt="MIDI DIN5">
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+
+        <fieldset class="parameter-group">
+          <legend>Steps</legend>
+          <table id="seq-table">
+            <tbody>
+              <tr><td></td><script>
+                for(let i=1; i<=16; ++i){document.write("<td>"+i+"</td>");}
+              </script></tr>
+              <script>seqSteps(0,16);</script>
+              <tr><td colspan=17><hr></td></tr>
+              <tr><td colspan=17></td></tr> <!-- Keep even/odd same -->
+              <tr><td></td><script>
+                for(let i=17; i<=32; ++i){document.write("<td>"+i+"</td>");}
+              </script></tr>
+              <script>seqSteps(16,32);</script>
+            </tbody>
+          </table>
+        </fieldset>
+        
+      </div>
     </section>
     
     <!-- MIDI Mapping Popup -->

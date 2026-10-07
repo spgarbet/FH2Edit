@@ -2131,9 +2131,9 @@ function initTriggerUI()
 function toggleDrumMute(lane)
 {
   const n = lane + 1;
-  const button = document.getElementById("drum_mute_" + n);
+  const button = document.getElementById("drum-mute-" + n);
   const image  = button.querySelector("img");
-  const row    = document.getElementById("drum_lane_" + n);
+  const row    = document.getElementById("drum-lane-" + n);
   const muted  = row.classList.toggle("muted");
 
   if(muted)
@@ -2228,49 +2228,49 @@ function drumLane(lane)
 {
   let n = lane + 1;
 
-  document.write("<tr id=\"drum_lane_" + n + "\">");
+  document.write("<tr id=\"drum-lane-" + n + "\">");
   document.write("<td>" + n + "</td>");
 
   document.write("<td>");
   document.write("<button class=\"mute-button\" type=\"button\"");
-  document.write(" id=\"drum_mute_" + n + "\"");
+  document.write(" id=\"drum-mute-" + n + "\"");
   document.write(" onclick=\"toggleDrumMute(" + lane + ")\"");
   document.write(" aria-label=\"Drum sequencer mute for lane " + n + "\">");
   document.write("<img src=\"icons/unmute.png\" alt=\"Unmuted lane " + n + "\">");
   document.write("</button>");
   document.write("</td>");
 
-  document.write("<td><select id=\"drum_note_" + n + "\">");
+  document.write("<td><select id=\"drum-note-" + n + "\">");
   optionRange(0, 127, lane+1);
   document.write("</select></td>");
 
-  document.write("<td><select id=\"drum_start_" + n + "\"");
+  document.write("<td><select id=\"drum-start-" + n + "\"");
   document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
   optionRange(1, 32, 1, 1);
   document.write("</select></td>");
   
-  document.write("<td><select id=\"drum_end_" + n + "\"");
+  document.write("<td><select id=\"drum-end-" + n + "\"");
   document.write(" onchange=\"updateDrumLaneRange(" + lane + ")\">");
   optionRange(1, 32, 16, 1);
   document.write("</select></td>");
 
-  document.write("<td><select id=\"drum_rate_" + n + "\">");
+  document.write("<td><select id=\"drum-rate-" + n + "\">");
   durationOptions();
   document.write("</select>");
-    writeMidiMapButton("drum_rate_map_" + n, "dseql", n, "T", 
+    writeMidiMapButton("drum-rate-map-" + n, "dseql", n, "T", 
     "MIDI rate for drum lane " + (n+1));
   document.write("</td>");
 
-  document.write("<td><select id=\"drum_reset_" + n + "\">");
+  document.write("<td><select id=\"drum-reset-" + n + "\">");
   document.write("<option value=\"0\">--</option>");
   optionRange(2, 32, 1, 1);
   document.write("</select>");
-  writeMidiMapButton("drum_reset_map_" + n, "dseql", n, "S", 
+  writeMidiMapButton("drum-reset-map-" + n, "dseql", n, "S", 
     "MIDI reset for drum lane " + (n+1));
   document.write("</td>");
   
   document.write("<td>");
-  writeMidiMapButton("drum_position_" + n, "dseql", n, "P", 
+  writeMidiMapButton("drum-position-" + n, "dseql", n, "P", 
     "MIDI position for drum lane " + (n+1));
   document.write("</td>");
 
@@ -2285,8 +2285,8 @@ function laneDrumTrigs(lane)
 
   for(let i = 0; i < 32; ++i)
   {
-    document.write("<td id=\"drum_step_" + lane + "_" + i + "\">");
-    document.write("<button id=\"drum_trig_" + lane + "_" + i + "\"");
+    document.write("<td id=\"drum-step-" + lane + "_" + i + "\">");
+    document.write("<button id=\"drum-trig-" + lane + "_" + i + "\"");
     document.write(" data-lane=\"" + lane + "\"");
     document.write(" data-index=\"" + i + "\"");
     document.write(" class=\"notrig\"");
@@ -2325,12 +2325,12 @@ function toggleDrumTrig(trig)
 function updateDrumLaneRange(lane)
 {
   const n     = lane + 1;
-  const start = parseInt(document.getElementById("drum_start_" + n).value);
-  const end   = parseInt(document.getElementById("drum_end_" + n).value);
+  const start = parseInt(document.getElementById("drum-start-" + n).value);
+  const end   = parseInt(document.getElementById("drum-end-" + n).value);
 
   for(let i = 0; i < 32; ++i)
   {
-    const cell = document.getElementById("drum_step_" + lane + "_" + i);
+    const cell = document.getElementById("drum-step-" + lane + "_" + i);
 
     if(i >= start && i <= end)
     {
@@ -2349,9 +2349,223 @@ function initDrumSeq()
 {
   window.addEventListener("load", function()
   {
-    for(let lane = 0; lane < 8; ++lane)
+    for(let lane=0; lane<8; ++lane)
     {
       updateDrumLaneRange(lane);
+    }
+  });
+}
+
+  ////////////////////////////////////////////////////////////////////////////
+ //
+// Sequencer
+
+function midiNoteOptions(selected)
+{
+  const midiNote = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  let   note     = 0;
+  let   value    = 0;
+  let   number   = -1;
+  
+  for(let value=0; value<128; ++value)
+  {
+    document.write("<option value=\""+value+"\""+(value===selected ? ' selected':'')+">");
+    document.write(value + " " + midiNote[note] + number);
+    document.write("</option>");
+    
+    if(++note > 11)
+    {
+      note = 0;
+      ++number;
+    }
+  }
+}
+
+function toggleSeqPattern(button)
+{
+  const step    = parseInt(button.dataset.step);
+  const substep = parseInt(button.dataset.substep);
+  let   state   = parseInt(button.dataset.state || "0");
+
+  switch(state)
+  {
+    case 0:       // A click in the off state turns it on
+      state = 1;
+      break;
+
+    case 1:       // A click in the on state
+      if(substep === 0) // If it's the first substep, then off it is.
+      {
+        state=0;  
+        break;
+      }
+
+      // Get previous
+      const previous = elem("seq-pattern-" + step + "-" + (substep - 1));
+      const previousState = parseInt(previous.dataset.state || "0");
+      
+      state = previousState === 0 ? 0 : 2;
+      break;
+
+    case 2:      // A click in the tie state turns it off
+      state = 0;
+      break;
+  }
+
+  button.dataset.state = state;
+  button.classList.remove("pattern-off", "pattern-on", "pattern-tie");
+
+  switch(state)
+  {
+    case 0:
+      button.classList.add("pattern-off");
+
+      // See if next step is a tie that needs set to on.
+      if(substep < 7)
+      {
+        const next = document.getElementById(
+          "seq-pattern-" + step + "-" + (substep + 1)
+        );
+
+        if(parseInt(next.dataset.state || "0") === 2)
+        {
+          next.dataset.state = "1";
+          next.classList.remove("pattern-tie");
+          next.classList.add("pattern-on");
+        }
+      }
+      break;
+
+    case 1:
+      button.classList.add("pattern-on");
+      break;
+
+    case 2:
+      button.classList.add("pattern-tie");
+      break;
+  }
+}
+
+function updateSeqPatternLength(step)
+{
+  const length = parseInt(document.getElementById("seq-length-" + step).value) + 1;
+
+  for(let sub = 0; sub < 8; ++sub)
+  {
+    const cell = document.getElementById("seq-pattern-" + step + "-" + sub);
+
+    if(sub < length)
+    {
+      cell.style.display = "";
+    }
+    else
+    {
+      cell.style.display = "none";
+    }
+  }
+}
+
+function seqPattern(step)
+{
+  document.write("<div class=\"seq-pattern\">");
+
+  for(let substep = 0; substep < 8; ++substep)
+  {
+    document.write("<button");
+    document.write(" id=\"seq-pattern-" + step + "-" + substep + "\"");
+    document.write(" class=\"pattern-off\"");
+    document.write(" data-step=\"" + step + "\"");
+    document.write(" data-substep=\"" + substep + "\"");
+    document.write(" onclick=\"toggleSeqPattern(this)\"");
+    document.write(" aria-label=\"Step " + (step + 1) + ", substep " + (substep + 1) + "\">");
+    document.write("</button>");
+  }
+
+  document.write("</div>");
+}
+
+function seqSteps(start, finish)
+{
+  document.write("<tr><td class=\"colhdr\">Degree</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><select id=\"seq-degree-"+step+"\">");
+    optionRange(0,15);
+    document.write("</select></td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Octave</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><select id=\"seq-octave-"+step+"\">");
+    optionRange(0,7,3);
+    document.write("</select></td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Pattern</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td class=\"seq-pattern-cell\">");
+    seqPattern(step);
+    document.write("</td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Length</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><select id=\"seq-length-" + step + "\"");
+    document.write(" onchange=\"updateSeqPatternLength(" + step + ")\">");
+    optionRange(1, 8, 1, 1);
+    document.write("</select></td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Ratchet</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><input id=\"seq-ratchet-"+step+"\" type=\"checkbox\"></td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Skip</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><input id=\"seq-skip-"+step+"\" type=\"checkbox\"></td>");
+  }
+  document.write("</tr>");
+  
+  document.write("<tr><td class=\"colhdr\">Reset</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><input id=\"seq-reset-"+step+"\" type=\"checkbox\"></td>");
+  }
+  document.write("</tr>");
+  
+  // A flipped view of "mute" to the more common viewpoint of probability
+  document.write("<tr><td class=\"colhdr\">Probability</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td><select id=\"seq-prob-"+step+"\">");
+    document.write("<option value=\"0\">100%</option>");
+    document.write("<option value=\"1\">86%</option>");
+    document.write("<option value=\"2\">71%</option>");
+    document.write("<option value=\"3\">57%</option>");
+    document.write("<option value=\"4\">43%</option>");
+    document.write("<option value=\"5\">29%</option>");
+    document.write("<option value=\"6\">14%</option>");
+    document.write("<option value=\"7\">0%</option>");
+    document.write("</select></td>");
+  }
+  document.write("</tr>");
+  
+  window.addEventListener("load", function()
+  {
+    for(let step = 0; step < 32; ++step)
+    {
+      updateSeqPatternLength(step);
     }
   });
 }

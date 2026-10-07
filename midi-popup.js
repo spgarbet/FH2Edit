@@ -20,7 +20,7 @@ function initMidiMapButtons()
 {
   const mappings = allMappings();
   const buttons  = document.querySelectorAll(".midi-map-button");
- 
+
   for (const button of buttons)
   {
     const mapping = locateMapping(

@@ -1035,14 +1035,106 @@ canvas
   background: #dddddd;
 }
 
-#drum_seq_table tbody td
+#drum-seq-table tbody td
 {
   vertical-align: center;
 }
 
-#drum_seq_table .midi-map-button
+#drum-seq-table .midi-map-button
 {
   display: inline;
   margin-left: 0;
   margin-right: 0;
+}
+
+#drum-content td
+{
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+#drum-content button
+{
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* Sequencer */
+
+#sequencer-content .midi-map-button
+{
+  display: inline;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#sequencer-content tr:nth-child(even) td
+{
+  background-color: #fffade;
+}
+
+
+.pattern-on
+{
+}
+
+.pattern-off::after
+{
+  content: "";
+  position: absolute;
+  width: 0.5em;
+  height: 0.5em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #999;
+  border-radius: 50%;
+}
+
+.pattern-on::after
+{
+  content: "";
+  position: absolute;
+  width: 0.5em;
+  height: 0.5em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: black;
+  border-radius: 50%;
+}
+
+.pattern-tie::after
+{
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: calc(100% + 2px);
+  left: calc(50% - 1px);
+  top: -4px;
+  background: black;
+}
+
+.seq-pattern
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.seq-pattern button
+{
+  position: relative;
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.seq-pattern-cell
+{
+  vertical-align: top;
 }

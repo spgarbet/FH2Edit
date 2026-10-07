@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () =>
   initLfoWaveform();
   initLfoUI()
   updateFPS();
-  initMidiMapButtons();
   initTriggerUI();
   initDrumSeq();
+  initMidiMapButtons();
 });
