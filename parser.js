@@ -463,7 +463,7 @@ function parsePresetSequencers(reader)
   {
     const sequencer = sequencers[i];
 
-    sequencer.pattern = [];
+    sequencer.steps = [];
 
     for (let j = 0; j < 32; ++j)
     {
@@ -471,7 +471,7 @@ function parsePresetSequencers(reader)
       const v0      = reader.u8();
       const v1      = reader.u8();
 
-      sequencer.pattern.push({
+      sequencer.steps.push({
           value:   pattern,
           degree:  v0 & 0xf,
           octave:  (v0 >> 4) & 0x7,
@@ -488,30 +488,30 @@ function parsePresetSequencers(reader)
     sequencer.reset     = reader.u8();
     sequencer.rootNote  = reader.u8();
     sequencer.direction = reader.u8();
+    reader.skip(1);
   }
   
   // Sequencer Addendum
   reader.seek(4120);
   for (let i=0; i<4; ++i)
   {
-    const sequencer = sequencers[i];
-
+    const sequencer       = sequencers[i];
     sequencer.permutation = reader.u8();
 
     for (let j=0; j<32; ++j)
     {
       const v0      = reader.u8();
       const v1      = reader.u8();
-      const pattern = sequencer.pattern[j];
+      const step    = sequencer.steps[j];
 
-      pattern.value = pattern.value | (v0 << 14);
-      pattern.skip  = v1 & 1;
-      pattern.mute  = (v1 >> 1) & 0x7;
-      pattern.steps = [];
+      step.value    = step.value | (v0 << 14);
+      step.skip     = v1 & 1;
+      step.mute     = (v1 >> 1) & 0x7;
+      step.pattern  = [];
 
       for (let k = 0; k < 8; ++k)
       {
-        pattern.steps.push((pattern.value >> (2 * k)) & 3);
+        step.pattern.push((step.value >> (2 * k)) & 3);
       }
     }
   }
