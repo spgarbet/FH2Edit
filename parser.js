@@ -369,6 +369,79 @@ function parsePresetGlobals(reader)
   });
 }
 
+function parsePresetDrumSeq(reader)
+{
+  reader.seek(1702);
+  
+  const drum = 
+  {
+    active:   reader.u8() & 1,
+    mute:     reader.u8() & 1,
+    lanes:    []
+  };
+  
+  reader.seek(2256);
+  
+  for (let j = 0; j < 8; ++j)
+  {
+    const h    = reader.u32LE();
+    const a    = reader.u32LE();
+    const lane =
+    {
+      pattern: Array(32).fill(0),
+      start:   reader.u8(),
+      end:     reader.u8(),
+      rate:    reader.u8(),
+      reset:   reader.u8(),
+      mute:    reader.u8()
+    };
+
+    for (let m = 0; m < 4; ++m)
+    {
+      for (let n = 0; n < 4; ++n)
+      {
+        const bit = m * 8 + n;
+        const hit = (h >> bit) & 1;
+        const acc = (a >> bit) & 1;
+        
+        // 0=Off, 1=Hit, 2=Accent Hit
+        if(hit) { lane.pattern[bit] = acc ? 2 : 1; }
+      }
+    }
+
+    reader.skip(3);
+    
+    drum.lanes.push(lane);
+  }
+  
+  drum.reset = reader.u8();
+  
+  // Drum sequencer addendum
+  reader.seek(4380);
+
+  for (let j = 0; j < 8; ++j)
+  {
+    const h       = reader.u32LE();
+    const a       = reader.u32LE();
+    const pattern = drum.lanes[j].pattern;
+
+    for (let m = 0; m < 4; ++m)
+    {
+      for (let n = 0; n < 4; ++n)
+      {
+        const source = m * 8 + n;
+        const bit    = source + 4;
+        const hit    = (h >> source) & 1;
+        const acc    = (a >> source) & 1;
+
+        if(hit) { pattern[bit] = acc ? 2 : 1; }
+      }
+    }
+  }
+  
+  return drum;
+}
+
 /* For reference purposes
 function parsePreset(reader)
 {

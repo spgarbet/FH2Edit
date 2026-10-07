@@ -30,14 +30,12 @@
 ## In Process
 
 - Drum sequencer
-  - Tooltips
   - Hook up reading values
   - Hook writing values
 - Sequencer
-  - Tooltips
   - Hook up reading values
   - Hook up writing values.
-  
+  - Fix MIDI Mapping buttons.
 
 ## TODO
 
