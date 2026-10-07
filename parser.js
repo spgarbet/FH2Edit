@@ -1106,30 +1106,27 @@ function parseConfigDrumSeq(reader)
 {
   reader.seek(3632);
   const drumSequencer = [];
-  for (let i = 0; i < 1; ++i)
+
+  const channel = reader.u8();
+  const outputs = reader.u8();
+
+  const drum =
   {
-    const channel = reader.u8();
-    const outputs = reader.u8();
+    channel:  channel,
+    internal: (outputs >> 0) & 1,
+    usbc:     (outputs >> 1) & 1,
+    usba:     (outputs >> 2) & 1,
+    din:      (outputs >> 3) & 1,
+    select:   (outputs >> 4) & 1,
+    notes:    []
+  };
 
-    const drum =
-    {
-      channel: channel,
-      internal: (outputs >> 0) & 1,
-      usbc:     (outputs >> 1) & 1,
-      usba:     (outputs >> 2) & 1,
-      din:      (outputs >> 3) & 1,
-      select:   (outputs >> 4) & 1,
-      notes:    []
-    };
+  reader.skip(2);
 
-    reader.skip(2);
+  for (let j = 0; j < 8; ++j) { drum.notes.push(reader.u8()); }
 
-    for (let j = 0; j < 8; ++j) { drum.notes.push(reader.u8()); }
-
-    drumSequencer.push(drum);
-  }
   
-  return drumSequencer;
+  return drum;
 }
 
 function parseOutputRanges(reader)

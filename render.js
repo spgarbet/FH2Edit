@@ -406,8 +406,6 @@ function renderTrigEditor(output)
 
 function renderDrumSeq()
 {
-  console.log("renderDrumSeq");
-  
   const drum = parseDrumSeq();
   
   put('drum-channel', drum.channel  );

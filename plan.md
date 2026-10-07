@@ -30,7 +30,6 @@
 ## In Process
 
 - Drum sequencer
-  - Hook up reading values
   - Hook writing values
 - Sequencer
   - Hook up reading values
