@@ -242,12 +242,12 @@ function setOutputHighGate(index, value)
 
 function setConfigSrrValue(offset, value, index=selectedSrrIndex)
 {
-  setConfigU8(3708 + 7*index + offset, value);
+  setConfigU8(3708 + 7*index + offset, Number(value));
 }
 
 function setPresetSrrValue(offset, value, index=selectedSrrIndex)
 { 
-  setPresetU8(2400 + 8*index + offset, value);
+  setPresetU8(2400 + 8*index + offset, Number(value));
 }
 
 function setConfigSrrAddValue(bit, disabled, index)

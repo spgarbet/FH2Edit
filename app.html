@@ -1497,8 +1497,8 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 <div class="singleline">
                   <div>
                     <label for="srr-clock">Clock Source</label>
-                    <select id="srr-clock">
-                      <option value="0" onchange="setConfigSrrValue(3, this.value)">External</option>
+                    <select id="srr-clock" onchange="setConfigSrrValue(3, this.value)">
+                      <option value="0">External</option>
                       <script>
                         for (let j=1; j<=16; ++j)
                         {
