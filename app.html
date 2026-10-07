@@ -1138,8 +1138,8 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   </button>
                 </div>
                 <div>
-                  <label for="arp-rate" class="tooltip" data-tooltip="Rate in terms of 24ppqn clocks. The value '0' means that the arpeggiator advances every time an external clock pulse or  Euclidean trigger.">Rate</label>
-                  <select id="arp-rate" onchange="setArpPresetValue(4,this.value,selectedIcon.index)"><script>optionRange(0,127,0)</script></select>
+                  <label for="arp-rate" class="tooltip" data-tooltip="Rate in terms of 24ppqn clocks, or every pulse.">Rate</label>
+                  <select id="arp-rate" onchange="setArpPresetValue(4,this.value,selectedIcon.index)"><option value="0">Every</option></option><script>durationOptions(24)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="T"
                           aria-label="MIDI assignment for arpeggiator rate">
@@ -1387,9 +1387,10 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                     </button>
                   </div>
                   <div>
-                    <label for="euc-rate" class="tooltip" data-tooltip="The rate of the pattern, in terms of 24ppqn clocks. The special value '0' means that the pattern advances on every external clock pulse (useful for irregular rhythms).">Rate</label>
+                    <label for="euc-rate" class="tooltip" data-tooltip="The rate of the pattern, in terms of 24ppqn clocks or every pulse">Rate</label>
                     <select id="euc-rate" onchange="setEucValue(3,this.value)">
-                      <script>optionRange(0,127,0)</script>
+                      <option value="0">Every</option>
+                      <script>durationOptions(24)</script>
                     </select>
                     <button class="midi-map-button" type="button"
                             data-type="euc" data-index="0" data-dest="T"
@@ -1545,7 +1546,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   <div>
                     <label for="srr-rate" class="tooltip" data-tooltip="Sets the clock speed, in  24ppqn clocks.">Rate</label>
                     <select id="srr-rate" onchange="setPresetSrrValue(3,this.value)">
-                      <script>optionRange(0,127,6)</script>
+                      <script>durationOptions(24)</script>
                     </select>
                     <button class="midi-map-button" type="button"
                           data-type="srr" data-index="0" data-dest="T"
@@ -1647,14 +1648,10 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </select>
               </div>
               <div>
-                <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses. Some convenient values include:
-  24 quarter notes
-  12 eighth notes
-  8 eighth note triplets
-  6 sixteenth notes">Base</label>
+                <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses.">Base</label>
                 <select id="clock-editor-base"
                   onchange="setConfigU8(2149+8*selectedIcon.index,this.value)">
-                  <script>optionRange(1, 96);</script>
+                  <script>durationOptions(24)</script>
                 </select>
               </div>
               <div>
@@ -1846,7 +1843,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
             </div>
             <div>
               <label for="seq-rate">Rate</label>
-              <select id="seq-rate"><script>durationOptions()</script></select>
+              <select id="seq-rate"><script>durationOptions(24)</script></select>
               <button class="midi-map-button" type="button"
                       data-type="seq" data-index="0" data-dest="G"
                       aria-label="MIDI assignment for global sequencer reset">

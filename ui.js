@@ -2173,7 +2173,7 @@ function drumLanes()
   }
 }
 
-function durationOptions()
+function durationOptions(selected)
 {
   const musicalRates =
   [
@@ -2199,7 +2199,7 @@ function durationOptions()
 
   for(const [value, label] of musicalRates)
   {
-    document.write("<option value=\"" + value + "\""+(value===24?' selected':'')+">" + label + "</option>");
+    document.write("<option value=\"" + value + "\""+(value===selected?' selected':'')+">" + label + "</option>");
     musicalRateValues.add(value);
   }
 
@@ -2207,7 +2207,7 @@ function durationOptions()
   {
     if(!musicalRateValues.has(i))
     {
-      document.write("<option value=\"" + i + "\">" + i + "</option>");
+      document.write("<option value=\"" + i + "\""+(i===selected?' selected':'')+">" + i + "</option>");
     }
   }
 }
