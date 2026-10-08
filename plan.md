@@ -31,7 +31,6 @@
 ## In Process
 
 - Sequencer
-  - Hook up reading values
   - Hook up writing values.
   - Fix MIDI Mapping buttons.
 

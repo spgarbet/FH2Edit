@@ -475,7 +475,7 @@ function parsePresetSequencers(reader)
           value:   pattern,
           degree:  v0 & 0xf,
           octave:  (v0 >> 4) & 0x7,
-          length:  v1 & 0x7,
+          len:     v1 & 0x7,
           ratchet: (v1 >> 3) & 1,
           reset:   (v1 >> 4) & 1
       });

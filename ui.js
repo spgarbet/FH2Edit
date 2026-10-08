@@ -2407,36 +2407,10 @@ function midiNoteOptions(selected)
   }
 }
 
-function toggleSeqPattern(button)
+function updateSeqPatternState(button, state)
 {
-  const step    = parseInt(button.dataset.step);
   const substep = parseInt(button.dataset.substep);
-  let   state   = parseInt(button.dataset.state || "0");
-
-  switch(state)
-  {
-    case 0:       // A click in the off state turns it on
-      state = 1;
-      break;
-
-    case 1:       // A click in the on state
-      if(substep === 0) // If it's the first substep, then off it is.
-      {
-        state=0;  
-        break;
-      }
-
-      // Get previous
-      const previous      = elem("seq-pattern-" + step + "-" + (substep - 1));
-      const previousState = parseInt(previous.dataset.state || "0");
-      
-      state = previousState === 0 ? 0 : 2;
-      break;
-
-    case 2:      // A click in the tie state turns it off
-      state = 0;
-      break;
-  }
+  const step    = parseInt(button.dataset.step);
 
   button.dataset.state = state;
   button.classList.remove("pattern-off", "pattern-on", "pattern-tie");
@@ -2468,6 +2442,40 @@ function toggleSeqPattern(button)
       button.classList.add("pattern-tie");
       break;
   }
+}
+
+function toggleSeqPattern(button)
+{
+  const step    = parseInt(button.dataset.step);
+  const substep = parseInt(button.dataset.substep);
+  let   state   = parseInt(button.dataset.state || "0");
+
+  switch(state)
+  {
+    case 0:       // A click in the off state turns it on
+      state = 1;
+      break;
+
+    case 1:       // A click in the on state
+      if(substep === 0) // If it's the first substep, then off it is.
+      {
+        state=0;  
+        break;
+      }
+
+      // Get previous
+      const previous      = elem("seq-pattern-" + step + "-" + (substep - 1));
+      const previousState = parseInt(previous.dataset.state || "0");
+      
+      state = previousState === 0 ? 0 : 2;
+      break;
+
+    case 2:      // A click in the tie state turns it off
+      state = 0;
+      break;
+  }
+  
+  updateSeqPatternState(button, state);
 }
 
 function updateSeqPatternLength(step)

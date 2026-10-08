@@ -408,15 +408,15 @@ function renderDrumSeq()
 {
   const drum = parseDrumSeq();
   
-  put('drum-channel', drum.channel  );
-  put('drum-out-i',   drum.internal );
-  put('drum-out-c',   drum.usbc     );
-  put('drum-out-a',   drum.usba     );
-  put('drum-out-d',   drum.din      );
-  put('drum-out-s',   drum.select   );
-  put('drum-running', drum.active   );
-  put('drum-muted',   drum.mute     );
-  put('drum-reset',   drum.reset    );
+  put(  'drum-channel', drum.channel  );
+  check('drum-out-i',   drum.internal );
+  check('drum-out-c',   drum.usbc     );
+  check('drum-out-a',   drum.usba     );
+  check('drum-out-d',   drum.din      );
+  check('drum-out-s',   drum.select   );
+  check('drum-running', drum.active   );
+  check('drum-muted',   drum.mute     );
+  put(  'drum-reset',   drum.reset    );
 
   for(let i=0; i<8; ++i)
   {
@@ -440,8 +440,42 @@ function renderDrumSeq()
 
 function renderSequencer()
 {
-  const i   = num('seq-screen-index');
-  const seq = parseSequencers()[i];
+  const seq = parseSequencers()[num('seq-screen-index')];
   
+  put(  'seq-running',     seq.active      );
+  put(  'seq-channel',     seq.channel     );
+  check('seq_out_i',       seq.internal    );
+  check('seq_out_c',       seq.usbc        );
+  check('seq_out_a',       seq.usba        );
+  check('seq_out_d',       seq.din         );
+  check('seq_out_s',       seq.select      );
+  put(  'seq-clock',       seq.clock       );
+  put(  'seq-start',       seq.start       );
+  put(  'seq-end',         seq.end         );
+  put(  'seq-rate',        seq.rate        );
+  put(  'seq-reset',       seq.reset       );
+  put(  'seq-gate-len',    seq.gateLen     );
+  put(  'seq-direction',   seq.direction   );
+  put(  'seq-permutation', seq.permutation );
+  put(  'seq-root-note',   seq.rootNote    );
   
+  for(let i=0; i<32; ++i)
+  {
+    const step=seq.steps[i];
+    
+    put(  'seq-degree-'  + i, step.degree  );
+    put(  'seq-octave-'  + i, step.octave  );
+    put(  'seq-length-'  + i, step.len     );
+    check('seq-ratchet-' + i, step.ratchet );
+    check('seq-skip-'    + i, step.skip    );
+    put(  'seq-prob-'    + i, step.mute    );
+    
+    updateSeqPatternLength(i);
+
+    for(j=0; j<8; ++j)
+    {
+      const button = elem('seq-pattern-' + i + "-" + j);
+      updateSeqPatternState(button, step.pattern[j]);
+    }
+  }
 }
