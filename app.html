@@ -1722,27 +1722,34 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
           <div class="singleline">
             <div>
               <label for="drum-channel">MIDI Channel</label>
-              <select id="drum-channel"><script>optionRange(1,16,1,1)</script></select>
+              <select id="drum-channel" onchange="setConfigU8(3632,this.value)">
+                <script>optionRange(1,16,1,1)</script>
+              </select>
             </div>
             <div>
               <label for="drum-out-i">&emsp;Output</label>
-                                Int&nbsp;<input id="drum-out-i" type="checkbox">
-              &nbsp;&#124;&ensp;C&nbsp;  <input id="drum-out-c" type="checkbox">
-              &nbsp;&#124;&ensp;A&nbsp;  <input id="drum-out-a" type="checkbox">
-              &nbsp;&#124;&ensp;DIN&nbsp;<input id="drum-out-d" type="checkbox">
-              &nbsp;&#124;&ensp;Sel&nbsp;<input id="drum-out-s" type="checkbox">
+                                Int&nbsp;<input id="drum-out-i" type="checkbox" 
+                                  onchange="setDrumMidiOut(this.checked, 'i')">
+              &nbsp;&#124;&ensp;C&nbsp;  <input id="drum-out-c" type="checkbox"
+                                  onchange="setDrumMidiOut(this.checked, 'c')">
+              &nbsp;&#124;&ensp;A&nbsp;  <input id="drum-out-a" type="checkbox"
+                                  onchange="setDrumMidiOut(this.checked, 'a')">
+              &nbsp;&#124;&ensp;DIN&nbsp;<input id="drum-out-d" type="checkbox"
+                                  onchange="setDrumMidiOut(this.checked, 'd')">
+              &nbsp;&#124;&ensp;Sel&nbsp;<input id="drum-out-s" type="checkbox"
+                                  onchange="setDrumMidiOut(this.checked, 's')">
             </div>           
             <div>
               <label for="drum-running" class="tooltip" data-tooltip="Actively running">Running</label>
-              <input id="drum-running" type="checkbox">
+              <input id="drum-running" type="checkbox" onchange="setPresetU8(1702, this.checked)">
             </div>
             <div>
               <label for="drum-muted" class="tooltip" data-tooltip="Mute all drum output">Muted</label>
-              <input id="drum-muted" type="checkbox">
+              <input id="drum-muted" type="checkbox" onchange="setPresetU8(1703, this.checked)">
             </div>
             <div>
               <label for="drum-reset" class="tooltip" data-tooltip="Force the sequence back to the first step after this many quarter notes elapsed">Reset</label>
-              <select id="drum-reset"><option value="0" selected>Off</option><script>optionRange(1,127,0)</script></select>
+              <select id="drum-reset" onchange="setPresetU8(2384, this.value)"><option value="0" selected>Off</option><script>optionRange(1,127,0)</script></select>
               <button class="midi-map-button" type="button"
                       data-type="dseq" data-index="0" data-dest="S"
                       aria-label="MIDI assignment for global drum sequencer reset">
@@ -1763,7 +1770,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
           <legend>Lanes</legend>
           <table id="drum-seq-table">
             <thead>
-              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td><span class="tooltip" data-tooltip="Reset the sequence to its first step when playback reaches this step.">Reset</span></td><td><span class="tooltip" data-tooltip="Set the position of the drum sequence lane via MIDI CC">Pos</span></td><script>laneHeaders()</script></tr>
+              <tr><td></td><td>Mute</td><td>Note</td><td>Start</td><td>End</td><td>Rate</td><td><span class="tooltip" data-tooltip="Reset the sequence to its first step when playback has made this many steps.">Reset</span></td><td><span class="tooltip" data-tooltip="Set the position of the drum sequence lane via MIDI CC">Pos</span></td><script>laneHeaders()</script></tr>
             </thead>
             <tbody><script>drumLanes()</script></tbody>
           </table>

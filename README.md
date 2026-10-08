@@ -45,10 +45,10 @@ FH2Edit is under active development.
   - Envelope
   - Arpeggiator
   - Trigger editor
+- **Drum Sequencer**
 
 **In progress**
 
-- Drum Sequencer (html is just boilerplate)
 - Sequencer (html is just boilerplate)
 
 **Planned**

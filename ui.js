@@ -2156,6 +2156,7 @@ function toggleDrumMute(lane)
   const row   = elem("drum-lane-" + lane);
   const muted = row.classList.toggle("muted");
   updateDrumMute(lane, muted);
+  setDrumLanePreset(lane, 4, muted ? 1 : 0);
 }
 
 function laneHeaders()
@@ -2248,28 +2249,33 @@ function drumLane(lane)
   document.write("</button>");
   document.write("</td>");
 
-  document.write("<td><select id='drum-note-" + lane + "'>");
+  document.write("<td><select id='drum-note-" + lane + "'");
+  document.write(" onclick='setConfigU8("+(3636+lane)+", this.value)'>");
   midiNoteOptions(lane);
   document.write("</select></td>");
 
   document.write("<td><select id='drum-start-" + lane + "'");
-  document.write(" onchange='updateDrumLaneRange(" + lane + ")'>");
+  document.write(" onchange='updateDrumLaneRange(" + lane + ");");
+  document.write("  setDrumLanePreset(" + lane + ", 0, this.value)'>");
   optionRange(1, 32, 1, 1);
   document.write("</select></td>");
   
   document.write("<td><select id='drum-end-" + lane + "'");
-  document.write(" onchange='updateDrumLaneRange(" + lane + ")'>");
+  document.write(" onchange='updateDrumLaneRange(" + lane + ");");
+  document.write("  setDrumLanePreset(" + lane + ", 1, this.value)'>");
   optionRange(1, 32, 16, 1);
   document.write("</select></td>");
 
-  document.write("<td><select id='drum-rate-" + lane + "'>");
+  document.write("<td><select id='drum-rate-" + lane + "'");
+  document.write(" onchange='setDrumLanePreset("+lane+", 2, this.value)'>");
   durationOptions();
   document.write("</select>");
     writeMidiMapButton("drum-rate-map-" + lane, "dseql", lane, "T", 
     "MIDI rate for drum lane " + (lane+1));
   document.write("</td>");
 
-  document.write("<td><select id='drum-reset-" + lane + "'>");
+  document.write("<td><select id='drum-reset-" + lane + "'");
+  document.write(" onchange='setDrumLanePreset("+lane+", 3, this.value)'>");
   document.write("<option value='0'>--</option>");
   optionRange(2, 32, 1, 1);
   document.write("</select>");
@@ -2296,7 +2302,7 @@ function laneDrumTrigs(lane)
     document.write("<td id='drum-step-" + lane + "-" + i + "'>");
     document.write("<button id='drum-trig-" + lane + "-" + i + "'");
     document.write(" data-lane='" + lane + "'");
-    document.write(" data-index='" + i + "'");
+    document.write(" data-step='" + i + "'");
     document.write(" class='notrig'");
     document.write(" onclick='toggleDrumTrig(this)'>&nbsp;</button>");
     document.write("</td>");
@@ -2332,12 +2338,11 @@ function updateDrumTrig(trig, value)
 
 function toggleDrumTrig(trig)
 {
-  switch(trig.textContent)
-  {
-    case "o": updateDrumTrig(trig, 2); break;
-    case "X": updateDrumTrig(trig, 0); break;
-    default:  updateDrumTrig(trig, 1); break;
-  }
+  let value = trig.textContent==="o" ? 
+                2 : 
+                (trig.textContent==="X" ? 0 : 1);
+  updateDrumTrig(trig, value);
+  setDrumTrig(trig.dataset.lane, trig.dataset.step, value);
 }
 
 function updateDrumLaneRange(lane)

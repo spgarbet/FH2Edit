@@ -384,16 +384,16 @@ function parsePresetDrumSeq(reader)
   
   for (let j = 0; j < 8; ++j)
   {
-    const h    = reader.u32LE();
-    const a    = reader.u32LE();
+    const h    = reader.u32LE();  //  0, 16, ...
+    const a    = reader.u32LE();  //  4, 20, ...
     const lane =
     {
       pattern: Array(32).fill(0),
-      start:   reader.u8(),
-      end:     reader.u8(),
-      rate:    reader.u8(),
-      reset:   reader.u8(),
-      mute:    reader.u8()
+      start:   reader.u8(),       //  8, 24, ...
+      end:     reader.u8(),       //  9, 25, ...
+      rate:    reader.u8(),       // 10, 26, ...
+      reset:   reader.u8(),       // 11, 27, ...
+      mute:    reader.u8()        // 12, 28, ...
     };
 
     for (let m = 0; m < 4; ++m)
@@ -414,7 +414,7 @@ function parsePresetDrumSeq(reader)
     drum.lanes.push(lane);
   }
   
-  drum.reset = reader.u8();
+  drum.reset = reader.u8(); // 2384
   
   // Drum sequencer addendum
   reader.seek(4380);
@@ -1182,10 +1182,8 @@ function parseConfigSequencers(reader)
 function parseConfigDrumSeq(reader)
 {
   reader.seek(3632);
-  const drumSequencer = [];
-
-  const channel = reader.u8();
-  const outputs = reader.u8();
+  const channel = reader.u8();   // 3632
+  const outputs = reader.u8();   // 3633
 
   const drum =
   {
@@ -1200,7 +1198,10 @@ function parseConfigDrumSeq(reader)
 
   reader.skip(2);
 
-  for (let j = 0; j < 8; ++j) { drum.notes.push(reader.u8()); }
+  for (let j = 0; j < 8; ++j)
+  { 
+    drum.notes.push(reader.u8()); // 3636+j
+  }
 
   
   return drum;

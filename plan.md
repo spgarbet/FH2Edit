@@ -26,11 +26,10 @@
   - (ICON-Envelope) A separate editor for the Envelope
   - (ICON-Arpeggiator) A separate editor for the Arp
   - (ICON-Lightning) Triggers
+- Drum sequencer
 
 ## In Process
 
-- Drum sequencer
-  - Hook writing values
 - Sequencer
   - Hook up reading values
   - Hook up writing values.
@@ -43,6 +42,7 @@
 - Testing
   - All the Arps
   - Envelopes
+  - Drum Sequencer
 - Tunings 32 slots for Scala/Keyboard
   - Use local memory? 
 - Outputs

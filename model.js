@@ -214,7 +214,7 @@ function setCVMidiOut(value, letter, flag)
 
   const bit = bits[flag];
 
-  if (bit === undefined) { return; }
+  if (bit === undefined) { console.error("Undefined flag"); return; }
 
   const flags = configSysex[base];
 
@@ -684,4 +684,63 @@ function nextAvailableTrig()
   }
   
   return -1;
+}
+
+function setDrumTrig(lane, step, value)
+{
+  lane  = Number(lane);
+  step  = Number(step);
+  value = Number(value);
+  
+  console.log("setDrumTrig", lane, step, value);
+  
+  const main   = step % 8 < 4;
+  const source = main ? step : step - 4;
+  const byte   = Math.floor(source / 8);
+  const bit    = source % 4;
+  const stride = main ? 16 : 8;
+  const base   = main ? 2256 : 4380;
+  const hLoc   = base + stride*lane + byte;
+  const aLoc   = hLoc + 4;
+  const mask   = 1 << bit;
+
+  setPresetU8(hLoc, value > 0
+    ? presetSysex[hLoc] | mask
+    : presetSysex[hLoc] & ~mask);
+
+  setPresetU8(aLoc, value === 2
+    ? presetSysex[aLoc] | mask
+    : presetSysex[aLoc] & ~mask);
+}
+
+// Offsets
+// 0 => start
+// 1 => end
+// 2 => rate
+// 3 => reset
+// 4 => mute
+function setDrumLanePreset(lane, offset, value)
+{
+  setPresetU8(2264+lane*16+offset, Number(value));
+}
+
+function setDrumMidiOut(value, flag)
+{
+  const bits =
+  {
+    i: 1 << 0,
+    c: 1 << 1,
+    a: 1 << 2,
+    d: 1 << 3,
+    s: 1 << 4
+  };
+
+  const bit = bits[flag];
+
+  if (bit === undefined) { console.error("Undefined flag"); return; }
+
+  const base  = 2633;
+  const flags = configSysex[base];
+
+  setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
