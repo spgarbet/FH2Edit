@@ -832,7 +832,7 @@ function setSeqPermutation(value, index=num('seq-screen-index'))
   setPresetU8(4120 + 65*index, value);
 }
 
-function setSeqDegree(value, step, index=num("seq-screen-index"))
+function setSeqDegree(value, step, index)
 {
   const loc = 1714 + 136*index + 4*step;
   const v   = presetSysex[loc];
@@ -840,7 +840,7 @@ function setSeqDegree(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, (v & 0xf0) | (Number(value) & 0x0f));
 }
 
-function setSeqOctave(value, step, index=num("seq-screen-index"))
+function setSeqOctave(value, step, index)
 {
   const loc = 1714 + 136*index + 4*step;
   const v   = presetSysex[loc];

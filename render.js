@@ -463,9 +463,8 @@ function renderSequencer()
   for(let i=0; i<32; ++i)
   {
     const step=seq.steps[i];
-    
-    put(  'seq-degree-'  + i, step.degree  );
-    put(  'seq-octave-'  + i, step.octave  );
+
+    put(  'seq-offset-'  + i, seqMidiNoteOffset(step.degree, step.octave));
     put(  'seq-length-'  + i, step.len     );
     check('seq-ratchet-' + i, step.ratchet );
     check('seq-skip-'    + i, step.skip    );

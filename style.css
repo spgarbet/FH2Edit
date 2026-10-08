@@ -1152,3 +1152,9 @@ canvas
 {
   background: #ddd9c0;
 }
+
+#seq-break
+{
+  background: white !important;
+}
+}

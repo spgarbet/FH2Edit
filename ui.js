@@ -2545,34 +2545,16 @@ function seqPattern(step)
   document.write("</div>");
 }
 
+
 function seqSteps(start, finish)
 {
-  document.write("<tr><td class='colhdr'>Degree</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Degree/octave offset from root'>Note</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td data-seq-step='"+step+"'><select id='seq-degree-"+step+"' ");
-    document.write(" onchange='setSeqDegree(this.value,"+step+")'>");
-    optionRange(0,15);
+    document.write("<td data-seq-step='"+step+"'><select id='seq-offset-"+step+"' ");
+    document.write(" onchange='setSeqNoteOffset(this.value,"+step+")'>");
+    optionNoteOffsets();
     document.write("</select></td>");
-  }
-  document.write("</tr>");
-  
-  document.write("<tr><td class='colhdr'>Octave</td>");
-  for(let step=start; step<finish; ++step)
-  {
-    document.write("<td data-seq-step='"+step+"'><select id='seq-octave-"+step+"' ");
-    document.write(" onchange='setSeqOctave(this.value,"+step+")'>");
-    optionRange(0,7,3);
-    document.write("</select></td>");
-  }
-  document.write("</tr>");
-  
-  document.write("<tr><td class='colhdr'>Pattern</td>");
-  for(let step=start; step<finish; ++step)
-  {
-    document.write("<td class='seq-pattern-cell' data-seq-step='"+step+"'>");
-    seqPattern(step);
-    document.write("</td>");
   }
   document.write("</tr>");
   
@@ -2586,6 +2568,15 @@ function seqSteps(start, finish)
   }
   document.write("</tr>");
   
+  document.write("<tr><td class='colhdr'>Pattern</td>");
+  for(let step=start; step<finish; ++step)
+  {
+    document.write("<td class='seq-pattern-cell' data-seq-step='"+step+"'>");
+    seqPattern(step);
+    document.write("</td>");
+  }
+  document.write("</tr>");
+
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Divide this step into multiple rapid note triggers.'>Ratchet</td>");
   for(let step=start; step<finish; ++step)
   {
@@ -2658,4 +2649,61 @@ function updateSeqRange(index=num("seq-screen-index"))
   
   setSeqStart(start);
   setSeqEnd(end);
+}
+
+function seqMidiNoteOffset(degree, octave)
+{
+  return (degree + 12*octave);
+}
+
+function seqMidiNote(root, degree, octave)
+{
+  const note = root + seqMidiNoteMap(degree, octave);
+  
+  if(note < 128) { return note; }
+}
+
+function seqDegreeOctave(offset)
+{
+  let   degree = offset % 12;
+  let   octave = Math.floor(offset / 12);
+
+  while(octave > 7)
+  {
+    --octave;
+    degree += 12;
+  }
+  
+  if(octave >=  0 &&
+     octave <=  7 &&
+     degree >=  0 &&
+     degree <= 15)
+  {
+    return { octave: octave, degree: degree };
+  }
+}
+
+function seqNoteOffsetMax(root)
+{
+  if(root < 28) { return 99; }
+  return 127-root;
+}
+
+function setSeqNoteOffset(value, step, index=num("seq-screen-index"))
+{
+  const split = seqDegreeOctave(value);
+  setSeqDegree(split.degree, step, index);
+  setSeqOctave(split.octave, step, index);
+}
+
+function optionNoteOffsets()
+{
+  for(let off=0; off<100; ++off)
+  {
+    const split = seqDegreeOctave(off);
+
+    document.write("<option value='" + off + "'>");
+    document.write(split.degree + "/" + split.octave);
+    document.write("</option>");
+  }
 }
