@@ -892,8 +892,8 @@ function setSeqSubstep(value, step, substep, index=num("seq-screen-index"))
 {
   value = Number(value) & 0x3;
   
-  const main = 1712 + 128*index + 4*step;
-  const add  = 4121 + 65*index + 2*step;
+  const main = 1712 + 136*index + 4*step;
+  const add  = 4121 +  65*index + 2*step;
   
   let pattern = presetSysex[main] |
                 (presetSysex[main + 1] << 7) |

@@ -2503,6 +2503,8 @@ function toggleSeqPattern(button)
   }
   
   updateSeqPatternState(button, state);
+  setSeqSubstep(state, step, substep, num("seq-screen-index"))
+
 }
 
 function updateSeqPatternLength(step)
