@@ -691,9 +691,7 @@ function setDrumTrig(lane, step, value)
   lane  = Number(lane);
   step  = Number(step);
   value = Number(value);
-  
-  console.log("setDrumTrig", lane, step, value);
-  
+
   const main   = step % 8 < 4;
   const source = main ? step : step - 4;
   const byte   = Math.floor(source / 8);

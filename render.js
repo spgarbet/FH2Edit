@@ -437,3 +437,11 @@ function renderDrumSeq()
     updateDrumLaneRange(i);
   }
 }
+
+function renderSequencer()
+{
+  const i   = num('seq-screen-index');
+  const seq = parseSequencers()[i];
+  
+  
+}

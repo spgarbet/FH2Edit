@@ -1163,12 +1163,12 @@ function parseConfigSequencers(reader)
 
     sequencers.push(
       {
-        channel: channel,
+        channel:  channel,
         internal: (outputs >> 0) & 1,
-        cv:       (outputs >> 1) & 1,
-        accent:   (outputs >> 2) & 1,
-        drum:     (outputs >> 3) & 1,
-        slide:    (outputs >> 4) & 1,
+        usbc:     (outputs >> 1) & 1,
+        usba:     (outputs >> 2) & 1,
+        din:      (outputs >> 3) & 1,
+        sel:      (outputs >> 4) & 1,
         clock:    reader.u8()
       }
     );
@@ -1203,7 +1203,6 @@ function parseConfigDrumSeq(reader)
     drum.notes.push(reader.u8()); // 3636+j
   }
 
-  
   return drum;
 }
 
@@ -1380,6 +1379,8 @@ function parseDrumSeq()
 
 function parseSequencers()
 {
-  return { ...(parsePresetSequencers(new ByteReader(presetSysex))),
-           ...(parseConfigSequencers(new ByteReader(configSysex))) };
+  const preset = parsePresetSequencers(new ByteReader(presetSysex));
+  const config = parseConfigSequencers(new ByteReader(configSysex));
+
+  return preset.map((sequencer, i) => ({...sequencer, ...config[i] }));
 }

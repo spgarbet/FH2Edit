@@ -304,6 +304,10 @@ function initTabs()
         case "drum-screen":
           renderDrumSeq();
           break;
+          
+        case "sequencer-screen":
+          renderSequencer();
+          break;
       }
     });
   }
