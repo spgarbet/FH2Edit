@@ -46,10 +46,9 @@ FH2Edit is under active development.
   - Arpeggiator
   - Trigger editor
 - **Drum Sequencer**
+- **Note Sequencers**
 
 **In progress**
-
-- Sequencer (html is just boilerplate)
 
 **Planned**
 
