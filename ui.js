@@ -2548,7 +2548,7 @@ function seqSteps(start, finish)
   document.write("<tr><td class='colhdr'>Degree</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id='seq-degree-"+step+"'>");
+    document.write("<td><select id='seq-degree-"+step+"' onclick='setSeqDegree(this.value,"+step+")'>");
     optionRange(0,15);
     document.write("</select></td>");
   }
@@ -2557,7 +2557,7 @@ function seqSteps(start, finish)
   document.write("<tr><td class='colhdr'>Octave</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id='seq-octave-"+step+"'>");
+    document.write("<td><select id='seq-octave-"+step+"' onclick='setSeqOctave(this.value,"+step+")'>");
     optionRange(0,7,3);
     document.write("</select></td>");
   }
@@ -2576,7 +2576,7 @@ function seqSteps(start, finish)
   for(let step=start; step<finish; ++step)
   {
     document.write("<td><select id='seq-length-" + step + "'");
-    document.write(" onchange='updateSeqPatternLength(" + step + ")'>");
+    document.write(" onchange='updateSeqPatternLength(" + step + "); setSeqLen(this.value," + step + ")'>");
     optionRange(1, 8, 1, 1);
     document.write("</select></td>");
   }
@@ -2585,21 +2585,24 @@ function seqSteps(start, finish)
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Divide this step into multiple rapid note triggers.'>Ratchet</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id='seq-ratchet-"+step+"' type='checkbox'></td>");
+    document.write("<td><input id='seq-ratchet-"+step+"' type='checkbox'");
+    document.write(" onchange='setSeqRatchet(this.checked," + step + ")'></td>");
   }
   document.write("</tr>");
   
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Skip this step without advancing the sequence normally.'>Skip</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id='seq-skip-"+step+"' type='checkbox'></td>");
+    document.write("<td><input id='seq-skip-"+step+"' type='checkbox'");
+    document.write(" onchange='setSeqSkip(this.checked," + step + ")'></td>");
   }
   document.write("</tr>");
   
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Reset the sequence to its first step when playback reaches this step.'>Reset</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><input id='seq-reset-"+step+"' type='checkbox'></td>");
+    document.write("<td><input id='seq-reset-"+step+"' type='checkbox'");
+    document.write(" onchange='setSeqReset(this.checked," + step + ")'></td>");
   }
   document.write("</tr>");
   
@@ -2607,7 +2610,8 @@ function seqSteps(start, finish)
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Chance that this step will play.'>Probability</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td><select id='seq-prob-"+step+"'>");
+    document.write("<td><select id='seq-prob-"+step+"'");
+    document.write(" onchange='setSeqMute(this.value," + step + ")'>");
     document.write("<option value='0'>100%</option>");
     document.write("<option value='1'>86%</option>");
     document.write("<option value='2'>71%</option>");

@@ -468,6 +468,7 @@ function renderSequencer()
     put(  'seq-length-'  + i, step.len     );
     check('seq-ratchet-' + i, step.ratchet );
     check('seq-skip-'    + i, step.skip    );
+    check('seq-reset-'   + i, step.reset   );
     put(  'seq-prob-'    + i, step.mute    );
     
     updateSeqPatternLength(i);

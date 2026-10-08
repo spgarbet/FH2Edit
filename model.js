@@ -834,7 +834,7 @@ function setSeqPermutation(value, index=num('seq-screen-index'))
 
 function setSeqDegree(value, step, index=num("seq-screen-index"))
 {
-  const loc = 1714 + 128*index + 4*step;
+  const loc = 1714 + 136*index + 4*step;
   const v   = presetSysex[loc];
 
   setPresetU8(loc, (v & 0xf0) | (Number(value) & 0x0f));
@@ -842,7 +842,7 @@ function setSeqDegree(value, step, index=num("seq-screen-index"))
 
 function setSeqOctave(value, step, index=num("seq-screen-index"))
 {
-  const loc = 1714 + 128*index + 4*step;
+  const loc = 1714 + 136*index + 4*step;
   const v   = presetSysex[loc];
 
   setPresetU8(loc, (v & 0x8f) | ((Number(value) & 0x7) << 4));
@@ -850,7 +850,7 @@ function setSeqOctave(value, step, index=num("seq-screen-index"))
 
 function setSeqLen(value, step, index=num("seq-screen-index"))
 {
-  const loc = 1715 + 128*index + 4*step;
+  const loc = 1715 + 136*index + 4*step;
   const v   = presetSysex[loc];
 
   setPresetU8(loc, (v & 0xf8) | (Number(value) & 0x7));
@@ -858,7 +858,7 @@ function setSeqLen(value, step, index=num("seq-screen-index"))
 
 function setSeqRatchet(value, step, index=num("seq-screen-index"))
 {
-  const loc = 1715 + 128*index + 4*step;
+  const loc = 1715 + 136*index + 4*step;
   const v   = presetSysex[loc];
 
   setPresetU8(loc, value ? v | 0x08 : v & ~0x08);
@@ -866,7 +866,7 @@ function setSeqRatchet(value, step, index=num("seq-screen-index"))
 
 function setSeqReset(value, step, index=num("seq-screen-index"))
 {
-  const loc = 1715 + 128*index + 4*step;
+  const loc = 1715 + 136*index + 4*step;
   const v   = presetSysex[loc];
 
   setPresetU8(loc, value ? v | 0x10 : v & ~0x10);
