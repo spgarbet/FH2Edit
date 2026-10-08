@@ -2544,7 +2544,6 @@ function seqPattern(step)
   document.write("</div>");
 }
 
-
 function seqSteps(start, finish)
 {
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Degree/octave offset from root'>Note</td>");
@@ -2691,6 +2690,10 @@ function setSeqNoteOffset(value, step, index=num("seq-screen-index"))
   const split = seqDegreeOctave(value);
   setSeqDegree(split.degree, step, index);
   setSeqOctave(split.octave, step, index);
+  
+  const sel = elem("seq-offset-"+step);
+  sel.closest("td").classList.remove("seq-offset-invalid");
+  sel.title = '';
 }
 
 function optionNoteOffsets()
@@ -2707,19 +2710,29 @@ function optionNoteOffsets()
 
 function updateSeqNoteOffsets(root)
 {
-  root = Number(root);
-  labels = [];
+  root    = Number(root);
+  labels  = [];
+  invalid = [];
   for(let off=0; off<100; ++off)
   {
     const split = seqDegreeOctave(off);
     const note  = root+off;
+    invalid.push(note > 127);
     labels.push(split.degree + "/" + split.octave + 
       (note > 127 ? '' : ' '+midiNote(note)));
   }
-  
+ 
   document.querySelectorAll(".seq-offset").forEach(select => {
+    const cell = select.closest("td");
+    const note = root + Number(select.value);
+    cell.classList.toggle("seq-offset-invalid", note > 127);
+    select.title = note > 127
+      ? "This note exceeds MIDI note 127 and may not play correctly."
+      : "";
+      
     [...select.options].forEach((option, index) => {
       option.textContent = labels[index];
+      option.disabled    = invalid[index];
     });
   });
 }

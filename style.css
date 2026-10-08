@@ -1162,4 +1162,13 @@ canvas
 {
   background: white !important;
 }
+
+#seq-table td.seq-offset-invalid
+{
+  background: #fff0f0;
+}
+
+#seq-table td.seq-offset-invalid select
+{
+  color: #a00000;
 }
