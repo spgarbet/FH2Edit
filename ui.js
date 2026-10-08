@@ -2386,6 +2386,33 @@ function initDrumSeq()
  //
 // Sequencer
 
+function updateSeqMute(muted)
+{
+  const button = elem("seq-mute");
+  const image  = button.querySelector("img");
+  const seqn   = num('seq-screen-index') + 1;
+
+  if(muted)
+  {
+    image.src = "icons/mute.png";
+    image.alt = "Muted sequencer " + seqn;
+    button.setAttribute("aria-pressed", "true");
+  }
+  else
+  {
+    image.src = "icons/unmute.png";
+    image.alt = "Unmuted lane " + seqn;
+    button.setAttribute("aria-pressed", "false");
+  }
+}
+
+function toggleSeqMute()
+{
+  const muted = elem('seq-mute').classList.toggle("muted");
+  updateSeqMute(muted);
+  setSeqMute(muted, num('seq-screen-index'));
+}
+
 function midiNoteOptions(selected)
 {
   const midiNote = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];

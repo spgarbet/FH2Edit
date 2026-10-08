@@ -755,7 +755,7 @@ function setSeqClock(value, index=num('seq-screen-index'))
   setConfigU8(loc, value);
 }
 
-function setSeqMidiOut(value, flag)
+function setSeqMidiOut(value, flag, index=num('seq-screen-index'))
 {
   const bits =
   {
@@ -770,13 +770,13 @@ function setSeqMidiOut(value, flag)
 
   if (bit === undefined) { console.error("Undefined flag"); return; }
 
-  const base  = 3617 + 4*num('seq-screen-index');
+  const base  = 3617 + 4*index;
   const flags = configSysex[base];
 
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
 
-function setSequencerActive(value, index=num('seq-screen-index'))
+function setSeqActive(value, index=num('seq-screen-index'))
 {
   const flags = presetSysex[1700];
   const mask  = 1 << index;
@@ -784,7 +784,7 @@ function setSequencerActive(value, index=num('seq-screen-index'))
   setPresetU8(1700, value ? flags | mask : flags & ~mask);
 }
 
-function setSequencerMute(value, index=num('seq-screen-index'))
+function setSeqMute(value, index=num('seq-screen-index'))
 {
   const flags = presetSysex[1701];
   const mask  = 1 << index;
@@ -792,47 +792,47 @@ function setSequencerMute(value, index=num('seq-screen-index'))
   setPresetU8(1701, value ? flags | mask : flags & ~mask);
 }
 
-function setSequencerStart(value, index=num('seq-screen-index'))
+function setSeqStart(value, index=num('seq-screen-index'))
 {
   setPresetU8(1840 + 128*index, value);
 }
 
-function setSequencerEnd(value, index=num('seq-screen-index'))
+function setSeqEnd(value, index=num('seq-screen-index'))
 {
   setPresetU8(1841 + 128*index, value);
 }
 
-function setSequencerRate(value, index=num('seq-screen-index'))
+function setSeqRate(value, index=num('seq-screen-index'))
 {
   setPresetU8(1842 + 128*index, value);
 }
 
-function setSequencerGateLen(value, index=num('seq-screen-index'))
+function setSeqGateLen(value, index=num('seq-screen-index'))
 {
   setPresetU8(1843 + 128*index, value);
 }
 
-function setSequencerReset(value, index=num('seq-screen-index'))
+function setSeqReset(value, index=num('seq-screen-index'))
 {
   setPresetU8(1844 + 128*index, value);
 }
 
-function setSequencerRootNote(value, index=num('seq-screen-index'))
+function setSeqRootNote(value, index=num('seq-screen-index'))
 {
   setPresetU8(1845 + 128*index, value);
 }
 
-function setSequencerDirection(value, index=num('seq-screen-index'))
+function setSeqDirection(value, index=num('seq-screen-index'))
 {
   setPresetU8(1846 + 128*index, value);
 }
 
-function setSequencerPermutation(value, index=num('seq-screen-index'))
+function setSeqPermutation(value, index=num('seq-screen-index'))
 {
   setPresetU8(4120 + 65*index, value);
 }
 
-function setSequencerDegree(value, step, index=num("seq-screen-index"))
+function setSeqDegree(value, step, index=num("seq-screen-index"))
 {
   const loc = 1714 + 128*index + 4*step;
   const v   = presetSysex[loc];
@@ -840,7 +840,7 @@ function setSequencerDegree(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, (v & 0xf0) | (Number(value) & 0x0f));
 }
 
-function setSequencerOctave(value, step, index=num("seq-screen-index"))
+function setSeqOctave(value, step, index=num("seq-screen-index"))
 {
   const loc = 1714 + 128*index + 4*step;
   const v   = presetSysex[loc];
@@ -848,7 +848,7 @@ function setSequencerOctave(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, (v & 0x8f) | ((Number(value) & 0x7) << 4));
 }
 
-function setSequencerLen(value, step, index=num("seq-screen-index"))
+function setSeqLen(value, step, index=num("seq-screen-index"))
 {
   const loc = 1715 + 128*index + 4*step;
   const v   = presetSysex[loc];
@@ -856,7 +856,7 @@ function setSequencerLen(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, (v & 0xf8) | (Number(value) & 0x7));
 }
 
-function setSequencerRatchet(value, step, index=num("seq-screen-index"))
+function setSeqRatchet(value, step, index=num("seq-screen-index"))
 {
   const loc = 1715 + 128*index + 4*step;
   const v   = presetSysex[loc];
@@ -864,7 +864,7 @@ function setSequencerRatchet(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, value ? v | 0x08 : v & ~0x08);
 }
 
-function setSequencerReset(value, step, index=num("seq-screen-index"))
+function setSeqReset(value, step, index=num("seq-screen-index"))
 {
   const loc = 1715 + 128*index + 4*step;
   const v   = presetSysex[loc];
@@ -872,7 +872,7 @@ function setSequencerReset(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, value ? v | 0x10 : v & ~0x10);
 }
 
-function setSequencerSkip(value, step, index=num("seq-screen-index"))
+function setSeqSkip(value, step, index=num("seq-screen-index"))
 {
   const loc = 4122 + 65*index + 2*step;
   const v   = presetSysex[loc];
@@ -880,7 +880,7 @@ function setSequencerSkip(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, value ? v | 0x01 : v & ~0x01);
 }
 
-function setSequencerMute(value, step, index=num("seq-screen-index"))
+function setSeqMute(value, step, index=num("seq-screen-index"))
 {
   const loc = 4122 + 65*index + 2*step;
   const v   = presetSysex[loc];
@@ -888,7 +888,7 @@ function setSequencerMute(value, step, index=num("seq-screen-index"))
   setPresetU8(loc, (v & 0x01) | ((Number(value) & 0x7) << 1));
 }
 
-function setSequencerSubstep(value, step, substep, index=num("seq-screen-index"))
+function setSeqSubstep(value, step, substep, index=num("seq-screen-index"))
 {
   value = Number(value) & 0x3;
   

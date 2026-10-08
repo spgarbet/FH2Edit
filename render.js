@@ -442,7 +442,7 @@ function renderSequencer()
 {
   const seq = parseSequencers()[num('seq-screen-index')];
   
-  put(  'seq-running',     seq.active      );
+  check('seq-running',     seq.active      );
   put(  'seq-channel',     seq.channel     );
   check('seq_out_i',       seq.internal    );
   check('seq_out_c',       seq.usbc        );
