@@ -2413,24 +2413,23 @@ function toggleSeqMute()
   setSeqMute(muted, num('seq-screen-index'));
 }
 
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function midiNote(value)
+{
+  const name   = NOTE_NAMES[value % 12];
+  const octave = Math.floor(value / 12) - 1;
+
+  return name + octave;
+}
+
 function midiNoteOptions(selected)
 {
-  const midiNote = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  let   note     = 0;
-  let   value    = 0;
-  let   number   = -1;
-  
   for(let value=0; value<128; ++value)
   {
     document.write("<option value='"+value+"'"+(value===selected ? ' selected':'')+">");
-    document.write(value + " " + midiNote[note] + number);
+    document.write(value + " " + midiNote(value));
     document.write("</option>");
-    
-    if(++note > 11)
-    {
-      note = 0;
-      ++number;
-    }
   }
 }
 
@@ -2551,14 +2550,14 @@ function seqSteps(start, finish)
   document.write("<tr><td class='colhdr tooltip' data-tooltip='Degree/octave offset from root'>Note</td>");
   for(let step=start; step<finish; ++step)
   {
-    document.write("<td data-seq-step='"+step+"'><select id='seq-offset-"+step+"' ");
+    document.write("<td data-seq-step='"+step+"'><select class='seq-offset' id='seq-offset-"+step+"' ");
     document.write(" onchange='setSeqNoteOffset(this.value,"+step+")'>");
     optionNoteOffsets();
     document.write("</select></td>");
   }
   document.write("</tr>");
   
-  document.write("<tr><td class='colhdr'>Length</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='Length of subpattern. If a ratchet, takes one step. Otherwise, step lasts a multiple of rate.'>Length</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td data-seq-step='"+step+"'><select id='seq-length-"+step+"'");
@@ -2568,7 +2567,7 @@ function seqSteps(start, finish)
   }
   document.write("</tr>");
   
-  document.write("<tr><td class='colhdr'>Pattern</td>");
+  document.write("<tr><td class='colhdr tooltip' data-tooltip='The substep pattern, all the same note.'>Pattern</td>");
   for(let step=start; step<finish; ++step)
   {
     document.write("<td class='seq-pattern-cell' data-seq-step='"+step+"'>");
@@ -2637,8 +2636,6 @@ function updateSeqRange(index=num("seq-screen-index"))
   {
     const active = i >= start && i <= end;
     const cells  = document.querySelectorAll("[data-seq-step='"+i+"']");
-    
-    console.log("updateSeqRange",i,cells);
 
     for(const cell of cells)
     {
@@ -2706,4 +2703,23 @@ function optionNoteOffsets()
     document.write(split.degree + "/" + split.octave);
     document.write("</option>");
   }
+}
+
+function updateSeqNoteOffsets(root)
+{
+  root = Number(root);
+  labels = [];
+  for(let off=0; off<100; ++off)
+  {
+    const split = seqDegreeOctave(off);
+    const note  = root+off;
+    labels.push(split.degree + "/" + split.octave + 
+      (note > 127 ? '' : ' '+midiNote(note)));
+  }
+  
+  document.querySelectorAll(".seq-offset").forEach(select => {
+    [...select.options].forEach((option, index) => {
+      option.textContent = labels[index];
+    });
+  });
 }

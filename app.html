@@ -1887,7 +1887,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
             </div>
             <div>
               <label for="seq-root-note">Root Note</label>
-              <select id="seq-root-note" onchange="setSeqRootNote(this.value)"><script>midiNoteOptions(60)</script></select>
+              <select id="seq-root-note" onchange="setSeqRootNote(this.value); updateSeqNoteOffsets(this.value)"><script>midiNoteOptions(60)</script></select>
             </div>
             <div>
               <label for="seq-position-button">Position</label>

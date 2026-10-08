@@ -31,7 +31,9 @@
 
 ## In Process
 
-- Sequencer: Could Degree/Octave be made a single dropdown relative to Root Note? This would be a real help in setting values. ?How does the root note affect it, is it additive?
+- Outputs
+  - (ICON-Gamepad)  HID Gamepad, assign to output
+  - (ICON-Keyboard) HID Keyboard, assign to output
 
 ## TODO
 
@@ -43,9 +45,6 @@
   - Drum Sequencer
 - Tunings 32 slots for Scala/Keyboard
   - Use local memory? Hidden interface.
-- Outputs
-  - (ICON-Gamepad) HID Gamepad, assign to output
-  - (ICON-Keyboard) HID Keyboard, assign to output
 - Read/Write sequences from Novation
 - Deal properly with Gate expanders
  

@@ -1133,6 +1133,11 @@ canvas
   vertical-align: top;
 }
 
+#sequencer-content td
+{
+  text-align: center;
+}
+
 #sequencer-content tr:nth-child(even) td:not(.step-inactive)
 {
   background-color: #fffade;
