@@ -482,4 +482,5 @@ function renderSequencer()
   }
   
   updateMidiMapButtons("#sequencer-content .midi-map-button", index);
+  updateSeqRange(index);
 }

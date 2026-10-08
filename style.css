@@ -1068,12 +1068,6 @@ canvas
   margin-right: 0;
 }
 
-#sequencer-content tr:nth-child(even) td
-{
-  background-color: #fffade;
-}
-
-
 .pattern-on
 {
 }
@@ -1137,4 +1131,24 @@ canvas
 .seq-pattern-cell
 {
   vertical-align: top;
+}
+
+#sequencer-content tr:nth-child(even) td:not(.step-inactive)
+{
+  background-color: #fffade;
+}
+
+#sequencer-content td.step-active
+{
+  background: white;
+}
+
+#sequencer-content td.step-inactive
+{
+  background: #dddddd;
+}
+
+#sequencer-content tr:nth-child(even) td.step-inactive
+{
+  background: #ddd9c0;
 }
