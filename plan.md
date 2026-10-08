@@ -31,8 +31,7 @@
 ## In Process
 
 - Sequencer
-  - Hook up writing values.
-  - Fix MIDI Mapping buttons.
+  - Darken dead steps.
 
 ## TODO
 
@@ -44,6 +43,7 @@
   - Drum Sequencer
 - Tunings 32 slots for Scala/Keyboard
   - Use local memory? Hidden interface.
+- Sequencer: Could Degree/Octave be made a single dropdown relative to Root Note? This would be a real help in setting values. ?How does the root note affect it, is it additive?
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output

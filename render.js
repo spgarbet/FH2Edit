@@ -440,7 +440,8 @@ function renderDrumSeq()
 
 function renderSequencer()
 {
-  const seq = parseSequencers()[num('seq-screen-index')];
+  const index = num('seq-screen-index');
+  const seq   = parseSequencers()[index];
   
   check('seq-running',     seq.active      );
   put(  'seq-channel',     seq.channel     );
@@ -479,4 +480,6 @@ function renderSequencer()
       updateSeqPatternState(button, step.pattern[j]);
     }
   }
+  
+  updateMidiMapButtons("#sequencer-content .midi-map-button", index);
 }
