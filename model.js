@@ -742,3 +742,166 @@ function setDrumMidiOut(value, flag)
 
   setConfigU8(base, value ? flags | bit : flags & ~bit);
 }
+
+function setSeqChannel(value, index=num('seq-screen-index'))
+{
+  const loc = 3616 + 4*index;
+  setConfigU8(loc, value);
+}
+
+function setSeqClock(value, index=num('seq-screen-index'))
+{
+  const loc = 3618 + 4*index;
+  setConfigU8(loc, value);
+}
+
+function setSeqMidiOut(value, flag)
+{
+  const bits =
+  {
+    i: 1 << 0,
+    c: 1 << 1,
+    a: 1 << 2,
+    d: 1 << 3,
+    s: 1 << 4
+  };
+
+  const bit = bits[flag];
+
+  if (bit === undefined) { console.error("Undefined flag"); return; }
+
+  const base  = 3617 + 4*num('seq-screen-index');
+  const flags = configSysex[base];
+
+  setConfigU8(base, value ? flags | bit : flags & ~bit);
+}
+
+function setSequencerActive(value, index=num('seq-screen-index'))
+{
+  const flags = presetSysex[1700];
+  const mask  = 1 << index;
+
+  setPresetU8(1700, value ? flags | mask : flags & ~mask);
+}
+
+function setSequencerMute(value, index=num('seq-screen-index'))
+{
+  const flags = presetSysex[1701];
+  const mask  = 1 << index;
+
+  setPresetU8(1701, value ? flags | mask : flags & ~mask);
+}
+
+function setSequencerStart(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1840 + 128*index, value);
+}
+
+function setSequencerEnd(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1841 + 128*index, value);
+}
+
+function setSequencerRate(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1842 + 128*index, value);
+}
+
+function setSequencerGateLen(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1843 + 128*index, value);
+}
+
+function setSequencerReset(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1844 + 128*index, value);
+}
+
+function setSequencerRootNote(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1845 + 128*index, value);
+}
+
+function setSequencerDirection(value, index=num('seq-screen-index'))
+{
+  setPresetU8(1846 + 128*index, value);
+}
+
+function setSequencerPermutation(value, index=num('seq-screen-index'))
+{
+  setPresetU8(4120 + 65*index, value);
+}
+
+function setSequencerDegree(value, step, index=num("seq-screen-index"))
+{
+  const loc = 1714 + 128*index + 4*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, (v & 0xf0) | (Number(value) & 0x0f));
+}
+
+function setSequencerOctave(value, step, index=num("seq-screen-index"))
+{
+  const loc = 1714 + 128*index + 4*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, (v & 0x8f) | ((Number(value) & 0x7) << 4));
+}
+
+function setSequencerLen(value, step, index=num("seq-screen-index"))
+{
+  const loc = 1715 + 128*index + 4*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, (v & 0xf8) | (Number(value) & 0x7));
+}
+
+function setSequencerRatchet(value, step, index=num("seq-screen-index"))
+{
+  const loc = 1715 + 128*index + 4*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, value ? v | 0x08 : v & ~0x08);
+}
+
+function setSequencerReset(value, step, index=num("seq-screen-index"))
+{
+  const loc = 1715 + 128*index + 4*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, value ? v | 0x10 : v & ~0x10);
+}
+
+function setSequencerSkip(value, step, index=num("seq-screen-index"))
+{
+  const loc = 4122 + 65*index + 2*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, value ? v | 0x01 : v & ~0x01);
+}
+
+function setSequencerMute(value, step, index=num("seq-screen-index"))
+{
+  const loc = 4122 + 65*index + 2*step;
+  const v   = presetSysex[loc];
+
+  setPresetU8(loc, (v & 0x01) | ((Number(value) & 0x7) << 1));
+}
+
+function setSequencerSubstep(value, step, substep, index=num("seq-screen-index"))
+{
+  value = Number(value) & 0x3;
+  
+  const main = 1712 + 128*index + 4*step;
+  const add  = 4121 + 65*index + 2*step;
+  
+  let pattern = presetSysex[main] |
+                (presetSysex[main + 1] << 7) |
+                (presetSysex[add] << 14);
+
+  const shift = 2*substep;
+  pattern = (pattern & ~(0x3 << shift)) | (value << shift);
+
+  setPresetShort(main, pattern & 0x3fff);
+  setPresetU8(add, pattern >> 14);
+}

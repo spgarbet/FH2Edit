@@ -43,7 +43,7 @@
   - Envelopes
   - Drum Sequencer
 - Tunings 32 slots for Scala/Keyboard
-  - Use local memory? 
+  - Use local memory? Hidden interface.
 - Outputs
   - (ICON-Gamepad) HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output

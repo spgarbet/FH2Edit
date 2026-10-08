@@ -1812,7 +1812,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
             </div>
             <div>
               <label for="seq-channel">MIDI Channel</label>
-              <select id="seq-channel"><script>optionRange(1,16,1,1)</script></select>
+              <select id="seq-channel" onchange="setSeqChannel(this.value)"><script>optionRange(1,16,1,1)</script></select>
               <button id="seq-mute" type="button" class="mute-button"
                       onclick="toggleSeqMute()"
                       aria-label="Sequence Mute">
