@@ -568,7 +568,12 @@ function processSysexData(arr, filename)
 
 // Compound Ops
 function onSave()        { onSavePreset();  onSaveConfig();  }
-function onWrite()       { onWritePreset(); onWriteConfig(); }
+async function onWrite()      
+{ 
+  onWritePreset();
+  await new Promise(resolve => setTimeout(resolve, 400));
+  onWriteConfig();
+}
 async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
 function onFlash()       { onFlashPreset(); onFlashConfig(); }
 function onInitialize()  { onInitPreset();  onInitConfig();  }

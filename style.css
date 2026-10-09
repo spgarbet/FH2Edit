@@ -967,8 +967,8 @@ canvas
 
 #trig-editor .trig-single-trash img
 {
-  width: 11px;
-  height: 11px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
@@ -1171,4 +1171,34 @@ canvas
 #seq-table td.seq-offset-invalid select
 {
   color: #a00000;
+}
+
+#game-editor .gamepad-single-trash
+{
+  width: 17px;
+  height: 17px;
+  padding: 2px;
+  margin: 0;
+}
+
+#game-editor .gamepad-single-trash img
+{
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+#key-editor .key-single-trash
+{
+  width: 17px;
+  height: 17px;
+  padding: 2px;
+  margin: 0;
+}
+
+#key-editor .key-single-trash img
+{
+  width: 14px;
+  height: 14px;
+  display: block;
 }

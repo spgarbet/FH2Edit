@@ -105,23 +105,34 @@ function writeMessage()
   midiLogOut(sysex);
 }
 
+const RETRY_ATTEMPTS =   6;
+const RETRY_WAIT     = 750;
+
 async function retryPreset()
 {
-  for (let i=0; i<4; ++i)
+  for (let i=0; i<RETRY_ATTEMPTS; ++i)
   {
-    await new Promise(resolve => setTimeout(resolve, 750));
+    await new Promise(resolve => setTimeout(resolve,
+      RETRY_WAIT + Math.floor(Math.random() * 201) - 100));
 
     if (!appState.presetReq) { break; }
 
     midiOutput().send(presetSysex);
-    log("Retried preset");
+    log("Retry " + i + " preset");
     midiLogOut(presetSysex);
   }
-  if(!appState.presetReq && checked('flash-mode'))
-  { 
-    flashPreset(num('preset-slot')); 
+  
+  // Let it settle a moment
+  await new Promise(resolve => setTimeout(resolve, 100));
+  if(appState.presetReq)
+  {
+    log("Unable to send preset");
+    appState.presetReq = false; // Giving up
   }
-  appState.presetReq = false; // Make sure to give up
+  else
+  {
+    if(checked('flash-mode')) { flashPreset(num('preset-slot')); }
+  }
 }
 
 function writePreset()
@@ -141,21 +152,29 @@ function writePreset()
 
 async function retryConfig()
 {
-  for (let i=0; i<4; ++i)
+  for (let i=0; i<RETRY_ATTEMPTS; ++i)
   {
-    await new Promise(resolve => setTimeout(resolve, 750));
+   await new Promise(resolve => setTimeout(resolve,
+      RETRY_WAIT + Math.floor(Math.random() * 201) - 100));
 
     if (!appState.configReq) { break; }
 
     midiOutput().send(configSysex);
-    log("Retried config");
+    log("Retry "+i+" config");
     midiLogOut(configSysex);
   }
-  if(!appState.configReq && checked('flash-mode'))
-  { 
-    configPreset(num('config-slot')); 
+  
+  // Let it settle a moment
+  await new Promise(resolve => setTimeout(resolve, 100));
+  if(appState.configReq)
+  {
+    log("Unable to send config");
+    appState.configReq = false; // Giving up
   }
-  appState.configReq = false; // Make sure to give up
+  else
+  {
+    if(checked('flash-mode')) { flashConfig(num('config-slot')); }
+  }
 }
 
 function writeConfig()
