@@ -43,13 +43,17 @@
   - All the Arps
   - Envelopes
   - Drum Sequencer
-- Tunings 32 slots for Scala/Keyboard
-  - Use local memory? Hidden interface.
 - Read/Write sequences from Novation
 - Deal properly with Gate expanders
- 
+
+### Separate project
+
+The tunings scala/keyboard interface lacks a means to read what's on the device.
+Any state presented could be invalid, unless the editor was the only program
+that did the editing. It would be nice to have labeled dropdowns, but I'm 
+thinking having another program to upload scala is the way to go. 
+
 ## Questions
 
 - What is the scale of portamento? 0-127 means what?
-- When in configuration trigger can a note be set to "--"? What value is that? -1?
 - Do paraphonic outputs still maintain stride?

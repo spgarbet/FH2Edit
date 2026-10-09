@@ -52,11 +52,14 @@ FH2Edit is under active development.
 
 **In progress**
 
+- Testing
+
 **Planned**
 
 - MIDI mapping learn mode
 - Tunings (32 slots, Scala/keyboard)
 - A Gates tab (for things like expanders)
+- Read Novation sequences
 
 ## Aftermatter
 
