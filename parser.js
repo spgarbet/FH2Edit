@@ -1017,8 +1017,10 @@ function parseConfigArpeggiator(reader, index=null)
   };
 }
 
-function parseGamepad(reader)
+function parseGamepad()
 {
+  reader = new ByteReader(configSysex);
+  
   // Gamepad / HID mappings
   reader.seek(2956);
   const gamepad = [];              

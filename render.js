@@ -181,6 +181,24 @@ function rebuildIconState()
       updateEuc(i);
     }
   }
+  
+  for(let i=0; i<64; ++i)
+  {
+    if(trigActive(i))
+    {
+      iconState.trig[i].enabled = true;
+      iconState.trig[i].output  = i;
+    }
+  }
+  
+  for(let i=0; i<64; ++i)
+  {
+    if(gamepadActive(i))
+    {
+      iconState.game[i].enabled = true;
+      iconState.game[i].output  = i;
+    }
+  }
 
   renderOutputs();
 }
@@ -483,4 +501,44 @@ function renderSequencer()
   updateMidiMapButtons("#sequencer-content .midi-map-button", index);
   updateSeqRange(index);
   updateSeqNoteOffsets(get('seq-root-note'));
+}
+
+
+function appendGamepadRow(gamepad, fragment)
+{
+  const template = elem("gamepad-row-template");
+  const row      = template.cloneNode(true);
+
+  row.removeAttribute("id");
+  
+  row.dataset.index                          = gamepad.index;
+  row.querySelector(".gamepad-usage" ).value = gamepad.usage;
+  row.querySelector(".gamepad-scale" ).value = gamepad.scale;
+  row.querySelector(".gamepad-offset").value = gamepad.offset;
+  
+  const disabled = gamepad.usage < 20 || gamepad.usage > 29;
+  row.querySelector(".gamepad-scale" ).disabled = disabled;
+  row.querySelector(".gamepad-offset").disabled = disabled;
+  
+  fragment.appendChild(row);
+}
+
+function renderGamepadEditor(output)
+{
+  const avail    = 32-gamepadCount();
+  const fragment = document.createDocumentFragment();
+  const rows     = elem("gamepad-rows");
+  
+  elem('gamepad-available').textContent   = "Available: " + avail ;
+  elem('gamepad-editor-name').textContent = "Output " + (output+1) + " HID Gamepad";
+  elem('gamepad-editor-plus').hidden      = avail === 0;
+  
+  elem("gamepad-rows").replaceChildren();
+
+  for(const gamepad of gamepadsForOutput(output))
+  {
+    appendGamepadRow(gamepad, fragment);
+  }
+  
+  rows.appendChild(fragment);
 }

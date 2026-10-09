@@ -32,7 +32,8 @@ const iconState =
   euc:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   arp:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   env:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
-  trig:  Array.from({ length: 64 }, () => ({ enabled: false, output: null }))
+  trig:  Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
+  game:  Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
 };
 
 let   selectedIcon     = null;
@@ -50,7 +51,8 @@ const ICON_DEFS =
   env:   { label: "Envelope",   src: "icons/envelope.png", total: 16 },
   euc:   { label: "Euclidean",  src: "icons/rhythm.png",   total: 16 },
   srr:   { label: "Shift Reg",  src: "icons/srr.png",      total: 16 },
-  trig:  { label: "Trigger",    src: "icons/trigger.png",  total: 64 }
+  trig:  { label: "Trigger",    src: "icons/trigger.png",  total: 64 },
+  game:  { label: "Gamepad",    src: "icons/game.png",     total: 64 },
 };
 
 // Elements
@@ -637,6 +639,18 @@ function nextAvailableIcon(type, output)
     return -1;
   }
   
+  if(type === "game")
+  {
+    if(!gamepadAvailable()) { return -1; }
+  
+    for(let i = 0; i < iconState.game.length; ++i)
+    {
+      if(!iconState.game[i].enabled) { return i; }
+    }
+    
+    return -1;
+  }
+  
   if(type === "arp" || type === "env")
   {
     const midi = iconState.midi;
@@ -705,6 +719,9 @@ function addIcon(type, output)
       break;
     case "trig":
       initTrig(index, output);
+      break;
+    case "game":
+      initGamepad(index, output);
       break;
   }
 
@@ -849,6 +866,7 @@ function selectIcon(type, index, output)
 
   renderOutputEditor();
 }
+
 function renderOutputIcons(output, container)
 {
   container.replaceChildren();
@@ -869,7 +887,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
   {
     const state = iconState[type];
 
@@ -914,7 +932,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -973,6 +991,11 @@ function buildIconPicker()
   {
     disableTriggersOnOutput(selectedIcon.output);
     removeIcon("trig", selectedIcon.index);
+  });
+  elem("gamepad-editor-trash").addEventListener("click", function()
+  {
+    disableGamepadsOnOutput(selectedIcon.output);
+    removeIcon("game", selectedIcon.index);
   });
 }
 
@@ -1190,7 +1213,7 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
   {
     elem(x+"-editor").hidden = sel !== x;
     
@@ -1216,6 +1239,9 @@ function renderOutputEditor()
       break;
     case "trig":
       renderTrigEditor(selectedIcon.output);
+      break;
+    case "game":
+      renderGamepadEditor(selectedIcon.output);
       break;
   }
   updateTooltips();
@@ -2130,6 +2156,68 @@ function initTriggerUI()
     
     if(nextAvailableTrig() === -1) { elem("trig-editor-plus").hidden = true; }
     
+  });
+}
+
+function initGamepadUI()
+{
+  elem("gamepad-rows").addEventListener("change", function(event)
+  {
+    const row = event.target.closest("tr");
+    if(!row) { return; }
+  
+    const index = Number(row.dataset.index);
+  
+    if(event.target.matches(".gamepad-usage"))
+    {
+      setGamepadUsage(event.target.value, index);
+      const disabled = 
+        Number(event.target.value) < 20 ||
+        Number(event.target.value) > 29;
+      row.querySelector(".gamepad-scale" ).disabled = disabled;
+      row.querySelector(".gamepad-offset").disabled = disabled;
+    }
+    else if(event.target.matches(".gamepad-scale"))
+    {
+      setGamepadScale(event.target.value, index);
+    }
+    else if(event.target.matches(".gamepad-offset"))
+    {
+      setGamepadOffset(event.target.value, index);
+    }
+  });
+  elem("gamepad-rows").addEventListener("click", function(event)
+  {
+    const button = event.target.closest(".gamepad-single-trash");
+    if(!button) { return; }
+  
+    const row   = button.closest("tr");
+    const tbody = row.closest("tbody");
+    const index = Number(row.dataset.index);
+    
+    setGamepadUsage(index, 0);
+  
+    row.remove();
+    
+    elem('gamepad-available').textContent = "Available: " + (32-gamepadCount()) ;
+    elem('gamepad-editor-plus').hidden    = false;
+
+    if(tbody.rows.length === 0) { removeIcon("game", selectedIcon.index); }
+  });
+  elem("gamepad-editor-plus").addEventListener("click", function(event)
+  {
+    const index = nextAvailableGamepad();
+    if(index === -1) { console.error("Adding a gamepad with none available"); return; }
+    
+    initGamepad(index, selectedIcon.output);
+    
+    const gamepad = parseGamepad(index);
+    
+    appendGamepadRow(trig, elem("gamepad-rows"));
+    
+    elem('gamepad-available').textContent = "Available: " + (32-gamepadCount()) ;
+    
+    if(nextAvailableGamepad() === -1) { elem("gamepad-editor-plus").hidden = true; }
   });
 }
 

@@ -45,16 +45,18 @@ FH2Edit is under active development.
   - Envelope
   - Arpeggiator
   - Trigger editor
+  - HID Gamepad
 - **Drum Sequencer**
 - **Note Sequencers**
 
 **In progress**
 
+- HID keyboard
+
 **Planned**
 
 - MIDI mapping learn mode
 - Tunings (32 slots, Scala/keyboard)
-- HID gamepad and HID keyboard outputs
 - A Gates tab (for things like expanders)
 
 ## Aftermatter

@@ -905,3 +905,101 @@ function setSeqSubstep(value, step, substep, index=num("seq-screen-index"))
   setPresetShort(main, pattern & 0x3fff);
   setPresetU8(add, pattern >> 14);
 }
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// HID Gamepad
+
+function gamepadActive(output)
+{
+  const gamepads = parseGamepad();
+  for(let i=0; i<32; ++i)
+  {
+    if(gamepads[i].output === output &&
+       gamepads[i].usage > 0)
+    {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function gamepadCount()
+{
+  const gamepads = parseGamepad();
+  let   active   = 0;
+  for(let i=0; i<32; ++i)
+  {
+    if(gamepads[i].output > 0 && gamepads[i].usage > 0) { ++active; }
+  }
+  return active;
+}
+
+function gamepadAvailable()
+{
+  return gamepadCount() < 32;
+}
+
+function disableGamepad(index)
+{
+  setGamepadOutput(index, 0);
+  setGamepadUsage( index, 0);
+}
+
+function disableGamepadsOnOutput(output)
+{
+  const gamepads = parseGamepad();
+  for(let i=0; i<32; ++i)
+  {
+    if(gamepads[i].output === output)
+    {
+      disableGamepad(i);
+    }
+  }
+}
+
+function setGamepadUsage(index, value)
+{
+  setConfigU8(2956 + 8*index, value);
+}
+
+function setGamepadScale(index, value)
+{
+  setConfigShort(2958 + 8*index, value);
+}
+
+function setGamepadOffset(index, value)
+{
+  setConfigShort(2960 + 8*index, value);
+}
+
+function setGamepadOutput(index, value)
+{
+  setConfigU8(2957 + 8*index, value);
+}
+
+function initGamepad(index, output)
+{ 
+  setGamepadUsage(  index,     20 );
+  setGamepadScale(  index,    -16 );
+  setGamepadOffset( index,   4096 );
+  setGamepadOutput( index, output );
+}
+
+function gamepadsForOutput(output)
+{
+  return parseGamepad().filter(game => game.output === output && game.usage > 0);
+}
+
+function nextAvailableGamepad()
+{
+  const gamepads = parseGamepad();
+  
+  for(let i=0; i<32; ++i)
+  {
+    if(gamepads[i].output === 0 || gamepads[i].usage === 0) { return i; }
+  }
+  
+  return -1;
+}

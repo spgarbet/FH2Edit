@@ -45,3 +45,5 @@ You need to include one line for each author (not for each icon).
 - MIDI DIN5 icon created by Shawn Garbett, an author of this package, licensed via GPL-3.
 - [Trigger](https://www.flaticon.com/free-icon/lightning_2024098?term=lightning&page=1&position=18&origin=search&related_id=2024098) icon made by [Magnific](https://www.flaticon.com/authors/manific) from [Flaticon](https://flaticon.com)
 - [Mute and Music Note](https://www.flaticon.com/free-icon/music-sign_3787391?related_id=3787391&origin=pack) icon made by [DenIcon](https://www.flaticon.com/authors/denicon) from [Flaticon](https://flaticon.com)
+- [Game](https://www.flaticon.com/free-icon/game_7786362?term=game+controller&page=1&position=18&origin=search&related_id=7786362) icon made by [sonnycandra](https://www.flaticon.com/authors/sonnycandra) from [Flaticon](https://flaticon.com)
+- [Keyboard](https://www.flaticon.com/free-icon/keyboard_10302466?term=keyboard&page=1&position=9&origin=search&related_id=10302466) icon made by [Corner Pixel](https://www.flaticon.com/authors/corner-pixel) from [Flaticon](https://flaticon.com)

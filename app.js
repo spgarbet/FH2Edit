@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () =>
   initLfoUI()
   updateFPS();
   initTriggerUI();
+  initGamepadUI();
   initDrumSeq();
   initMidiMapButtons();
 });

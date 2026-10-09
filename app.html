@@ -1047,6 +1047,67 @@ Euclidean: [Euclidean No] Upon a pulse generated.">Reset</label>
               </tbody></table>
             </div>
           </div>
+
+<!-- HID Gamepad -->
+          <div id="game-editor" hidden>
+            <div class="editor-header">
+              <button id="gamepad-editor-trash" type="button" class="outputs-button"><img src="icons/trash.png" alt="Remove All Gamepad Outputs"></button>
+              <h3 id="gamepad-editor-name">HID Gamepad</h3>
+              <h5 id="gamepad-available">32 Available</h5>
+            </div>
+            <div>
+              <button id="gamepad-editor-plus" type="button" class="outputs-button"><img src="icons/curly-plus.png" alt="Add an Output Gamepad"></button>
+            </div>
+            <div class="singleline">
+              <table>
+                <thead><tr>
+                  <th>Usage</th>
+                  <th><span class="tooltip" data-tooltip="The 8-bit HID value (0–255) is converted to a DAC code using 4 × (offset + scale × value). With Y’s defaults (offset 4096, scale −16), the range is 16384–64.">Scale</span></th>
+                  <th>Offset</th>
+                  <th></th></tr>
+                </thead>
+                <tbody id="gamepad-rows"></tbody>
+              </table>
+            </div>
+            <div id="gamepad-template" hidden>
+              <table><tbody>
+                <tr id="gamepad-row-template">
+                  <td>
+                    <select class="gamepad-usage">
+                      <option value="20">X</option>
+                      <option value="21">Y</option>
+                      <option value="22">Z</option>
+                      <option value='23'>Rx</option>
+                      <option value='24'>Ry</option>
+                      <option value='25'>Rz</option>
+                      <option value='26'>Slider</option>
+                      <option value='27'>Dial</option>
+                      <option value='28'>Wheel</option>
+                      <option value='29'>Hat</option>
+                      <option value='30'>HatU</option>
+                      <option value='31'>HatD</option>
+		                  <option value='32'>HatL</option>
+		                  <option value='33'>HatR</option>
+		                  <script>
+		                    for (j=1; j<20; ++j)
+		                    {
+			                    document.write( "<option value='" + j + "'>Button" + 
+			                                    j + "</option>" );
+		                    }
+                      </script>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="gamepad-scale" type="number" min="-256" max="256" step="1" value="-16">
+                  </td>
+                  <td>
+                    <input class="gamepad-offset" type="number" min="0" max="4096" step="1" value="4096">
+                  </td>
+                  <td><button type="button" class="outputs-button gamepad-single-trash"><img src="icons/trash.png" alt="Remove Trigger"></button></td>
+                </tr>
+              </tbody></table>
+            </div>
+          </div>
           
 <!-- Arpeggiator -->
           <div id="arp-editor" hidden>
@@ -1948,7 +2009,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
   
   <footer id="footer">
     <span><a href="https://github.com/spgarbet/FH2Edit" id="github-link">Source</a></span>
-    <span>Version 0.2.0.9999</span>
+    <span>Version 0.2.1</span>
     <span>©2026 <a href="https://garbett.org">Shawn Garbett</a></span>
     <span>
       <a href="https://www.gnu.org/licenses/gpl-3.0.html"
@@ -1995,6 +2056,8 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
         <li><a href="https://www.flaticon.com/free-icon/link_659999?term=chain&page=1&position=8&origin=search&related_id=659999" target="_blank" rel="noopener">Link</a> icon created by <a href="https://www.flaticon.com/authors/smashicons" target="_blank" rel="noopener">Smashicons</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         <li><a href="https://www.flaticon.com/free-icon/lightning_2024098?term=lightning&page=1&position=18&origin=search&related_id=2024098" target="_blank" rel="noopener">Trigger</a> icon made by <a href="https://www.flaticon.com/authors/manific" target="_blank" rel="noopener">Manific</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         <li><a href="https://www.flaticon.com/free-icon/music-sign_3787391?related_id=3787391&origin=pack" target="_blank" rel="noopener">Mute and Music Note</a> icon made by <a href="https://www.flaticon.com/authors/denicon" target="_blank" rel="noopener">DenIcon</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/game_7786362?term=game+controller&page=1&position=18&origin=search&related_id=7786362" target="_blank" rel="noopener">Game</a> icon made by <a href="https://www.flaticon.com/authors/sonnycandra" target="_blank" rel="noopener">sonnycandra</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
+        <li><a href="https://www.flaticon.com/free-icon/keyboard_10302466?term=keyboard&page=1&position=9&origin=search&related_id=10302466" target="_blank" rel="noopener">Keyboard</a> icon made by <a href="el](https://www.flaticon.com/authors/corner-pixel" target="_blank" rel="noopener">Corner Pixel</a> from <a href="https://flaticon.com" target="_blank" rel="noopener">Flaticon</a></li>
         </ul>
       </div>
   

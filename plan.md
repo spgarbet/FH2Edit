@@ -26,19 +26,20 @@
   - (ICON-Envelope) A separate editor for the Envelope
   - (ICON-Arpeggiator) A separate editor for the Arp
   - (ICON-Lightning) Triggers
+  - (ICON-Gamepad)  HID Gamepad, assign to output
 - Drum sequencer
 - Sequencer
 
 ## In Process
 
 - Outputs
-  - (ICON-Gamepad)  HID Gamepad, assign to output
   - (ICON-Keyboard) HID Keyboard, assign to output
+- Better defaults for gamepad. 
 
 ## TODO
 
 - MIDI Mapping Learn mode
-- MIDI Map display routes
+- MIDI Map display routes page
 - Testing
   - All the Arps
   - Envelopes
