@@ -363,6 +363,7 @@ function parsePresetGlobals(reader)
   {
     version,
     name,
+    tempo,
     swingType,
     swingAmount,
     swing
@@ -1041,8 +1042,9 @@ function parseGamepad()
   return gamepad;
 }
 
-function parseKeyboard(reader)
-{  
+function parseKeyboard()
+{ 
+  reader = new ByteReader(configSysex);
   reader.seek(3212);
   const keyboard = [];
   for (let i = 0; i < 32; ++i)
@@ -1055,11 +1057,11 @@ function parseKeyboard(reader)
 
     keyboard.push(
       {
-        type:   type,
-        output: output,
-        key:    key,
-        value0: reader.uShort(),
-        value1: reader.uShort()
+        type:    type,
+        output:  output,
+        key:     key,
+        release: reader.uShort(),
+        press:   reader.uShort()
       }
     );
   }

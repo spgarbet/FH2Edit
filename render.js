@@ -199,6 +199,15 @@ function rebuildIconState()
       iconState.game[i].output  = i;
     }
   }
+  
+  for(let i=0; i<64; ++i)
+  {
+    if(keyActive(i))
+    {
+      iconState.key[i].enabled = true;
+      iconState.key[i].output  = i;
+    }
+  }
 
   renderOutputs();
 }
@@ -538,6 +547,41 @@ function renderGamepadEditor(output)
   for(const gamepad of gamepadsForOutput(output))
   {
     appendGamepadRow(gamepad, fragment);
+  }
+  
+  rows.appendChild(fragment);
+}
+
+function appendKeyRow(key, fragment)
+{
+  const template = elem("key-row-template");
+  const row      = template.cloneNode(true);
+
+  row.removeAttribute("id");
+  
+  row.dataset.index                       = key.index;
+  row.querySelector(".key-type"   ).value = key.type;
+  row.querySelector(".key-key"    ).value = key.key;
+  row.querySelector(".key-release").value = key.release;
+  row.querySelector(".key-press"  ).value = key.press;
+
+  fragment.appendChild(row);
+}
+
+function renderKeyEditor(output)
+{
+  const avail    = 32-keyCount();
+  const fragment = document.createDocumentFragment();
+  const rows     = elem("key-rows");
+  
+  elem('key-available').textContent   = "Available: " + avail ;
+  elem('key-editor-name').textContent = "Output " + (output+1) + " HID Keyboard";
+  elem('key-editor-plus').hidden      = avail === 0;
+  elem("key-rows").replaceChildren();
+
+  for(const key of keysForOutput(output))
+  {
+    appendKeyRow(key, fragment);
   }
   
   rows.appendChild(fragment);

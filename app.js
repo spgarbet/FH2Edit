@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () =>
   updateFPS();
   initTriggerUI();
   initGamepadUI();
+  initKeyboardUI();
   initDrumSeq();
   initMidiMapButtons();
 });

@@ -46,12 +46,11 @@ FH2Edit is under active development.
   - Arpeggiator
   - Trigger editor
   - HID Gamepad
+  - HID Keyboard
 - **Drum Sequencer**
 - **Note Sequencers**
 
 **In progress**
-
-- HID keyboard
 
 **Planned**
 

@@ -931,7 +931,7 @@ function gamepadCount()
   let   active   = 0;
   for(let i=0; i<32; ++i)
   {
-    if(gamepads[i].output > 0 && gamepads[i].usage > 0) { ++active; }
+    if(gamepads[i].output >= 0 && gamepads[i].usage > 0) { ++active; }
   }
   return active;
 }
@@ -998,7 +998,111 @@ function nextAvailableGamepad()
   
   for(let i=0; i<32; ++i)
   {
-    if(gamepads[i].output === 0 || gamepads[i].usage === 0) { return i; }
+    if(gamepads[i].usage === 0) { return i; }
+  }
+  
+  return -1;
+}
+
+
+  /////////////////////////////////////////////////////////////////////
+ //
+// HID Key
+
+function keyActive(output)
+{
+  const keys = parseKeyboard();
+  for(let i=0; i<32; ++i)
+  {
+    if(keys[i].output === output &&
+       keys[i].type > 0)
+    {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function keyCount()
+{
+  const keys = parseKeyboard();
+  let   active   = 0;
+  for(let i=0; i<32; ++i)
+  {
+    if(keys[i].output >= 0 && keys[i].type > 0) { ++active; }
+  }
+  return active;
+}
+
+function keyAvailable()
+{
+  return keyCount() < 32;
+}
+
+function disableKey(index)
+{
+  setKeyOutput(index, 0);
+  setKeyType( index, 0);
+}
+
+function disableKeysOnOutput(output)
+{
+  const keys = parseKeyboard();
+  for(let i=0; i<32; ++i)
+  {
+    if(keys[i].output === output)
+    {
+      disableKey(i);
+    }
+  }
+}
+function setKeyType(index, value)
+{
+  setConfigU8(3212 + 8*index, value);
+}
+
+function setKeyOutput(index, value)
+{
+  setConfigU8(3213 + 8*index, value);
+}
+
+function setKeyKey(index, value)
+{
+  setConfigU8(3214 + 8*index, value);
+}
+
+function setKeyRelease(index, value)
+{
+  setConfigShort(3216 + 8*index, value);
+}
+
+function setKeyPress(index, value)
+{
+  setConfigShort(3218 + 8*index, value);
+}
+
+function initKey(index, output)
+{ 
+  setKeyType(   index,      1 );
+  setKeyKey(    index,      1 );
+  setKeyRelease(index,      0 );
+  setKeyPress(  index,   8192 );
+  setKeyOutput( index, output );
+}
+
+function keysForOutput(output)
+{
+  return parseKeyboard().filter(key => key.output === output && key.type > 0);
+}
+
+function nextAvailableKey()
+{
+  const keys = parseKeyboard();
+  
+  for(let i=0; i<32; ++i)
+  {
+    if(keys[i].type === 0) { return i; }
   }
   
   return -1;

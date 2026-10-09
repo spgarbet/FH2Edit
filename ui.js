@@ -34,6 +34,7 @@ const iconState =
   env:   Array.from({ length: 16 }, () => ({ enabled: false, output: null })),
   trig:  Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
   game:  Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
+  key:   Array.from({ length: 64 }, () => ({ enabled: false, output: null })),
 };
 
 let   selectedIcon     = null;
@@ -53,6 +54,7 @@ const ICON_DEFS =
   srr:   { label: "Shift Reg",  src: "icons/srr.png",      total: 16 },
   trig:  { label: "Trigger",    src: "icons/trigger.png",  total: 64 },
   game:  { label: "Gamepad",    src: "icons/game.png",     total: 64 },
+  key:   { label: "Keyboard",   src: "icons/keyboard.png", total: 64 },
 };
 
 // Elements
@@ -651,6 +653,17 @@ function nextAvailableIcon(type, output)
     return -1;
   }
   
+  if(type === "key")
+  {
+    if(!keyAvailable()) { return -1; }
+    for(let i = 0; i < iconState.key.length; ++i)
+    {
+      if(!iconState.key[i].enabled) { return i; }
+    }
+
+    return -1;
+  }
+  
   if(type === "arp" || type === "env")
   {
     const midi = iconState.midi;
@@ -722,6 +735,9 @@ function addIcon(type, output)
       break;
     case "game":
       initGamepad(index, output);
+      break;
+    case "key":
+      initKey(index, output);
       break;
   }
 
@@ -887,7 +903,7 @@ function renderOutputIcons(output, container)
   });
   container.appendChild(addButton);
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game", "key"])
   {
     const state = iconState[type];
 
@@ -932,7 +948,7 @@ function buildIconPicker()
 {
   const picker = elem("icon-picker");
 
-  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
+  for (const type of ["midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game", "key"])
   {
     const button        = document.createElement("button");
     button.type         = "button";
@@ -996,6 +1012,11 @@ function buildIconPicker()
   {
     disableGamepadsOnOutput(selectedIcon.output);
     removeIcon("game", selectedIcon.index);
+  });
+  elem("key-editor-trash").addEventListener("click", function()
+  {
+    disableKeysOnOutput(selectedIcon.output);
+    removeIcon("key", selectedIcon.index);
   });
 }
 
@@ -1213,7 +1234,7 @@ function renderOutputEditor()
 {
   let sel = selectedIcon?.type || "placeholder";
 
-  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game"])
+  for(let x of ["placeholder", "midi", "lfo", "clock", "srr", "euc", "arp", "env", "trig", "game", "key"])
   {
     elem(x+"-editor").hidden = sel !== x;
     
@@ -1242,6 +1263,9 @@ function renderOutputEditor()
       break;
     case "game":
       renderGamepadEditor(selectedIcon.output);
+      break;
+    case "key":
+      renderKeyEditor(selectedIcon.output);
       break;
   }
   updateTooltips();
@@ -2211,15 +2235,77 @@ function initGamepadUI()
     
     initGamepad(index, selectedIcon.output);
     
-    const gamepad = parseGamepad(index);
+    const gamepad = parseGamepad()[index];
     
-    appendGamepadRow(trig, elem("gamepad-rows"));
+    appendGamepadRow(gamepad, elem("gamepad-rows"));
     
     elem('gamepad-available').textContent = "Available: " + (32-gamepadCount()) ;
     
     if(nextAvailableGamepad() === -1) { elem("gamepad-editor-plus").hidden = true; }
   });
 }
+
+function initKeyboardUI()
+{
+  elem("key-rows").addEventListener("change", function(event)
+  {
+    const row = event.target.closest("tr");
+    if(!row) { return; }
+  
+    const index = Number(row.dataset.index);
+  
+    if(event.target.matches(".key-type"))
+    {
+      setKeyType(event.target.value, index);
+    }
+    else if(event.target.matches(".key-key"))
+    {
+      setKeyKey(event.target.value, index);
+    }
+    else if(event.target.matches(".key-release"))
+    {
+      setKeyRelease(event.target.value, index);
+    }
+    else if(event.target.matches(".key-press"))
+    {
+      setKeyPress(event.target.value, index);
+    }
+  });
+  elem("key-rows").addEventListener("click", function(event)
+  {
+    const button = event.target.closest(".key-single-trash");
+    if(!button) { return; }
+  
+    const row   = button.closest("tr");
+    const tbody = row.closest("tbody");
+    const index = Number(row.dataset.index);
+    
+    setKeyType(index, 0);
+  
+    row.remove();
+    
+    elem('key-available').textContent = "Available: " + (32-keyCount()) ;
+    elem('key-editor-plus').hidden    = false;
+
+    if(tbody.rows.length === 0) { removeIcon("key", selectedIcon.index); }
+  });
+  elem("key-editor-plus").addEventListener("click", function(event)
+  {
+    const index = nextAvailableKey();
+    if(index === -1) { console.error("Adding a key with none available"); return; }
+    
+    initKey(index, selectedIcon.output);
+    
+    const key = parseKeyboard(new ByteReader(configSysex))[index];
+    
+    appendKeyRow(key, elem("key-rows"));
+    
+    elem('key-available').textContent = "Available: " + (32-keyCount()) ;
+    
+    if(nextAvailableKey() === -1) { elem("key-editor-plus").hidden = true; }
+  });
+}
+
 
   ///////////////////////////////////////////////////////////////////////////
  //
@@ -2823,4 +2909,26 @@ function updateSeqNoteOffsets(root)
       option.disabled    = invalid[index];
     });
   });
+}
+
+const kbdCodes = [
+  "","","","","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+	"1","2","3","4","5","6","7","8","9","0",
+	"Return","Escape","Delete","Tab","Spacebar","Minus","Equal","[","]","\\","#",";","'","`",",",".","/","Caps Lock",
+	"F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",
+	"Print","Scroll","Pause","Insert","Home","Page Up","Delete","End","Page Down","Right","Left","Down","Up",
+	"Num Lock","Keypad /","Keypad *","Keypad -","Keypad +","Keypad Enter",
+	"Keypad 1","Keypad 2","Keypad 3","Keypad 4","Keypad 5","Keypad 6","Keypad 7","Keypad 8","Keypad 9","Keypad 0",
+	"Keypad ."
+];
+
+function optionKeys()
+{
+  for (let i=0; i<kbdCodes.length; ++i)
+  {
+  	if ( kbdCodes[i] != "" )
+  	{
+      document.write( "<option value='" + i + "'>" + kbdCodes[i] + "</option>" );
+    }
+  }
 }
