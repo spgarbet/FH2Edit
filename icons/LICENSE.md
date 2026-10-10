@@ -47,3 +47,5 @@ You need to include one line for each author (not for each icon).
 - [Mute and Music Note](https://www.flaticon.com/free-icon/music-sign_3787391?related_id=3787391&origin=pack) icon made by [DenIcon](https://www.flaticon.com/authors/denicon) from [Flaticon](https://flaticon.com)
 - [Game](https://www.flaticon.com/free-icon/game_7786362?term=game+controller&page=1&position=18&origin=search&related_id=7786362) icon made by [sonnycandra](https://www.flaticon.com/authors/sonnycandra) from [Flaticon](https://flaticon.com)
 - [Keyboard](https://www.flaticon.com/free-icon/keyboard_10302466?term=keyboard&page=1&position=9&origin=search&related_id=10302466) icon made by [Corner Pixel](https://www.flaticon.com/authors/corner-pixel) from [Flaticon](https://flaticon.com)
+- [Listen](https://www.flaticon.com/free-icons/listen")Listen icon created by Magnific - Flaticon</a>
+- [Radar](https://www.flaticon.com/free-icons/radar")Radar icons created by Magnific - Flaticon</a>
