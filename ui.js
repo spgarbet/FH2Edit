@@ -575,7 +575,7 @@ async function onWrite()
   onWriteConfig();
 }
 async function onRead()  { onReadPreset();  await sleep(500); onReadConfig();  }
-function onFlash()       { onFlashPreset(); onFlashConfig(); }
+async function onFlash() { onFlashPreset(); await sleep(500); onFlashConfig(); }
 function onInitialize()  { onInitPreset();  onInitConfig();  }
 
 function setExpanders(v)
