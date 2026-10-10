@@ -737,10 +737,9 @@ function setDrumMidiOut(value, flag)
 
   if (bit === undefined) { console.error("Undefined flag"); return; }
 
-  const base  = 2633;
-  const flags = configSysex[base];
+  const flags = configSysex[3633];
 
-  setConfigU8(base, value ? flags | bit : flags & ~bit);
+  setConfigU8(3633, value ? flags | bit : flags & ~bit);
 }
 
 function setSeqChannel(value, index=num('seq-screen-index'))
