@@ -2,6 +2,11 @@
 
 ## Known Bugs
 
+[ ] Post read from FH-2 icon state seems malformed for MIDI/CV
+[X] When changing output on the drum seq, it always drops back to Int
+[X] Fixed bug in flash both
+[X] Select output on Sequencer gets lost in render
+
 ## Completed
 
 - I/O
@@ -38,11 +43,16 @@
 ## TODO
 
 - MIDI Mapping Learn mode
+- Cleanup cc/note discrepancys in mapping
 - MIDI Map display routes page
+  Midi has
+    Source,   Bus, Channel
+    Receiver, Bus, Channel
 - Testing
   - All the Arps
   - Envelopes
   - Drum Sequencer
+  - Sequencer
 - Read/Write sequences from Novation
 - Deal properly with Gate expanders
 
