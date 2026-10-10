@@ -1172,7 +1172,7 @@ function parseConfigSequencers(reader)
         usbc:     (outputs >> 1) & 1,
         usba:     (outputs >> 2) & 1,
         din:      (outputs >> 3) & 1,
-        sel:      (outputs >> 4) & 1,
+        select:   (outputs >> 4) & 1,
         clock:    reader.u8()
       }
     );
@@ -1279,50 +1279,6 @@ function parseConfigAllGlobals(reader)
   
   return config;
 }
-
-/* For reference purposes
-function parseConfig(reader)
-{
-  reader.skip(8);
-
-  const version = reader.u32LE(); // 8
-
-  if (version !== 11)
-  {
-    log("FH-2 Config Version Unsupported");
-    alert("This version of the tool does support the configuration version.");
-    return null;
-  }
-
-  const config =
-  {
-    version: version,
-    name:    reader.fixedString(16).trimEnd() // 12
-  };
-
-  // Globals
-  config.globals        = parseConfigGlobals(reader);        //   29
-  config.outputRanges   = parseOutputRanges(reader);         //   36
-  config.mcvs           = parseMcvs(reader);                 //  100
-  config.mappings       = parseMappings(reader);             //  612 
-  config.clocks         = parseConfigClocks(reader);         // 2148
-  config.gateLevels     = parseGateLevels(reader);           // 2404
-  config.triggers       = parseConfigTriggers(reader);       // 2660
-  config.euclidean      = parseConfigEuclideans(reader); 
-  config.globalMidi     = parseConfigGlobalMidi(reader);
-  config.gamepad        = parseGamepad(reader);
-  config.keyboard       = parseKeyboard(reader);
-  config.lfoResets      = parseLfoResets(reader);            // 3468
-  config.cvMidi         = parseCvMidi(reader);
-  config.tempo          = parseTempoLimits(reader);          // 3612
-  config.sequencers     = parseConfigSequencers(reader);     // 3616
-  config.drumSequencer  = parseConfigDrumSeq(reader);        // 3632
-  config.arpeggiators   = parseConfigArpeggiators(reader);   // 3644
-  config.shiftRegisters = parseConfigShiftRegisters(reader); // 3708
-
-  return config;
-}
-*/
 
 function parseScreenshot(reader)
 {
