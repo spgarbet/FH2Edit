@@ -5,7 +5,8 @@
 - [ ] Post read from FH-2 icon state seems malformed for MIDI/CV. Not reproduced.
 - [ ] Initial render of "poly" seq doesn't unhide all the elements. (from plus)
 - [ ] Arpeggiator doesn't work, it seems to destroy all input
-- [ ] Envelope read/write doesn't work. Check sysex
+- [X] Envelope read/write doesn't work. Check sysex
+- [X] Envelope is wrong scale. The "time scale" is the 127 value. Needs full rework.
 
 ## Completed
 

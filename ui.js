@@ -2076,9 +2076,21 @@ function setEucPulses(value, index=selectedEucIndex)
 // Envelopes
 const envScales = [0.2, 0.5, 1, 2, 5, 10, 20, 50];
 
+function formatSeconds(seconds)
+{
+  return Number.isInteger(seconds)
+    ? String(seconds)
+    : seconds.toFixed(1);
+}
+
 function formatEnvTime(value, scale)
 {
-  const seconds = value * envScales[scale];
+  const seconds = value * envScales[scale] / 127;
+  
+  if(seconds < 1)
+  {
+    return Math.round(10000*seconds)/10 + "ms";
+  }
 
   if(seconds >= 60)
   {
@@ -2093,12 +2105,6 @@ function formatEnvTime(value, scale)
   return formatSeconds(seconds) + "s";
 }
 
-function formatSeconds(seconds)
-{
-  return Number.isInteger(seconds)
-    ? String(seconds)
-    : seconds.toFixed(1);
-}
 
 function updateEnvTimeOptions()
 {
