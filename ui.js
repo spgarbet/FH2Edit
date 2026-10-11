@@ -1002,7 +1002,7 @@ function buildIconPicker()
   });
   elem("arp-editor-trash").addEventListener("click", function()
   {
-    disableArp(selectedIcon.output);
+    disableArp(selectedIcon.index);
     removeIcon("arp", selectedIcon.index);
   });
   elem("env-editor-trash").addEventListener("click", function()

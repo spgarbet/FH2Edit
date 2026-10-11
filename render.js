@@ -377,7 +377,7 @@ function renderArpMode(value)
 
 function renderArpEditor(index=null)
 {
-  if(index === null) { index = selectedIcon.output; }
+  if(index === null) { index = selectedIcon.index; }
   const arp = parseArpeggiator(index);
   
   renderArpMode(arp.mode);
