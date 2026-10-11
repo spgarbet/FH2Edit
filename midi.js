@@ -92,11 +92,11 @@ function flashConfig(slot)
   request([0x18, slot], "Flash configuration");
 }
 
-function writeMessage()
+function onWriteMessage()
 {
   if(!isCompatible('write message')) { return; }
     
-  var text = "Hello!\nThis message\nwas sent from\nthe config tool.";
+  var text = "Hello!\nThis message\nwas sent from\nthe FH2Edit tool";
   var request = [0x02];
   for (var i = 0; i < text.length; ++i) { request.push(text.charCodeAt(i)); }
   var sysex = makeSysex(request);
