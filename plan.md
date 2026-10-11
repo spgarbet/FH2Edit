@@ -39,9 +39,6 @@
   - [X] Icons
   - [ ] Code
   - [ ] Cleanup cc/note discrepancy in mapping
-- [ ] Gamepad needs "init" button
-- [ ] Keyboard needs "init" button.
-- [ ] Better defaults for gamepad/keyboard.
 
 ## TODO
 

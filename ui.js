@@ -3000,3 +3000,16 @@ function initAllKeys()
   selectIcon('key', 0, 0);
   renderOutputEditor(0);
 }
+
+
+function initAllGamepad()
+{
+  for(let i=0; i<256; ++i)
+  {
+    configSysex[2956+i] = GAME_DEFAULT_SYSEX[i];
+  }
+  
+  rebuildIconState();
+  selectIcon('game', 0, 0);
+  renderOutputEditor(0);
+}
