@@ -408,6 +408,8 @@ function buildOutputs()
 
     list.appendChild(element);
   }
+  
+  updatePortamentoTimeOptions();
 }
 
 // Main UI Functions
@@ -2132,6 +2134,16 @@ function updateEnvTimeOptions()
     {
       option.textContent = formatEnvTime(Number(option.value), scale);
     }
+  }
+}
+
+function updatePortamentoTimeOptions()
+{
+  const select = elem('midi-cvrt-porta');
+  
+  for(const option of select.options)
+  {
+    option.textContent = formatEnvTime(Number(option.value), 2);
   }
 }
 
