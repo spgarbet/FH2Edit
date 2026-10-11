@@ -2,10 +2,8 @@
 
 ## Known Bugs
 
-[ ] Post read from FH-2 icon state seems malformed for MIDI/CV
-[X] When changing output on the drum seq, it always drops back to Int
-[X] Fixed bug in flash both
-[X] Select output on Sequencer gets lost in render
+- [ ] Post read from FH-2 icon state seems malformed for MIDI/CV. Not reproduced.
+- [ ] Initial render of "poly" seq doesn't unhide all the elements. (from plus)
 
 ## Completed
 
@@ -38,23 +36,24 @@
 
 ## In Process
 
-- Better defaults for gamepad. 
+- [ ] MIDI Mapping Learn Mode
+  - [X] Icons
+  - [ ] Code
+  - [ ] Cleanup cc/note discrepancy in mapping
+- [ ] Testing
+  - [ ] All the Arps
+  - [ ] Envelopes
+  - [X] Sequencer
 
 ## TODO
 
-- MIDI Mapping Learn mode
-- Cleanup cc/note discrepancys in mapping
-- MIDI Map display routes page
+- [ ] Better defaults for gamepad/keyboard. 
+- [ ] MIDI Map display routes page
   Midi has
     Source,   Bus, Channel
     Receiver, Bus, Channel
-- Testing
-  - All the Arps
-  - Envelopes
-  - Drum Sequencer
-  - Sequencer
-- Read/Write sequences from Novation
-- Deal properly with Gate expanders
+- [ ] Read/Write sequences from Novation
+- [ ] Deal properly with Gate expanders
 
 ### Separate project
 
