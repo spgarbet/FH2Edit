@@ -447,8 +447,8 @@ function eucActive(index)
 
 function setEnvValue(offset, index, value)
 {
-  if(offset < 8) { setPresetU8(1508 + offset + 8*index,     value); }
-  else           { setPresetU8(2532 + offset - 8 + 8*index, value); }
+  if(offset < 8) { setPresetU8(1508 + offset + 8*index,       value); }
+  else           { setPresetU8(2532 + (offset - 8) + 8*index, value); }
 }
 
 function disableEnv(index)

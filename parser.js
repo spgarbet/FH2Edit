@@ -300,11 +300,12 @@ function parsePresetTriggers(reader)
   return trigEnabled;
 }
 
-function parseEnvelopePartOne(reader, index=null)
+function parseEnvelope(reader, index)
 {
-  if(index !== null) { reader.seek(1508+8*index); }
+  reader.seek(1508+8*index);
   
-  return {
+  const envelope=
+  {
     attack:   reader.u8(), // 0
     decay:    reader.u8(), // 1
     sustain:  reader.u8(), // 2
@@ -314,11 +315,6 @@ function parseEnvelopePartOne(reader, index=null)
     velocity: reader.u8(), // 6
     random:   reader.u8()  // 7
   };
-}
-
-function parseEnvelope(reader, index)
-{
-  const envelope=parseEnvelopePartOne(reader, index);
   
   reader.seek(2532+8*index);
   envelope.as = reader.u8(); //  8  in model setter
