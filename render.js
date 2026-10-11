@@ -355,8 +355,9 @@ function renderEnvEditor(index=null)
   updateMidiMapButtons("#env-editor .midi-map-button", index);
 }
 
-function setArpMode(value)
+function renderArpMode(value)
 {
+  console.log("renderArpMode", value);
   const coarse = elem("arp-mode-coarse");
 
   let base = 0;
@@ -368,16 +369,18 @@ function setArpMode(value)
     base = n;
   }
 
+  console.log("  (coarse,fine)", base, value-base);
+
   put('arp-mode-coarse', base);
   put('arp-mode-fine',   value - base);
 }
 
 function renderArpEditor(index=null)
 {
-  if(index === null) { index = selectedIcon.index; }
+  if(index === null) { index = selectedIcon.output; }
   const arp = parseArpeggiator(index);
   
-  setArpMode(arp.mode);
+  renderArpMode(arp.mode);
   
   put(  'arp-clock',    arp.clock);
   check('arp-usbc',     arp.usbc);

@@ -1002,6 +1002,7 @@ function buildIconPicker()
   });
   elem("arp-editor-trash").addEventListener("click", function()
   {
+    disableArp(selectedIcon.output);
     removeIcon("arp", selectedIcon.index);
   });
   elem("env-editor-trash").addEventListener("click", function()
@@ -2123,8 +2124,9 @@ function updateEnvTimeOptions()
   }
 }
 
-function setArpMode()
+function updateArpMode()
 {
+  console.log("updateArpMode()");
   setArpPresetValue(
     0,
     num('arp-mode-coarse')+num('arp-mode-fine'),

@@ -1201,7 +1201,7 @@ Random - The notes held play in random order.
 Random 2 - Plays in random order with no repeats.
 Random 3 - Random permutation each time through.
 As Played - The notes are repeated in the order they are played.">Mode</label>
-                  <select id="arp-mode-coarse" onchange="setArpMode()">
+                  <select id="arp-mode-coarse" onchange="updateArpMode()">
                     <option value="0">Off</option>
                     <option value="11">Up</option>
                     <option value="22">Down</option>
@@ -1216,7 +1216,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                     <option value="118">As Played</option>
                   </select>
                   &emsp;<span class="tooltip" data-tooltip="Amount added to base mode setting. Useful for controlling where CC overtakes the mode.">Fine:</span>&ensp;
-                  <select id="arp-mode-fine" onchange="setArpMode()"><script>optionRange(0,10,0)</script></select>
+                  <select id="arp-mode-fine" onchange="updateArpMode()"><script>optionRange(0,10,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="M"
                           aria-label="MIDI assignment for arpeggiator fine value of mode">
