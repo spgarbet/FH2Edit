@@ -1355,7 +1355,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 </div>
                 <div>
                   <label for="env-attack" class="tooltip" data-tooltip="Attack time">Attack</label>
-                  <select id="env-attack"><script onchange="setEnvValue(0, selectedIcon.index, this.value)">optionRange(0,127,0)</script></select>
+                  <select id="env-attack" onchange="setEnvValue(0, selectedIcon.index, this.value)"><script>optionRange(0,127,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="env" data-index="0" data-dest="A"
                           aria-label="MIDI assignment for envelope attack">
