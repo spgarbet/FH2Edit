@@ -357,7 +357,6 @@ function renderEnvEditor(index=null)
 
 function renderArpMode(value)
 {
-  console.log("renderArpMode", value);
   const coarse = elem("arp-mode-coarse");
 
   let base = 0;
@@ -368,8 +367,6 @@ function renderArpMode(value)
     if(n > value) { break; }
     base = n;
   }
-
-  console.log("  (coarse,fine)", base, value-base);
 
   put('arp-mode-coarse', base);
   put('arp-mode-fine',   value - base);

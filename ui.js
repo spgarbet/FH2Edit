@@ -1179,6 +1179,7 @@ function renderMidiEditor()
   const envelope=parseEnvelope(reader, index);
   put("env-random", envelope.random);
   
+  updateMidiHidden();
   updateMidiMapButtons("#lfo-editor .midi-map-button", index);
 }
 
@@ -1701,6 +1702,21 @@ function updateMidiOutputs(index=selectedIcon.index)
   renderOutputIconsFor(parent.output);
 }
 
+function updateMidiHidden()
+{
+  const type   = configSysex[104+32*selectedIcon.index];
+  let   fields = document.querySelectorAll('.poly-param');
+  for (const field of fields)
+  {
+    field.hidden = type === 0;
+  }
+  fields = document.querySelectorAll('.mpe-param');
+  for (const field of fields)
+  {
+    field.hidden = type !== 2;
+  }
+}
+
 function setMidiCVType(value)
 {
   const index  = selectedIcon.index;
@@ -1715,12 +1731,7 @@ function setMidiCVType(value)
     setMidiCVValue(5, 1); // Voices=1 for Mono
     elem("midi-cvrt-voices").value = 1;
   }
-  
-  const fields = document.querySelectorAll(type === 1 ? '.poly-param' : '.mpe-param');
-  for (const field of fields)
-  {
-    field.hidden = type === 0;
-  }
+  updateMidiHidden();
   updateMidiOutputs();
 }
 
@@ -2126,7 +2137,6 @@ function updateEnvTimeOptions()
 
 function updateArpMode()
 {
-  console.log("updateArpMode()");
   setArpPresetValue(
     0,
     num('arp-mode-coarse')+num('arp-mode-fine'),

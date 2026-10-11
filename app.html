@@ -576,7 +576,7 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                     <option value="26">MPE Random</option>    
                   </select>
                 </div>
-                <div class="mpe-param poly-param" hidden>
+                <div class="poly-param" hidden>
                   <label for="midi-cvrt-voices">Voices</label>
                   <select id="midi-cvrt-voices" onchange="setMidiVoices(this.value)">
                     <script>optionRange(1,16,1)</script>
@@ -691,12 +691,12 @@ Aftertouch: CV is converted to a Aftertouch (aka Channel Pressure) message scale
                     <option value="3">Both</option>
                   </select>
                 </div>
-                <div class="mpe-param poly-param" hidden>
+                <div class="poly-param" hidden>
                   <label for="midi-cvrt-no-steal" class="tooltip" data-tooltip="Any keys pressed beyond the voices of the converter are ignored. Without this option, new notes replace any old ones being held.">Prevent Stealing</label>
                   <input id="midi-cvrt-no-steal" type="checkbox"
                          onchange="setMidiCVValue(8,this.checked)">
                 </div>
-                <div class="mpe-param poly-param" hidden>
+                <div class="poly-param" hidden>
                   <label for="midi-cvrt-stride" class="tooltip" data-tooltip="Sets the spacing between the per-voice sets of CVs. For example, if a 3 voice polyphonic converter has just CV and gate per voice on output 1, then the voice outputs will be 1/2, 3/4, 5/6. If the stride were set to 3, then the outputs are 1/2, 4/5, 7/8.">Stride</label>
                   <select id="midi-cvrt-stride" onchange="setMidiStride(this.value)">
                       <script>optionRange(0,32,0)</script>
