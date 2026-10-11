@@ -1198,13 +1198,14 @@ canvas
 .action-button
 {
   appearance: none;
+  margin: 0rem 1em;
   padding: 0.4rem 0.85rem;
   border: 1px solid #999;
   border-radius: 4px;
   background: #f2f2f2;
   color: #222;
   font: inherit;
-  font-size: 0.9em;
+  font-size: 1.1em;
   cursor: pointer;
   transition: background-color 120ms, border-color 120ms;
 }
