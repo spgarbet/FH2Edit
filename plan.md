@@ -45,13 +45,13 @@
   - [ ] Cleanup cc/note discrepancy in mapping
 - [ ] Testing
   - [ ] All the Arps
-  - [ ] Envelopes
+  - [X] Envelopes
   - [X] Sequencer
 
 ## TODO
 
-- [ ] Gamepad needs "clear" and "init" buttons
-- [ ] Keyboard needs "clear" and "init" buttons.
+- [ ] Gamepad needs "init" button
+- [ ] Keyboard needs "init" button.
 - [ ] Better defaults for gamepad/keyboard. 
 - [ ] MIDI Map display routes page
   Midi has

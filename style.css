@@ -1188,6 +1188,44 @@ canvas
   display: block;
 }
 
+#gamepad-actions, #key-actions
+{
+  display: flex;
+  justify-content: flex-end;
+  margin: 3rem 0 0.5rem 0;
+}
+
+.action-button
+{
+  appearance: none;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #f2f2f2;
+  color: #222;
+  font: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms;
+}
+
+.action-button:hover
+{
+  background: #e2e2e2;
+  border-color: #777;
+}
+
+.action-button:active
+{
+  background: #d5d5d5;
+}
+
+.action-button:focus-visible
+{
+  outline: 2px solid #548bc9;
+  outline-offset: 2px;
+}
+
 #key-editor .key-single-trash
 {
   width: 17px;

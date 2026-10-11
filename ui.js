@@ -2256,6 +2256,17 @@ function initGamepadUI()
   });
 }
 
+function clearAllGamepad()
+{
+  for(let i=0; i<32; ++i)
+  {
+    disableGamepad(i);
+    if(iconState.game[i].enabled) { removeIcon("game", i); }
+  }
+  
+  elem("gamepad-editor-plus").hidden = true;
+}
+
 function initKeyboardUI()
 {
   elem("key-rows").addEventListener("change", function(event)
@@ -2317,6 +2328,16 @@ function initKeyboardUI()
   });
 }
 
+function clearAllKey()
+{
+  for(let i=0; i<32; ++i)
+  {
+    disableKey(i);
+    if(iconState.key[i].enabled) { removeIcon("key", i); }
+  }
+  
+  elem("key-editor-plus").hidden = true;
+}
 
   ///////////////////////////////////////////////////////////////////////////
  //
