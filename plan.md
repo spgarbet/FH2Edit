@@ -69,5 +69,5 @@ thinking having another program to upload scala is the way to go.
 
 ## Questions
 
-- What is the scale of portamento? 0-127 means what?
+- What is the scale of portamento? 0-127 means what? 127=1 second.
 - Do paraphonic outputs still maintain stride?

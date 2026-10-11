@@ -1233,8 +1233,8 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                   </button>
                 </div>
                 <div>
-                  <label for="arp-gate-len" class="tooltip" data-tooltip="Gate on time as a fraction of the clock rate. 64 is a 50% gate length.0 is a special value and means a fixed length trigger pulse, unrelated to the clockrate.">Gate Length</label>
-                  <select id="arp-gate-len" onchange="setArpPresetValue(2,this.value,selectedIcon.index)"><script>optionRange(0,127,0)</script></select>
+                  <label for="arp-gate-len" class="tooltip" data-tooltip="Gate on time as a fraction of the clock rate. 0 means a fixed length trigger pulse, unrelated to the clockrate.">Gate Length</label>
+                  <select id="arp-gate-len" onchange="setArpPresetValue(2,this.value,selectedIcon.index)"><script>u7PercentRange(0,127,0)</script></select>
                   <button class="midi-map-button" type="button"
                           data-type="arp" data-index="0" data-dest="G"
                           aria-label="MIDI assignment for arpeggiator gate length">

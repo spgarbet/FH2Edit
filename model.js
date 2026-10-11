@@ -498,10 +498,10 @@ function disableArp(index)
 function initArp(index, output)
 {
   setArpPresetValue(0,     11, index); // Mode = up
-  setArpPresetValue(1,      0, index);
-  setArpPresetValue(2,      0, index);
+  setArpPresetValue(1,      1, index);
+  setArpPresetValue(2,    120, index);
   setArpPresetValue(3,      0, index);
-  setArpPresetValue(4,      0, index);
+  setArpPresetValue(4,     24, index);
   setArpPresetValue(6,      0, index);
   setArpConfigValue(0, output, index);
   setArpConfigValue(1,      0, index);
