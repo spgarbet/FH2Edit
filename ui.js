@@ -2988,3 +2988,15 @@ function optionKeys()
     }
   }
 }
+
+function initAllKeys()
+{
+  for(let i=0; i<256; ++i)
+  {
+    configSysex[3212+i] = KEY_DEFAULT_SYSEX[i];
+  }
+  
+  rebuildIconState();
+  selectIcon('key', 0, 0);
+  renderOutputEditor(0);
+}
