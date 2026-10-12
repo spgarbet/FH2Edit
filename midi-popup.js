@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 let midiMapButton = null;
+let midiLearnMode = false;
 
 function initMidiMapButtons()
 {
@@ -39,6 +40,7 @@ function initMidiMapButtons()
     });
   }
 
+  elem("midi-map-learn"   ).addEventListener("click",  learnMidiMap     );
   elem("midi-map-assign"  ).addEventListener("click",  assignMidiMap    );
   elem("midi-map-remove"  ).addEventListener("click",  removeMidiMap    );
   elem("midi-map-channel" ).addEventListener("change", updateMidiMap    );
@@ -132,7 +134,10 @@ function removeMidiMap()
 function hideMidiMapPopup()
 {
   elem("midi-map-popup").hidden = true;
+  elem("midi-map-learn-img").src="icons/antenna.png";
+
   midiMapButton = null;
+  midiLearnMode = false;
 }
 
 function assignMidiMap()
@@ -184,4 +189,24 @@ function assignMidiMap()
   );
 
   hideMidiMapPopup();
+}
+
+function learnMidiMap()
+{
+  const icon = elem("midi-map-learn-img");
+  midiLearnMode = !midiLearnMode;
+  elem("midi-map-learn-img").src = midiLearnMode
+    ? "icons/ear.png"
+    : "icons/antenna.png";
+}
+
+function receivedMidiCC(channel, cc)
+{
+  if(!midiLearnMode) { return; }
+  
+  elem("midi-map-channel").value = channel;
+  elem("midi-map-cc"     ).value = cc;
+  
+  midiLearnMode = false;
+  elem("midi-map-learn-img").src = "icons/antenna.png";
 }

@@ -9,7 +9,7 @@
 - I/O
   - Select MIDI ports
   - Read/Write sysex to file
-  - Read/Write sysex from FH-2
+  - Read/Write sysex from FH-2 (reliable write!)
   - Read Screen
   - Flash
   - [Internal] MIDI Retry strategy with confirmation
@@ -20,25 +20,19 @@
   - 8 Global channel/cc mappings (start/stop, etc)
   - CV/MIDI X Y
 - Outputs
-  - (ICON-Clock) Clock assign to output
-  - (ICON-Sine) LFO assign to output with MIDI
-  - (ICON-Keys) MAIN 16 Midi to CV
-  - (ICON-Criss Cross) 16 Shift Registers
-  - (ICON-Drums) 16 Euclidean Patterns
-  - (ICON-Envelope) A separate editor for the Envelope
-  - (ICON-Arpeggiator) A separate editor for the Arp
-  - (ICON-Lightning) Triggers
-  - (ICON-Gamepad)  HID Gamepad, assign to output
-  - (ICON-Keyboard) HID Keyboard, assign to output
+  - Clock
+  - LFO
+  - Midi to CV
+  - Sequence Shift Registers
+  - Euclidean Patterns
+  - Envelopes
+  - Arpeggiators
+  - Gamepad
+  - Keyboard
 - Drum sequencer
 - Sequencer
 
 ## In Process
-
-- [ ] MIDI Mapping Learn Mode
-  - [X] Icons
-  - [ ] Code
-  - [ ] Cleanup cc/note discrepancy in mapping
 
 ## TODO
 

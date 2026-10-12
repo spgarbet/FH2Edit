@@ -1241,3 +1241,24 @@ canvas
   height: 14px;
   display: block;
 }
+
+.midi-map-actions
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#midi-map-learn
+{
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+#midi-map-learn img
+{
+  display: block;
+}

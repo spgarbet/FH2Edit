@@ -295,7 +295,14 @@ function onMIDIMessage(message)
 {
   var data   = message.data;
   
-  // Check if it's an FH-2 message, ignore if not
+  // Control Change
+  if( (data[0] & 0xf0) === 0xb0)
+  {
+    receivedMidiCC(data[0] & 0x0f, data[1]);
+    return;
+  }
+  
+  // Check if it's an FH-2 message, ignore otherwise
   var header = [ 240, 0, 33, 39, 47 ];
   for (var i=0; i<5; ++i) { if ( header[i] != data[i] ) { return; } }
   if (data[5] == 0x22) { return; } // Asking if this is an FH-2! Loopback
