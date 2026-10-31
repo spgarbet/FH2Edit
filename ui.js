@@ -726,7 +726,7 @@ function addIcon(type, output)
       initMidi(index, output);
       break
     case "clock":
-      initClock();
+      initClock(index, output);
       break;
     case "euc":
       initEuc(index, output);
