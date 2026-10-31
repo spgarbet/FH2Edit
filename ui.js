@@ -2444,7 +2444,7 @@ function durationOptions(selected)
 
   for(const [value, label] of musicalRates)
   {
-    document.write("<option value='" + value + "'"+(value===selected?' selected':'')+">" + label + "</option>");
+    document.write("<option value='" + value + "'"+(value===selected?' selected':'')+">" + value + " " + label + "</option>");
     musicalRateValues.add(value);
   }
 

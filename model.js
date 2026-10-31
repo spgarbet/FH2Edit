@@ -380,6 +380,7 @@ function disableClock(i)
 function initClock(index, output)
 {
   setConfigU8(2148+8*index, 1);
+  setConfigU8(2149+8*index, 24);
   setConfigU8(2152, output); // Set Output
 }
 

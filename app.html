@@ -1766,7 +1766,7 @@ As Played - The notes are repeated in the order they are played.">Mode</label>
                 <label for="clock-editor-base" class="tooltip" data-tooltip="The rate of the clock, in terms of 24ppqn pulses.">Base</label>
                 <select id="clock-editor-base"
                   onchange="setConfigU8(2149+8*selectedIcon.index,this.value)">
-                  <script>durationOptions(24)</script>
+                  <script>optionRange(0, 127)</script>
                 </select>
               </div>
               <div>
